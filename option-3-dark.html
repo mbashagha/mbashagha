@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mo Bashagha — Product Designer</title>
+    <meta name="description" content="Mo Bashagha is a product designer at WhatsApp. Previously at Wise, Facebook, and the Apple + IBM partnership.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..500;1,6..72,300..500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0D0F0E;
+            --ink: #EDEAE3;
+            --muted: #8A877F;
+            --line: #242725;
+            --accent: #64E2A0;
+            --serif: 'Newsreader', Georgia, serif;
+            --mono: 'IBM Plex Mono', monospace;
+        }
+
+        body {
+            font-family: var(--serif);
+            background: var(--bg);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* soft glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -30vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90vw;
+            height: 70vh;
+            background: radial-gradient(ellipse at center, rgba(100, 226, 160, 0.07), transparent 65%);
+            pointer-events: none;
+        }
+
+        ::selection { background: var(--accent); color: var(--bg); }
+
+        .wrap {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 0 clamp(1.25rem, 5vw, 2.5rem);
+            position: relative;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        header .brand { color: var(--ink); text-decoration: none; }
+        header nav { display: flex; gap: 1.75rem; }
+        header nav a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+        header nav a:hover { color: var(--accent); }
+
+        .hero {
+            padding: clamp(6rem, 18vh, 11rem) 0 clamp(4rem, 10vh, 7rem);
+        }
+
+        .status {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .status::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px var(--accent);
+        }
+
+        h1 {
+            font-weight: 330;
+            font-size: clamp(2.4rem, 6.5vw, 4.4rem);
+            line-height: 1.12;
+            letter-spacing: -0.01em;
+            max-width: 22ch;
+        }
+
+        h1 em { color: var(--accent); font-weight: 380; }
+
+        .hero p {
+            margin-top: 2rem;
+            font-size: 1.15rem;
+            color: var(--muted);
+            max-width: 50ch;
+        }
+
+        .hero p a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+        .hero p a:hover { border-color: var(--accent); }
+
+        section { border-top: 1px solid var(--line); padding: clamp(3rem, 8vh, 5rem) 0; }
+
+        .label {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 2.5rem;
+        }
+
+        .label::before { content: '// '; color: var(--accent); }
+
+        .role {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .role:last-child { border-bottom: none; }
+
+        .role h2 {
+            font-weight: 400;
+            font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+            letter-spacing: -0.01em;
+        }
+
+        .role h2 span {
+            display: block;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 0.4rem;
+            letter-spacing: 0.05em;
+        }
+
+        .role h2 span b { color: var(--accent); font-weight: 500; }
+
+        .role p { color: var(--muted); font-size: 1.02rem; }
+
+        .principles { display: grid; gap: 2rem; }
+
+        .principle {
+            display: grid;
+            grid-template-columns: 2.5rem 1fr;
+            gap: 1rem;
+            align-items: baseline;
+        }
+
+        .principle .n { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); }
+        .principle h3 { font-weight: 420; font-size: 1.3rem; margin-bottom: 0.4rem; }
+        .principle p { color: var(--muted); font-size: 1.02rem; max-width: 60ch; }
+
+        .beyond p {
+            font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+            font-weight: 330;
+            line-height: 1.5;
+            max-width: 36ch;
+        }
+
+        .beyond a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+        .beyond a:hover { border-color: var(--accent); }
+
+        .contact a.big {
+            font-size: clamp(1.8rem, 5.5vw, 3.6rem);
+            font-weight: 330;
+            letter-spacing: -0.01em;
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--line);
+            transition: color 0.25s, border-color 0.25s;
+        }
+
+        .contact a.big:hover { color: var(--accent); border-color: var(--accent); }
+
+        .socials {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2.5rem;
+            font-family: var(--mono);
+            font-size: 0.8rem;
+        }
+
+        .socials a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+        .socials a:hover { color: var(--accent); }
+
+        footer {
+            border-top: 1px solid var(--line);
+            padding: 1.5rem 0 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+        }
+
+        @media (max-width: 680px) {
+            .role { grid-template-columns: 1fr; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <header>
+            <a class="brand" href="#">mo.bashagha</a>
+            <nav>
+                <a href="#work">work</a>
+                <a href="#approach">approach</a>
+                <a href="#contact">contact</a>
+            </nav>
+        </header>
+
+        <section class="hero" style="border-top: none;">
+            <p class="status reveal">currently designing at WhatsApp</p>
+            <h1 class="reveal">Product designer crafting <em>simple, private</em> experiences for billions of people.</h1>
+            <p class="reveal">Previously: moving money across borders at <a href="https://wise.com" target="_blank" rel="noopener">Wise</a>, connecting communities at Facebook, and building enterprise tools with Apple&nbsp;+&nbsp;IBM.</p>
+        </section>
+
+        <section id="work">
+            <p class="label reveal">selected experience</p>
+            <div class="role reveal">
+                <h2>WhatsApp<span><b>product designer</b> · now</span></h2>
+                <p>Designing core messaging experiences for one of the most-used apps on earth — where simplicity, privacy, and reliability are the whole point.</p>
+            </div>
+            <div class="role reveal">
+                <h2>Facebook<span>product designer</span></h2>
+                <p>Designed products that connect people and communities at global scale.</p>
+            </div>
+            <div class="role reveal">
+                <h2>Wise (TransferWise)<span>product designer</span></h2>
+                <p>Helped people move money across borders — research-led design, shipped closely with engineering, measured against real-world data.</p>
+            </div>
+            <div class="role reveal">
+                <h2>Apple + IBM<span>designer</span></h2>
+                <p>Built enterprise mobile experiences as part of the Apple and IBM partnership, bringing consumer-grade design to the workplace.</p>
+            </div>
+        </section>
+
+        <section id="approach">
+            <p class="label reveal">how i work</p>
+            <div class="principles">
+                <div class="principle reveal">
+                    <span class="n">01</span>
+                    <div>
+                        <h3>Start with research</h3>
+                        <p>Good design is an argument backed by evidence. I talk to people, dig into the problem, and bring the reasoning along with the pixels.</p>
+                    </div>
+                </div>
+                <div class="principle reveal">
+                    <span class="n">02</span>
+                    <div>
+                        <h3>Build with engineers</h3>
+                        <p>The best work happens shoulder-to-shoulder with the people shipping it. I prototype, I code enough to be dangerous, and I stay through execution.</p>
+                    </div>
+                </div>
+                <div class="principle reveal">
+                    <span class="n">03</span>
+                    <div>
+                        <h3>Measure what ships</h3>
+                        <p>Launch isn't the finish line. I follow the data after release to learn whether the design actually worked — and iterate when it didn't.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="beyond">
+            <p class="label reveal">beyond the pixels</p>
+            <p class="reveal">I write about design on <a href="https://medium.com/@mobashagha" target="_blank" rel="noopener">Medium</a> and UX Collective, and have mentored startup teams at Gaza Sky Geeks.</p>
+        </section>
+
+        <section id="contact" class="contact">
+            <p class="label reveal">say hello</p>
+            <a class="big reveal" href="mailto:mbashagha@gmail.com">mbashagha@gmail.com</a>
+            <div class="socials reveal">
+                <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">linkedin ↗</a>
+                <a href="https://medium.com/@mobashagha" target="_blank" rel="noopener">medium ↗</a>
+                <a href="https://twitter.com/mobashagha" target="_blank" rel="noopener">x/twitter ↗</a>
+            </div>
+        </section>
+
+        <footer>
+            <span>© <span id="year">2026</span> mo bashagha</span>
+            <span>dark by default</span>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); observer.unobserve(e.target); } });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    </script>
+</body>
+</html>

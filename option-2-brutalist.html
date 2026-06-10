@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mo Bashagha — Product Designer</title>
+    <meta name="description" content="Mo Bashagha is a product designer at WhatsApp. Previously at Wise, Facebook, and the Apple + IBM partnership.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #FFFFFF;
+            --ink: #0A0A0A;
+            --accent: #16FF6F;
+            --line: #0A0A0A;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::selection { background: var(--accent); color: var(--ink); }
+
+        /* ---------- header ---------- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 3px solid var(--line);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.85rem;
+        }
+
+        header nav { display: flex; gap: 1.5rem; }
+        header a { color: var(--ink); text-decoration: none; }
+        header nav a:hover { background: var(--accent); }
+
+        /* ---------- hero ---------- */
+        .hero {
+            padding: clamp(3rem, 9vh, 6rem) 1.5rem;
+            border-bottom: 3px solid var(--line);
+        }
+
+        h1 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 800;
+            font-size: clamp(3rem, 11vw, 8.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+        }
+
+        h1 .hl {
+            background: var(--accent);
+            padding: 0 0.08em;
+        }
+
+        .hero p {
+            margin-top: 2rem;
+            font-size: clamp(1rem, 1.8vw, 1.3rem);
+            max-width: 56ch;
+            font-weight: 500;
+        }
+
+        /* ---------- marquee ---------- */
+        .marquee {
+            border-bottom: 3px solid var(--line);
+            overflow: hidden;
+            white-space: nowrap;
+            background: var(--ink);
+            color: var(--bg);
+            padding: 0.8rem 0;
+        }
+
+        .marquee-inner {
+            display: inline-block;
+            animation: scroll 22s linear infinite;
+            font-family: 'Archivo', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.95rem;
+        }
+
+        .marquee-inner span { margin: 0 1.2rem; }
+        .marquee-inner .dot { color: var(--accent); }
+
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .marquee-inner { animation: none; }
+        }
+
+        /* ---------- work ---------- */
+        .label {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 3px solid var(--line);
+            background: var(--accent);
+        }
+
+        .role {
+            display: grid;
+            grid-template-columns: 5rem 1fr 1.4fr;
+            border-bottom: 3px solid var(--line);
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .role > * { padding: 1.75rem 1.5rem; }
+
+        .role:hover { background: var(--ink); color: var(--bg); }
+        .role:hover .num { color: var(--accent); }
+
+        .num {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            border-right: 3px solid var(--line);
+        }
+
+        .role:hover .num { border-color: var(--bg); }
+
+        .role h2 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+            text-transform: uppercase;
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+
+        .role h2 span {
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin-top: 0.6rem;
+        }
+
+        .role p { font-size: 0.97rem; max-width: 46ch; align-self: center; }
+
+        /* ---------- principles ---------- */
+        .principles {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-bottom: 3px solid var(--line);
+        }
+
+        .principle {
+            padding: 2rem 1.5rem 2.5rem;
+            border-right: 3px solid var(--line);
+        }
+
+        .principle:last-child { border-right: none; }
+
+        .principle h3 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .principle h3::before {
+            content: '→ ';
+            color: #00C853;
+        }
+
+        .principle p { font-size: 0.95rem; }
+
+        /* ---------- beyond ---------- */
+        .beyond {
+            padding: 2.5rem 1.5rem;
+            border-bottom: 3px solid var(--line);
+            font-size: clamp(1.2rem, 2.6vw, 1.8rem);
+            font-weight: 500;
+            max-width: 60ch;
+        }
+
+        .beyond a { color: var(--ink); text-decoration: underline 3px var(--accent); text-underline-offset: 4px; }
+        .beyond a:hover { background: var(--accent); }
+
+        /* ---------- contact ---------- */
+        .contact {
+            padding: clamp(3rem, 8vh, 5rem) 1.5rem;
+            border-bottom: 3px solid var(--line);
+        }
+
+        .contact a.big {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1.6rem, 5.8vw, 4.5rem);
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .contact a.big:hover { background: var(--accent); }
+
+        .socials { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+
+        .socials a {
+            border: 3px solid var(--line);
+            padding: 0.5rem 1.1rem;
+            color: var(--ink);
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .socials a:hover { background: var(--ink); color: var(--accent); }
+
+        footer {
+            padding: 1.25rem 1.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 760px) {
+            .role { grid-template-columns: 1fr; }
+            .num { border-right: none; border-bottom: 3px solid var(--line); padding-bottom: 0.75rem; }
+            .role > * { padding: 1.25rem 1.5rem; }
+            .principles { grid-template-columns: 1fr; }
+            .principle { border-right: none; border-bottom: 3px solid var(--line); }
+            .principle:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#">MO BASHAGHA</a>
+        <nav>
+            <a href="#work">Work</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Product<br>Designer <span class="hl">at WhatsApp</span></h1>
+        <p>Designing simple products used by billions of people. Before that: moving money at Wise, connecting people at Facebook, and building enterprise tools with Apple + IBM.</p>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-inner">
+            <span>WhatsApp</span><span class="dot">●</span><span>Facebook</span><span class="dot">●</span><span>Wise</span><span class="dot">●</span><span>Apple + IBM</span><span class="dot">●</span><span>WhatsApp</span><span class="dot">●</span><span>Facebook</span><span class="dot">●</span><span>Wise</span><span class="dot">●</span><span>Apple + IBM</span><span class="dot">●</span>
+        </div>
+    </div>
+
+    <div class="label" id="work">Selected Experience</div>
+
+    <div class="role">
+        <div class="num">01</div>
+        <h2 style="align-self: center;">WhatsApp<span>Product Designer · Now</span></h2>
+        <p>Designing core messaging experiences for one of the most-used apps on earth — where simplicity, privacy, and reliability are the whole point.</p>
+    </div>
+    <div class="role">
+        <div class="num">02</div>
+        <h2 style="align-self: center;">Facebook<span>Product Designer</span></h2>
+        <p>Designed products that connect people and communities at global scale.</p>
+    </div>
+    <div class="role">
+        <div class="num">03</div>
+        <h2 style="align-self: center;">Wise<span>Product Designer</span></h2>
+        <p>Helped people move money across borders — research-led design, shipped closely with engineering, measured against real-world data.</p>
+    </div>
+    <div class="role">
+        <div class="num">04</div>
+        <h2 style="align-self: center;">Apple + IBM<span>Designer</span></h2>
+        <p>Built enterprise mobile experiences as part of the Apple and IBM partnership, bringing consumer-grade design to the workplace.</p>
+    </div>
+
+    <div class="label">How I Work</div>
+
+    <div class="principles">
+        <div class="principle">
+            <h3>Start with research</h3>
+            <p>Good design is an argument backed by evidence. I talk to people, dig into the problem, and bring the reasoning along with the pixels.</p>
+        </div>
+        <div class="principle">
+            <h3>Build with engineers</h3>
+            <p>The best work happens shoulder-to-shoulder with the people shipping it. I prototype, I code enough to be dangerous, and I stay through execution.</p>
+        </div>
+        <div class="principle">
+            <h3>Measure what ships</h3>
+            <p>Launch isn't the finish line. I follow the data after release to learn whether the design actually worked — and iterate when it didn't.</p>
+        </div>
+    </div>
+
+    <div class="beyond">
+        I write about design on <a href="https://medium.com/@mobashagha" target="_blank" rel="noopener">Medium</a> and UX Collective, and have mentored startup teams at Gaza Sky Geeks.
+    </div>
+
+    <section class="contact" id="contact">
+        <a class="big" href="mailto:mbashagha@gmail.com">mbashagha@gmail.com</a>
+        <div class="socials">
+            <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="https://medium.com/@mobashagha" target="_blank" rel="noopener">Medium</a>
+            <a href="https://twitter.com/mobashagha" target="_blank" rel="noopener">X / Twitter</a>
+        </div>
+    </section>
+
+    <footer>
+        <span>© <span id="year">2026</span> Mo Bashagha</span>
+        <span>No frameworks were harmed</span>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
