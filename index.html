@@ -537,6 +537,8 @@
             muteBtn.setAttribute('aria-pressed', String(live));
         }
 
+        var iosUnlocked = false;
+
         function ensureAudio() {
             if (!audio) {
                 var AC = window.AudioContext || window.webkitAudioContext;
@@ -546,6 +548,17 @@
             if (audio.state === 'suspended') {
                 var p = audio.resume();
                 if (p && p.then) p.then(setIcon).catch(function () {});
+            }
+            // iOS fully unlocks only after a (silent) buffer plays inside a gesture.
+            if (!iosUnlocked) {
+                try {
+                    var buf = audio.createBuffer(1, 1, 22050);
+                    var src = audio.createBufferSource();
+                    src.buffer = buf;
+                    src.connect(audio.destination);
+                    src.start(0);
+                    iosUnlocked = true;
+                } catch (err) { /* ignore */ }
             }
             return true;
         }
@@ -567,7 +580,9 @@
             if (now - lastWhirr < 95) return;
             lastWhirr = now;
             if (audio.state !== 'running') { ensureAudio(); return; }
-            blip(70 + Math.random() * 90, audio.currentTime, 0.08, 0.04);
+            // Two layers: low chug + mid tick so it carries on small phone speakers.
+            blip(80 + Math.random() * 70, audio.currentTime, 0.08, 0.05);
+            blip(320 + Math.random() * 140, audio.currentTime, 0.05, 0.03);
         }
 
         function victoryTune() {
@@ -579,15 +594,19 @@
             }
         }
 
-        // Browsers block audio until a user gesture: unlock on first tap/click/key.
-        function unlockAudio(e) {
-            if (e && muteBtn.contains(e.target)) return; // the toggle manages itself
-            if (soundOn) ensureAudio();
-            window.removeEventListener('pointerdown', unlockAudio);
-            window.removeEventListener('keydown', unlockAudio);
+        // Browsers block audio until a user gesture. Older iOS only honors
+        // touchend, so listen broadly and detach once audio is truly running.
+        var unlockEvents = ['pointerdown', 'touchend', 'keydown'];
+        function detachUnlock() {
+            unlockEvents.forEach(function (t) { window.removeEventListener(t, unlockAudio); });
         }
-        window.addEventListener('pointerdown', unlockAudio);
-        window.addEventListener('keydown', unlockAudio);
+        function unlockAudio(e) {
+            if (e && e.target && muteBtn.contains(e.target)) return; // the toggle manages itself
+            if (!soundOn) { detachUnlock(); return; }
+            ensureAudio();
+            if (audio && audio.state === 'running') { setIcon(); detachUnlock(); }
+        }
+        unlockEvents.forEach(function (t) { window.addEventListener(t, unlockAudio); });
 
         muteBtn.addEventListener('click', function () {
             if (!audio || audio.state !== 'running') {
