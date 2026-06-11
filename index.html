@@ -580,9 +580,11 @@
             if (now - lastWhirr < 95) return;
             lastWhirr = now;
             if (audio.state !== 'running') { ensureAudio(); return; }
-            // Two layers: low chug + mid tick so it carries on small phone speakers.
-            blip(80 + Math.random() * 70, audio.currentTime, 0.08, 0.05);
-            blip(320 + Math.random() * 140, audio.currentTime, 0.05, 0.03);
+            // Three layers: low chug + mid body + bright tick so it carries
+            // on small phone speakers.
+            blip(80 + Math.random() * 70, audio.currentTime, 0.08, 0.1);
+            blip(330 + Math.random() * 140, audio.currentTime, 0.06, 0.07);
+            blip(720 + Math.random() * 180, audio.currentTime, 0.03, 0.04);
         }
 
         function victoryTune() {
@@ -590,7 +592,7 @@
             if (audio.state !== 'running') { ensureAudio(); return; }
             var notes = [523, 659, 784, 1047];
             for (var i = 0; i < notes.length; i++) {
-                blip(notes[i], audio.currentTime + i * 0.13, 0.22, 0.07);
+                blip(notes[i], audio.currentTime + i * 0.13, 0.22, 0.13);
             }
         }
 
@@ -617,7 +619,7 @@
                 soundOn = !soundOn;
             }
             setIcon();
-            if (soundOn && audio) blip(660, audio.currentTime, 0.1, 0.06);
+            if (soundOn && audio) blip(660, audio.currentTime, 0.12, 0.12);
         });
 
         /* ---------- mowing ---------- */
