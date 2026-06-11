@@ -313,6 +313,10 @@
         </div>
     </div>
 
+    <!-- Silent loop: playing it puts iOS in media-playback mode so Web Audio
+         is heard even with the ring/silent switch on. -->
+    <audio id="unmuter" loop playsinline preload="auto" src="data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA"></audio>
+
     <script>
     (function () {
         'use strict';
@@ -538,6 +542,7 @@
         }
 
         var iosUnlocked = false;
+        var unmuteTried = false;
 
         function ensureAudio() {
             if (!audio) {
@@ -545,9 +550,18 @@
                 if (!AC) return false;
                 audio = new AC();
             }
-            if (audio.state === 'suspended') {
+            if (audio.state !== 'running') {
                 var p = audio.resume();
                 if (p && p.then) p.then(setIcon).catch(function () {});
+            }
+            // Silent <audio> loop: switches iOS to media-playback mode so the
+            // ring/silent switch no longer mutes Web Audio. Must start inside
+            // a user gesture; retry until it sticks.
+            if (!unmuteTried) {
+                unmuteTried = true;
+                var um = document.getElementById('unmuter');
+                var pp = um.play();
+                if (pp && pp.catch) pp.catch(function () { unmuteTried = false; });
             }
             // iOS fully unlocks only after a (silent) buffer plays inside a gesture.
             if (!iosUnlocked) {
@@ -722,12 +736,6 @@
         }
 
         /* ---------- boot ---------- */
-        // Create the context eagerly so the first user click only has to resume it.
-        try {
-            var AC0 = window.AudioContext || window.webkitAudioContext;
-            if (AC0) audio = new AC0();
-        } catch (err) { /* no audio support */ }
-
         buildSprites();
         initGrid();
         requestAnimationFrame(windLoop);
