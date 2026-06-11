@@ -276,7 +276,7 @@
     <div id="progress" class="hud" role="status">LAWN MOWED: <span class="pct">0%</span></div>
     <div id="controls" class="hud">
         <button id="mowall" type="button">MOW ALL ⏭</button>
-        <button id="mute" type="button" aria-pressed="true" aria-label="Toggle sound">🔊</button>
+        <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
 
     <div id="mower" aria-hidden="true">
@@ -530,13 +530,23 @@
         /* ---------- sound (Web Audio, generated) ---------- */
         var audio = null, soundOn = true, lastWhirr = 0;
 
+        // The icon reflects whether sound can actually play right now.
+        function setIcon() {
+            var live = soundOn && audio && audio.state === 'running';
+            muteBtn.textContent = live ? '🔊' : '🔇';
+            muteBtn.setAttribute('aria-pressed', String(live));
+        }
+
         function ensureAudio() {
             if (!audio) {
                 var AC = window.AudioContext || window.webkitAudioContext;
                 if (!AC) return false;
                 audio = new AC();
             }
-            if (audio.state === 'suspended') audio.resume();
+            if (audio.state === 'suspended') {
+                var p = audio.resume();
+                if (p && p.then) p.then(setIcon).catch(function () {});
+            }
             return true;
         }
 
@@ -556,13 +566,13 @@
             var now = performance.now();
             if (now - lastWhirr < 95) return;
             lastWhirr = now;
-            if (audio.state !== 'running') { audio.resume(); return; }
+            if (audio.state !== 'running') { ensureAudio(); return; }
             blip(70 + Math.random() * 90, audio.currentTime, 0.08, 0.04);
         }
 
         function victoryTune() {
             if (!soundOn || !audio) return;
-            if (audio.state !== 'running') { audio.resume(); return; }
+            if (audio.state !== 'running') { ensureAudio(); return; }
             var notes = [523, 659, 784, 1047];
             for (var i = 0; i < notes.length; i++) {
                 blip(notes[i], audio.currentTime + i * 0.13, 0.22, 0.07);
@@ -570,7 +580,8 @@
         }
 
         // Browsers block audio until a user gesture: unlock on first tap/click/key.
-        function unlockAudio() {
+        function unlockAudio(e) {
+            if (e && muteBtn.contains(e.target)) return; // the toggle manages itself
             if (soundOn) ensureAudio();
             window.removeEventListener('pointerdown', unlockAudio);
             window.removeEventListener('keydown', unlockAudio);
@@ -579,11 +590,15 @@
         window.addEventListener('keydown', unlockAudio);
 
         muteBtn.addEventListener('click', function () {
-            soundOn = !soundOn;
-            if (soundOn && !ensureAudio()) { soundOn = false; }
-            muteBtn.textContent = soundOn ? '🔊' : '🔇';
-            muteBtn.setAttribute('aria-pressed', String(soundOn));
-            if (soundOn) blip(660, audio.currentTime, 0.1, 0.06);
+            if (!audio || audio.state !== 'running') {
+                // First interaction while still locked: unlock and turn sound on.
+                soundOn = true;
+                if (!ensureAudio()) soundOn = false;
+            } else {
+                soundOn = !soundOn;
+            }
+            setIcon();
+            if (soundOn && audio) blip(660, audio.currentTime, 0.1, 0.06);
         });
 
         /* ---------- mowing ---------- */
