@@ -276,7 +276,7 @@
     <div id="progress" class="hud" role="status">LAWN MOWED: <span class="pct">0%</span></div>
     <div id="controls" class="hud">
         <button id="mowall" type="button">MOW ALL ⏭</button>
-        <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
+        <button id="mute" type="button" aria-pressed="true" aria-label="Toggle sound">🔊</button>
     </div>
 
     <div id="mower" aria-hidden="true">
@@ -528,7 +528,7 @@
         }
 
         /* ---------- sound (Web Audio, generated) ---------- */
-        var audio = null, soundOn = false, lastWhirr = 0;
+        var audio = null, soundOn = true, lastWhirr = 0;
 
         function ensureAudio() {
             if (!audio) {
@@ -552,7 +552,7 @@
         }
 
         function whirr() {
-            if (!soundOn || !audio) return;
+            if (!soundOn || !audio || audio.state !== 'running') return;
             var now = performance.now();
             if (now - lastWhirr < 95) return;
             lastWhirr = now;
@@ -560,12 +560,21 @@
         }
 
         function victoryTune() {
-            if (!soundOn || !audio) return;
+            if (!soundOn || !audio || audio.state !== 'running') return;
             var notes = [523, 659, 784, 1047];
             for (var i = 0; i < notes.length; i++) {
                 blip(notes[i], audio.currentTime + i * 0.13, 0.22, 0.07);
             }
         }
+
+        // Browsers block audio until a user gesture: unlock on first tap/click/key.
+        function unlockAudio() {
+            if (soundOn) ensureAudio();
+            window.removeEventListener('pointerdown', unlockAudio);
+            window.removeEventListener('keydown', unlockAudio);
+        }
+        window.addEventListener('pointerdown', unlockAudio);
+        window.addEventListener('keydown', unlockAudio);
 
         muteBtn.addEventListener('click', function () {
             soundOn = !soundOn;
