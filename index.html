@@ -17,7 +17,8 @@
     <meta name="twitter:description" content="Product designer at WhatsApp. Mow the lawn to enter the site. 🚜">
     <meta name="twitter:image" content="https://mobashagha.com/og.png">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
@@ -264,137 +265,8 @@
         body.dusk { --mow-a: #a9a24f; --mow-b: #b3ad57; }
         body.night { --mow-a: #3a5a48; --mow-b: #436a52; }
 
-        /* ---------- world 1-2 button ---------- */
-        #worldbtn {
-            position: fixed;
-            bottom: 1.2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 8;
-            display: none;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.6rem;
-            color: #fff;
-            background: rgba(13, 33, 16, 0.85);
-            border: 3px solid var(--ink);
-            padding: 0.85rem 1.1rem;
-            cursor: pointer;
-            animation: bob2 1s steps(2) infinite;
-        }
-
-        body.done #worldbtn.show { display: block; }
-
-        @keyframes bob2 { 50% { transform: translateX(-50%) translateY(5px); } }
-
-        /* ---------- world 1-2 career map ---------- */
-        #world12 {
-            min-height: 100dvh;
-            padding: 4.5rem 1.5rem 5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .w-title {
-            font-size: clamp(1.1rem, 4.5vw, 1.7rem);
-            color: #fff;
-            text-shadow: 3px 3px 0 var(--ink);
-            text-align: center;
-        }
-
-        .w-sub {
-            font-size: 0.55rem;
-            color: var(--ink);
-            margin: 1.1rem 0 3.5rem;
-            letter-spacing: 0.12em;
-            text-align: center;
-        }
-
-        .map {
-            position: relative;
-            width: 100%;
-            max-width: 880px;
-            height: 320px;
-        }
-
-        .map .trail {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .node {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            font-family: 'Press Start 2P', monospace;
-            background: var(--cream);
-            border: 3px solid var(--ink);
-            box-shadow: 4px 4px 0 var(--ink);
-            padding: 0.7rem 0.5rem 0.6rem;
-            width: 132px;
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .node:hover, .node:focus-visible, .node.sel {
-            background: var(--gold);
-        }
-
-        .node .lv { display: block; font-size: 0.5rem; color: #c62828; margin-bottom: 0.35rem; }
-        .node .nm { display: block; font-size: 0.48rem; line-height: 1.7; color: var(--ink); }
-        .node svg { width: 48px; height: 36px; margin: 0.25rem 0; }
-
-        .node .here {
-            position: absolute;
-            top: -2.2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.45rem;
-            color: #fff;
-            background: #c62828;
-            padding: 0.4rem 0.45rem;
-            border: 2px solid var(--ink);
-            white-space: nowrap;
-            animation: bob3 0.9s steps(2) infinite;
-        }
-
-        @keyframes bob3 { 50% { transform: translateX(-50%) translateY(3px); } }
-
-        .w-dialog {
-            width: 100%;
-            max-width: 620px;
-            margin-top: 2.75rem;
-            background: var(--cream);
-            border: 4px solid var(--ink);
-            box-shadow: 8px 8px 0 rgba(20, 46, 18, 0.35);
-            padding: 1.5rem;
-        }
-
-        .w-dialog[hidden] { display: none; }
-        .w-dialog .lv-name { font-size: 0.7rem; margin-bottom: 0.7rem; }
-        .w-dialog .lv-role { font-size: 0.5rem; color: #c62828; margin-bottom: 1rem; letter-spacing: 0.1em; }
-        .w-dialog .lv-desc { font-size: 0.55rem; line-height: 2.1; color: #33691e; min-height: 4.4em; }
-
-        .w-foot { margin-top: 3.5rem; text-align: center; }
-
-        @media (max-width: 760px) {
-            .map {
-                height: auto;
-                display: grid;
-                gap: 2.8rem;
-                justify-items: center;
-                padding: 1rem 0;
-            }
-            .map .trail { display: none; }
-            .node { position: static; transform: none; width: 180px; }
-            .node .here { top: auto; bottom: -1.9rem; animation-name: bob4; }
-            @keyframes bob4 { 50% { transform: translateX(-50%) translateY(-3px); } }
-        }
-
         @media (prefers-reduced-motion: reduce) {
-            .blink, #toast, #worldbtn, .node .here { animation: none; }
+            .blink, #toast { animation: none; }
         }
 
         @media (max-width: 480px) {
@@ -468,76 +340,6 @@
         </div>
     </div>
 
-    <button id="worldbtn" type="button">▼ WORLD 1-2</button>
-
-    <section id="world12" aria-label="Career map">
-        <h2 class="w-title">WORLD 1-2</h2>
-        <p class="w-sub">CAREER MAP · SELECT A LEVEL</p>
-        <div class="map">
-            <svg class="trail" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                <path d="M 10 72 C 20 45, 28 28, 38 28 S 56 70, 64 70 S 82 30, 90 30"
-                      fill="none" stroke="#ffffff" stroke-width="2.5" stroke-dasharray="2.5 2.5"
-                      vector-effect="non-scaling-stroke" opacity="0.75"/>
-            </svg>
-            <button class="node" data-lv="0" style="left: 10%; top: 72%;">
-                <span class="lv">LEVEL 1-1</span>
-                <svg viewBox="0 0 16 12" shape-rendering="crispEdges" aria-hidden="true">
-                    <rect x="3" y="1" width="10" height="7" fill="#455a64"/>
-                    <rect x="4" y="2" width="8" height="5" fill="#64b5f6"/>
-                    <rect x="5" y="3" width="3" height="1" fill="#e3f2fd"/>
-                    <rect x="7" y="8" width="2" height="1" fill="#37474f"/>
-                    <rect x="5" y="9" width="6" height="1" fill="#37474f"/>
-                </svg>
-                <span class="nm">APPLE + IBM</span>
-            </button>
-            <button class="node" data-lv="1" style="left: 38%; top: 28%;">
-                <span class="lv">LEVEL 1-2</span>
-                <svg viewBox="0 0 16 12" shape-rendering="crispEdges" aria-hidden="true">
-                    <rect x="4" y="8" width="8" height="2" fill="#f9a825"/>
-                    <rect x="5" y="6" width="8" height="2" fill="#ffd740"/>
-                    <rect x="3" y="4" width="8" height="2" fill="#ffd740"/>
-                    <rect x="5" y="1" width="6" height="3" fill="#ffee58"/>
-                    <rect x="7" y="2" width="2" height="1" fill="#f9a825"/>
-                </svg>
-                <span class="nm">WISE</span>
-            </button>
-            <button class="node" data-lv="2" style="left: 64%; top: 70%;">
-                <span class="lv">LEVEL 1-3</span>
-                <svg viewBox="0 0 16 12" shape-rendering="crispEdges" aria-hidden="true">
-                    <rect x="6" y="1" width="4" height="2" fill="#0d47a1"/>
-                    <rect x="4" y="3" width="8" height="2" fill="#1565c0"/>
-                    <rect x="4" y="5" width="8" height="5" fill="#1877f2"/>
-                    <rect x="7" y="7" width="2" height="3" fill="#0d47a1"/>
-                    <rect x="5" y="6" width="1" height="1" fill="#bbdefb"/>
-                    <rect x="10" y="6" width="1" height="1" fill="#bbdefb"/>
-                </svg>
-                <span class="nm">FACEBOOK</span>
-            </button>
-            <button class="node" data-lv="3" style="left: 90%; top: 30%;">
-                <span class="here">YOU ARE HERE</span>
-                <span class="lv">LEVEL 1-4</span>
-                <svg viewBox="0 0 16 12" shape-rendering="crispEdges" aria-hidden="true">
-                    <rect x="7" y="0" width="1" height="2" fill="#8d6e63"/>
-                    <rect x="8" y="0" width="3" height="1" fill="#e53935"/>
-                    <rect x="3" y="3" width="2" height="2" fill="#1faa55"/>
-                    <rect x="7" y="2" width="2" height="3" fill="#1faa55"/>
-                    <rect x="11" y="3" width="2" height="2" fill="#1faa55"/>
-                    <rect x="3" y="5" width="10" height="5" fill="#25d366"/>
-                    <rect x="7" y="7" width="2" height="3" fill="#0d3320"/>
-                    <rect x="5" y="6" width="1" height="1" fill="#dcf8c6"/>
-                    <rect x="10" y="6" width="1" height="1" fill="#dcf8c6"/>
-                </svg>
-                <span class="nm">WHATSAPP</span>
-            </button>
-        </div>
-        <div class="w-dialog" id="lvDialog" hidden>
-            <p class="lv-name"></p>
-            <p class="lv-role"></p>
-            <p class="lv-desc"></p>
-        </div>
-        <p class="tiny w-foot">THANKS FOR PLAYING · MORE WORLDS COMING SOON</p>
-    </section>
-
     <!-- Silent loop: playing it puts iOS in media-playback mode so Web Audio
          is heard even with the ring/silent switch on. -->
     <audio id="unmuter" loop playsinline preload="auto" src="data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA"></audio>
@@ -560,60 +362,6 @@
         var mowallBtn = document.getElementById('mowall');
         var muteBtn = document.getElementById('mute');
         var modeBtn = document.getElementById('modebtn');
-        var worldBtn = document.getElementById('worldbtn');
-
-        /* ---------- world 1-2 wiring (works with or without the game) ---------- */
-        var LEVELS = [
-            { name: 'APPLE + IBM', role: 'DESIGNER', desc: 'Built enterprise mobile experiences as part of the Apple and IBM partnership — bringing consumer-grade design to the workplace.' },
-            { name: 'WISE (TRANSFERWISE)', role: 'PRODUCT DESIGNER', desc: 'Helped people move money across borders. Research-led design, shipped shoulder-to-shoulder with engineering, measured against real-world data.' },
-            { name: 'FACEBOOK', role: 'PRODUCT DESIGNER', desc: 'Designed products that connect people and communities at global scale.' },
-            { name: 'WHATSAPP', role: 'PRODUCT DESIGNER · NOW', desc: 'Designing core messaging for one of the most-used apps on earth — where simplicity, privacy, and reliability are the whole point.' }
-        ];
-
-        var lvDialog = document.getElementById('lvDialog');
-        var typeTimer = null;
-
-        function selectLevel(node) {
-            var lv = LEVELS[+node.getAttribute('data-lv')];
-            var nodes = document.querySelectorAll('.node');
-            for (var i = 0; i < nodes.length; i++) nodes[i].classList.remove('sel');
-            node.classList.add('sel');
-            lvDialog.hidden = false;
-            lvDialog.querySelector('.lv-name').textContent = lv.name;
-            lvDialog.querySelector('.lv-role').textContent = lv.role;
-            var descEl = lvDialog.querySelector('.lv-desc');
-            if (typeTimer) clearInterval(typeTimer);
-            if (reduced) { descEl.textContent = lv.desc; return; }
-            // typewriter reveal
-            descEl.textContent = '';
-            var ci = 0;
-            typeTimer = setInterval(function () {
-                ci += 2;
-                descEl.textContent = lv.desc.slice(0, ci);
-                if (ci >= lv.desc.length) { clearInterval(typeTimer); typeTimer = null; }
-            }, 16);
-            if (window.LAWN && window.LAWN.blip) window.LAWN.blip();
-        }
-
-        (function () {
-            var nodes = document.querySelectorAll('.node');
-            for (var i = 0; i < nodes.length; i++) {
-                nodes[i].addEventListener('click', function () { selectLevel(this); });
-            }
-        })();
-
-        worldBtn.addEventListener('click', function () {
-            document.getElementById('world12').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
-        });
-
-        window.addEventListener('scroll', function () {
-            worldBtn.classList.toggle('show', window.scrollY < 150 && body.classList.contains('done') && worldBtn.dataset.armed === '1');
-        });
-
-        function armWorldBtn() {
-            worldBtn.dataset.armed = '1';
-            worldBtn.classList.add('show');
-        }
 
         /* ---------- day / dusk / night mode ---------- */
         var qmode = (location.search.match(/[?&]mode=(day|dusk|night)/) || [])[1];
@@ -630,7 +378,6 @@
             fx.style.display = 'none';
             progressEl.style.display = 'none';
             document.getElementById('controls').style.display = 'none';
-            armWorldBtn();
             return;
         }
 
@@ -1394,10 +1141,7 @@
             spawnConfetti();
             victoryTune();
             setTimeout(function () { banner.classList.add('fade'); }, 2600);
-            setTimeout(function () {
-                banner.classList.remove('show');
-                armWorldBtn();
-            }, 3300);
+            setTimeout(function () { banner.classList.remove('show'); }, 3300);
         }
 
         /* ---------- boot ---------- */
