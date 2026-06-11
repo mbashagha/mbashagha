@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mo Bashagha — Product Designer</title>
     <meta name="description" content="Mo Bashagha is a product designer at WhatsApp. Mow the lawn to enter.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mobashagha.com/">
+    <meta property="og:title" content="MO THE LAWN! — Mo Bashagha">
+    <meta property="og:description" content="Product designer at WhatsApp. Mow the lawn to enter the site. 🚜">
+    <meta property="og:image" content="https://mobashagha.com/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MO THE LAWN! — Mo Bashagha">
+    <meta name="twitter:description" content="Product designer at WhatsApp. Mow the lawn to enter the site. 🚜">
+    <meta name="twitter:image" content="https://mobashagha.com/og.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -240,6 +253,18 @@
             100% { transform: scale(1); }
         }
 
+        #banner .time {
+            margin-top: 0.9rem;
+            font-size: 0.55rem;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            line-height: 1.8;
+        }
+
+        /* ---------- day / dusk / night palettes (mowed lawn) ---------- */
+        body.dusk { --mow-a: #a9a24f; --mow-b: #b3ad57; }
+        body.night { --mow-a: #3a5a48; --mow-b: #436a52; }
+
         @media (prefers-reduced-motion: reduce) {
             .blink, #toast { animation: none; }
         }
@@ -276,6 +301,7 @@
     <div id="progress" class="hud" role="status">LAWN MOWED: <span class="pct">0%</span></div>
     <div id="controls" class="hud">
         <button id="mowall" type="button">MOW ALL ⏭</button>
+        <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
 
@@ -310,6 +336,7 @@
         <div class="inner">
             <h2>LEVEL CLEAR!</h2>
             <p>LAWN 100% MOWED ★★★</p>
+            <p class="time" id="clearTime" hidden></p>
         </div>
     </div>
 
@@ -334,6 +361,15 @@
         var banner = document.getElementById('banner');
         var mowallBtn = document.getElementById('mowall');
         var muteBtn = document.getElementById('mute');
+        var modeBtn = document.getElementById('modebtn');
+
+        /* ---------- day / dusk / night mode ---------- */
+        var qmode = (location.search.match(/[?&]mode=(day|dusk|night)/) || [])[1];
+        var hour = new Date().getHours();
+        var mode = qmode || (hour >= 21 || hour < 6 ? 'night' : hour >= 17 ? 'dusk' : 'day');
+        var MODE_ICON = { day: '☀️', dusk: '🌆', night: '🌙' };
+        if (mode !== 'day') body.classList.add(mode);
+        modeBtn.textContent = MODE_ICON[mode];
 
         if (reduced) {
             // No game: show the site directly.
@@ -368,9 +404,12 @@
             [[0, 5], [6, 6]], // + daisy
             [[1, 6], [7, 4]]  // + tulip
         ];
-        var BASE = ['#2f7d33', '#2a7430'];
-        var BLADE_C = '#1d5e23';
-        var TIP_C = '#6abf69';
+        // Grass colors per time-of-day mode.
+        var PALS = {
+            day:   { base: ['#2f7d33', '#2a7430'], blade: '#1d5e23', tip: '#6abf69', mid: '#2f8f3a', speck: '#27632b' },
+            dusk:  { base: ['#717c30', '#697428'], blade: '#4d5821', tip: '#c2cc66', mid: '#86913a', speck: '#5d682a' },
+            night: { base: ['#1f3b2f', '#1b352a'], blade: '#13291f', tip: '#4d7d65', mid: '#254b3c', speck: '#17312b' }
+        };
 
         var sprites = []; // [shade][variant][frame] -> canvas
 
@@ -381,6 +420,7 @@
         }
 
         function buildSprites() {
+            var pal = PALS[mode];
             sprites = [];
             for (var s = 0; s < 2; s++) {
                 sprites[s] = [];
@@ -390,39 +430,58 @@
                         var c = document.createElement('canvas');
                         c.width = TILE; c.height = TILE;
                         var ctx = c.getContext('2d');
-                        ctx.fillStyle = BASE[s];
+                        ctx.fillStyle = pal.base[s];
                         ctx.fillRect(0, 0, TILE, TILE);
                         // ground texture specks
-                        px(ctx, (v * 3 + s) % 8, 7, '#27632b');
-                        px(ctx, (v * 5 + 4) % 8, 6, '#27632b');
+                        px(ctx, (v * 3 + s) % 8, 7, pal.speck);
+                        px(ctx, (v * 5 + 4) % 8, 6, pal.speck);
                         var dx = SWAY[f];
                         var blades = BLADES[v];
                         for (var b = 0; b < blades.length; b++) {
                             var bx = blades[b][0], h = blades[b][1];
                             var top = 8 - h;
-                            for (var y = top; y < 8; y++) px(ctx, bx, y, BLADE_C);
+                            for (var y = top; y < 8; y++) px(ctx, bx, y, pal.blade);
                             // swaying lighter tip (tall blades lean with the wind)
                             var lean = h >= 6 ? dx : 0;
-                            px(ctx, bx + lean, top, TIP_C);
-                            if (h >= 7) px(ctx, bx + lean, top + 1, '#2f8f3a');
+                            px(ctx, bx + lean, top, pal.tip);
+                            if (h >= 7) px(ctx, bx + lean, top + 1, pal.mid);
                         }
                         if (v === 4) { // daisy
                             var hx = 3 + dx, hy = 1;
                             px(ctx, hx, hy - 1, '#ffffff'); px(ctx, hx - 1, hy, '#ffffff');
                             px(ctx, hx + 1, hy, '#ffffff'); px(ctx, hx, hy + 1, '#ffffff');
                             px(ctx, hx, hy, '#ffd740');
-                            for (var dy = 2; dy < 8; dy++) px(ctx, 3, dy, BLADE_C);
+                            for (var dy = 2; dy < 8; dy++) px(ctx, 3, dy, pal.blade);
                         }
                         if (v === 5) { // tulip
                             var tx = 4 + dx;
                             px(ctx, tx, 1, '#ec407a'); px(ctx, tx - 1, 1, '#f48fb1'); px(ctx, tx + 1, 1, '#f48fb1');
-                            for (var ty = 2; ty < 8; ty++) px(ctx, 4, ty, BLADE_C);
+                            for (var ty = 2; ty < 8; ty++) px(ctx, 4, ty, pal.blade);
                         }
                         sprites[s][v][f] = c;
                     }
                 }
             }
         }
+
+        function setMode(m) {
+            if (!PALS[m]) return;
+            mode = m;
+            body.classList.remove('dusk', 'night');
+            if (m !== 'day') body.classList.add(m);
+            modeBtn.textContent = MODE_ICON[m];
+            buildSprites();
+            if (!finished && grass.width) {
+                gctx.clearRect(0, 0, grass.width, grass.height);
+                drawGrass();
+            }
+            spawnFlies(m === 'night' ? 22 : m === 'dusk' ? 7 : 0);
+        }
+
+        modeBtn.addEventListener('click', function () {
+            var order = ['day', 'dusk', 'night'];
+            setMode(order[(order.indexOf(mode) + 1) % 3]);
+        });
 
         /* ---------- grid ---------- */
         function initGrid() {
@@ -517,8 +576,332 @@
             }
         }
 
-        function fxLoop() {
+        /* ---------- critters ---------- */
+        var critters = [];
+
+        function cpx(x, y, c) {
+            fctx.fillStyle = c;
+            fctx.fillRect(Math.round(x), Math.round(y), P, P);
+        }
+
+        function tileIndexAt(x, y) {
+            var c = Math.floor(x / TILE), r = Math.floor(y / TILE);
+            if (c < 0 || r < 0 || c >= cols || r >= rows) return -1;
+            return r * cols + c;
+        }
+
+        function tileMowedAt(x, y) {
+            var i = tileIndexAt(x, y);
+            return i === -1 || !!mowed[i];
+        }
+
+        function randUnmowedTile() {
+            if (mowedCount >= total) return null;
+            for (var t = 0; t < 80; t++) {
+                var i = (Math.random() * total) | 0;
+                if (!mowed[i]) return i;
+            }
+            return null;
+        }
+
+        function tileCenter(i) {
+            return { x: ((i % cols) + 0.5) * TILE, y: (((i / cols) | 0) + 0.5) * TILE };
+        }
+
+        function nearbyUnmowed(cr, radiusTiles) {
+            for (var t = 0; t < 24; t++) {
+                var c = Math.floor(cr.x / TILE) + ((Math.random() * (radiusTiles * 2 + 1)) | 0) - radiusTiles;
+                var r = Math.floor(cr.y / TILE) + ((Math.random() * (radiusTiles * 2 + 1)) | 0) - radiusTiles;
+                if (c < 0 || r < 0 || c >= cols || r >= rows) continue;
+                var i = r * cols + c;
+                if (!mowed[i]) return i;
+            }
+            return null;
+        }
+
+        function mowerNear(cr, distTiles) {
+            if (lastX === null || finished) return false;
+            var dx = cr.x - lastX, dy = cr.y - lastY;
+            var d = TILE * distTiles;
+            return dx * dx + dy * dy < d * d;
+        }
+
+        function awayPoint(cr, distTiles) {
+            var ang = lastX === null ? Math.random() * Math.PI * 2
+                                     : Math.atan2(cr.y - lastY, cr.x - lastX);
+            return {
+                x: Math.max(TILE, Math.min(fx.width - TILE, cr.x + Math.cos(ang) * TILE * distTiles)),
+                y: Math.max(TILE, Math.min(fx.height - TILE, cr.y + Math.sin(ang) * TILE * distTiles))
+            };
+        }
+
+        function edgePoint(cr) {
+            // a point well past the nearest screen edge
+            var dl = cr.x, dr = fx.width - cr.x, dt = cr.y, db = fx.height - cr.y;
+            var m = Math.min(dl, dr, dt, db);
+            if (m === dl) return { x: -TILE * 3, y: cr.y };
+            if (m === dr) return { x: fx.width + TILE * 3, y: cr.y };
+            if (m === dt) return { x: cr.x, y: -TILE * 3 };
+            return { x: cr.x, y: fx.height + TILE * 3 };
+        }
+
+        function offscreen(cr) {
+            return cr.x < -TILE * 2 || cr.x > fx.width + TILE * 2 ||
+                   cr.y < -TILE * 2 || cr.y > fx.height + TILE * 2;
+        }
+
+        function makeCritter(type) {
+            var i = randUnmowedTile();
+            var p = i === null ? { x: Math.random() * fx.width, y: Math.random() * fx.height * 0.8 }
+                               : tileCenter(i);
+            return {
+                type: type, x: p.x, y: p.y, tx: p.x, ty: p.y,
+                vx: 0, vy: 0, dir: 1, p: 0, t: 60 + Math.random() * 180,
+                state: 'idle', ph: 'hidden', phase: Math.random() * 6.28,
+                hist: [], fleeT: 0, exiting: false, gone: false, init: false,
+                color: ['#ff7043', '#ffd740', '#f06292', '#4fc3f7'][(Math.random() * 4) | 0]
+            };
+        }
+
+        function startHop(cr, tx, ty, fast) {
+            cr.fx0 = cr.x; cr.fy0 = cr.y;
+            cr.tx = tx; cr.ty = ty;
+            cr.p = 0; cr.fast = fast; cr.state = 'hop';
+            if (tx < cr.x - 2) cr.dir = -1; else if (tx > cr.x + 2) cr.dir = 1;
+        }
+
+        function drawFrog(cr, stretched) {
+            var G = '#66bb6a', L = '#a5d6a7', D = '#2e7d32';
+            function o(gx, gy, c) { cpx(cr.x + gx * P * cr.dir, cr.y + gy * P, c); }
+            if (stretched) {
+                o(-2, -1, G); o(-1, -1, G); o(0, -1, G); o(1, -1, G); o(2, -1, G);
+                o(-1, 0, L); o(0, 0, L); o(1, 0, L);
+                o(-3, 0, D); o(3, 0, D);
+                o(2, -2, '#ffffff');
+            } else {
+                o(-1, -3, '#ffffff'); o(1, -3, '#ffffff');
+                o(-2, -2, G); o(-1, -2, G); o(0, -2, G); o(1, -2, G);
+                o(-2, -1, G); o(-1, -1, L); o(0, -1, L); o(1, -1, G);
+                o(-2, 0, D); o(1, 0, D);
+            }
+        }
+
+        function drawSnake(cr, now) {
+            var seg, j;
+            for (j = 4; j >= 1; j--) {
+                seg = cr.hist[cr.hist.length - 1 - j * 5];
+                if (!seg) continue;
+                cpx(seg.x, seg.y, j % 2 ? '#33691e' : '#558b2f');
+            }
+            cpx(cr.x, cr.y, '#7cb342');
+            cpx(cr.x + P * cr.dir, cr.y, '#7cb342');
+            if ((now % 900) < 160) cpx(cr.x + P * 2 * cr.dir, cr.y, '#e53935'); // tongue
+        }
+
+        function drawMole(cr, lift) {
+            function o(gx, gy, c) { cpx(cr.x + gx * P, cr.y + gy * P, c); }
+            o(-2, 0, '#4e342e'); o(-1, 0, '#5d4037'); o(0, 0, '#5d4037'); o(1, 0, '#5d4037'); o(2, 0, '#4e342e');
+            if (lift > 0.3) { o(-1, -1, '#8d6e63'); o(0, -1, '#8d6e63'); o(1, -1, '#8d6e63'); }
+            if (lift > 0.7) {
+                o(-1, -2, '#8d6e63'); o(0, -2, '#8d6e63'); o(1, -2, '#8d6e63');
+                o(0, -1, '#f48fb1'); // nose
+                o(-1, -2, '#3e2723'); o(1, -2, '#3e2723'); // eyes
+            }
+        }
+
+        function drawButterfly(cr, open) {
+            function o(gx, gy, c) { cpx(cr.x + gx * P, cr.y + gy * P, c); }
+            o(0, -1, '#4e342e'); o(0, 0, '#4e342e');
+            if (open) {
+                o(-1, -1, cr.color); o(1, -1, cr.color);
+                o(-2, -2, cr.color); o(2, -2, cr.color);
+                o(-2, 0, cr.color); o(2, 0, cr.color);
+            } else {
+                o(-1, -2, cr.color); o(1, -2, cr.color);
+            }
+        }
+
+        function updateCritter(cr, now) {
+            var tgt, pt, pp, ang, d;
+
+            if (cr.type === 'frog') {
+                if (cr.state === 'idle') {
+                    if (finished || tileMowedAt(cr.x, cr.y)) {
+                        var ti = randUnmowedTile();
+                        if (ti === null || finished) { cr.exiting = true; pt = awayPoint(cr, 5); var ep = edgePoint(cr); startHop(cr, cr.x + (ep.x - cr.x) * 0.35, cr.y + (ep.y - cr.y) * 0.35, true); }
+                        else { pt = tileCenter(ti); startHop(cr, pt.x, pt.y, true); }
+                    } else if (mowerNear(cr, 4)) {
+                        pt = awayPoint(cr, 5);
+                        startHop(cr, pt.x, pt.y, true);
+                    } else if (--cr.t <= 0) {
+                        var ni = nearbyUnmowed(cr, 3);
+                        if (ni !== null) { pt = tileCenter(ni); startHop(cr, pt.x, pt.y, false); }
+                        cr.t = 90 + Math.random() * 220;
+                    }
+                } else { // hop
+                    cr.p += cr.fast ? 0.11 : 0.06;
+                    pp = Math.min(1, cr.p);
+                    cr.x = cr.fx0 + (cr.tx - cr.fx0) * pp;
+                    cr.y = cr.fy0 + (cr.ty - cr.fy0) * pp - Math.sin(pp * Math.PI) * 16;
+                    if (pp >= 1) {
+                        if (cr.exiting) {
+                            if (offscreen(cr)) { cr.gone = true; return; }
+                            var ep2 = edgePoint(cr);
+                            startHop(cr, cr.x + (ep2.x - cr.x) * 0.5, cr.y + (ep2.y - cr.y) * 0.5, true);
+                        } else {
+                            cr.state = 'idle';
+                            cr.t = 90 + Math.random() * 220;
+                        }
+                    }
+                }
+                drawFrog(cr, cr.state === 'hop');
+            }
+
+            if (cr.type === 'snake') {
+                if (!cr.init) {
+                    cr.init = true; cr.spd = 0.45;
+                    tgt = randUnmowedTile();
+                    if (tgt !== null) { pt = tileCenter(tgt); cr.tx = pt.x; cr.ty = pt.y; }
+                }
+                if (finished && !cr.exiting) {
+                    cr.exiting = true;
+                    pt = edgePoint(cr); cr.tx = pt.x; cr.ty = pt.y; cr.spd = 1.6;
+                } else if (!cr.exiting) {
+                    if (cr.fleeT > 0) { cr.fleeT--; if (cr.fleeT === 0) cr.spd = 0.45; }
+                    else if (mowerNear(cr, 4)) {
+                        pt = awayPoint(cr, 7); cr.tx = pt.x; cr.ty = pt.y;
+                        cr.spd = 2.4; cr.fleeT = 45;
+                    }
+                    var sdx = cr.tx - cr.x, sdy = cr.ty - cr.y;
+                    if (sdx * sdx + sdy * sdy < 25) {
+                        tgt = randUnmowedTile();
+                        if (tgt === null) { cr.exiting = true; pt = edgePoint(cr); cr.tx = pt.x; cr.ty = pt.y; cr.spd = 1.6; }
+                        else { pt = tileCenter(tgt); cr.tx = pt.x; cr.ty = pt.y; }
+                    }
+                }
+                ang = Math.atan2(cr.ty - cr.y, cr.tx - cr.x);
+                var wig = Math.sin(now * 0.012 + cr.phase) * 0.9;
+                cr.x += Math.cos(ang) * cr.spd - Math.sin(ang) * wig;
+                cr.y += Math.sin(ang) * cr.spd + Math.cos(ang) * wig;
+                cr.dir = Math.cos(ang) < 0 ? -1 : 1;
+                cr.hist.push({ x: cr.x, y: cr.y });
+                if (cr.hist.length > 30) cr.hist.shift();
+                if (cr.exiting && offscreen(cr)) { cr.gone = true; return; }
+                drawSnake(cr, now);
+            }
+
+            if (cr.type === 'mole') {
+                if (cr.ph === 'hidden') {
+                    if (--cr.t <= 0) {
+                        if (finished) { cr.gone = true; return; }
+                        if (tileMowedAt(cr.x, cr.y) || Math.random() < 0.4) {
+                            var mi = randUnmowedTile();
+                            if (mi === null) { cr.gone = true; return; }
+                            pt = tileCenter(mi); cr.x = pt.x; cr.y = pt.y;
+                        }
+                        cr.ph = 'rise'; cr.t = 16;
+                    }
+                } else if (cr.ph === 'rise') {
+                    cr.lift = 1 - cr.t / 16;
+                    if (--cr.t <= 0) { cr.ph = 'up'; cr.t = 120 + Math.random() * 160; }
+                } else if (cr.ph === 'up') {
+                    cr.lift = 1;
+                    if (finished || tileMowedAt(cr.x, cr.y) || mowerNear(cr, 3.5)) { cr.ph = 'sink'; cr.t = 8; }
+                    else if (--cr.t <= 0) { cr.ph = 'sink'; cr.t = 12; }
+                } else { // sink
+                    cr.lift = cr.t / 12;
+                    if (--cr.t <= 0) {
+                        if (finished) { cr.gone = true; return; }
+                        cr.ph = 'hidden'; cr.t = 100 + Math.random() * 240;
+                    }
+                }
+                if (cr.ph !== 'hidden') drawMole(cr, cr.lift || 0);
+            }
+
+            if (cr.type === 'butterfly') {
+                if (!cr.init) { cr.init = true; pickFlyTarget(cr); }
+                if (cr.state === 'sit') {
+                    if (mowerNear(cr, 3) || --cr.t <= 0) { cr.state = 'idle'; pickFlyTarget(cr); }
+                    drawButterfly(cr, ((now / 320) | 0) % 2 === 0);
+                } else {
+                    if (mowerNear(cr, 3)) {
+                        pt = awayPoint(cr, 8); cr.tx = pt.x; cr.ty = Math.max(TILE, pt.y - TILE * 2);
+                    }
+                    cr.vx += (cr.tx - cr.x) * 0.002; cr.vy += (cr.ty - cr.y) * 0.002;
+                    cr.vx *= 0.96; cr.vy *= 0.96;
+                    d = Math.sqrt(cr.vx * cr.vx + cr.vy * cr.vy) || 1;
+                    if (d > 1.7) { cr.vx = cr.vx / d * 1.7; cr.vy = cr.vy / d * 1.7; }
+                    cr.x += cr.vx;
+                    cr.y += cr.vy + Math.sin(now * 0.02 + cr.phase) * 0.5;
+                    var bdx = cr.tx - cr.x, bdy = cr.ty - cr.y;
+                    if (bdx * bdx + bdy * bdy < 64) {
+                        if (cr.land) { cr.state = 'sit'; cr.t = 140 + Math.random() * 160; }
+                        else pickFlyTarget(cr);
+                    }
+                    drawButterfly(cr, ((now / 90) | 0) % 2 === 0);
+                }
+            }
+        }
+
+        function pickFlyTarget(cr) {
+            cr.land = false;
+            if (Math.random() < 0.65 && mowedCount < total) {
+                for (var t = 0; t < 60; t++) {
+                    var i = (Math.random() * total) | 0;
+                    if (!mowed[i] && variants[i] >= 4) {
+                        var pt = tileCenter(i);
+                        cr.tx = pt.x; cr.ty = pt.y - 4;
+                        cr.land = true;
+                        return;
+                    }
+                }
+            }
+            cr.tx = TILE + Math.random() * (fx.width - TILE * 2);
+            cr.ty = TILE + Math.random() * (fx.height * 0.85);
+        }
+
+        /* ---------- fireflies (night / dusk) ---------- */
+        var flies = [];
+
+        function spawnFlies(n) {
+            flies = [];
+            for (var i = 0; i < n; i++) {
+                flies.push({
+                    x: Math.random() * fx.width,
+                    y: Math.random() * fx.height * 0.92,
+                    p: Math.random() * 6.28,
+                    s: 0.25 + Math.random() * 0.4
+                });
+            }
+        }
+
+        function drawFlies(now) {
+            for (var i = 0; i < flies.length; i++) {
+                var fl = flies[i];
+                fl.x += Math.sin(now * 0.0006 + fl.p) * fl.s;
+                fl.y += Math.cos(now * 0.0005 + fl.p * 1.3) * fl.s * 0.8;
+                if (fl.x < -10) fl.x = fx.width + 10;
+                if (fl.x > fx.width + 10) fl.x = -10;
+                if (fl.y < -10) fl.y = fx.height + 10;
+                if (fl.y > fx.height + 10) fl.y = -10;
+                var glow = 0.5 + 0.5 * Math.sin(now * 0.004 + fl.p * 3);
+                fctx.globalAlpha = 0.14 * glow;
+                fctx.fillStyle = '#ffee58';
+                fctx.fillRect(fl.x - 4, fl.y - 4, 12, 12);
+                fctx.globalAlpha = 0.4 + 0.6 * glow;
+                fctx.fillStyle = '#fff59d';
+                fctx.fillRect(fl.x, fl.y, 4, 4);
+            }
+            fctx.globalAlpha = 1;
+        }
+
+        function fxLoop(now) {
+            now = now || 0;
             fctx.clearRect(0, 0, fx.width, fx.height);
+            for (var ci = critters.length - 1; ci >= 0; ci--) {
+                updateCritter(critters[ci], now);
+                if (critters[ci].gone) critters.splice(ci, 1);
+            }
             for (var i = parts.length - 1; i >= 0; i--) {
                 var p = parts[i];
                 p.x += p.vx; p.y += p.vy; p.vy += p.g; p.life -= 0.025;
@@ -528,6 +911,7 @@
                 fctx.fillRect(p.x | 0, p.y | 0, p.size, p.size);
             }
             fctx.globalAlpha = 1;
+            drawFlies(now);
             requestAnimationFrame(fxLoop);
         }
 
@@ -638,6 +1022,8 @@
 
         /* ---------- mowing ---------- */
         var hudQueued = false;
+        var startTime = null;   // first manual mow
+        var skipped = false;    // MOW ALL used: run doesn't count for best time
 
         function updateHud() {
             if (hudQueued) return;
@@ -646,6 +1032,7 @@
                 hudQueued = false;
                 var pct = total ? Math.floor((mowedCount / total) * 100) : 0;
                 pctEl.textContent = (finished ? 100 : pct) + '%';
+                if (!finished && pct > 0) document.title = '🌱 ' + pct + '% MOWED · MO BASHAGHA';
                 if (!finished && mowedCount / total > 0.08) toast.classList.add('hide');
                 if (!finished && mowedCount >= total * 0.985) finishLawn();
             });
@@ -669,7 +1056,10 @@
                     if (withParticles) spawnClippings(cx, cy, 3);
                 }
             }
-            if (did) { whirr(); updateHud(); }
+            if (did) {
+                if (startTime === null && !skipped) startTime = performance.now();
+                whirr(); updateHud();
+            }
         }
 
         var lastX = null, lastY = null;
@@ -701,6 +1091,7 @@
         /* ---------- mow all (column sweep) ---------- */
         mowallBtn.addEventListener('click', function () {
             if (finished || sweepTimer) return;
+            skipped = true;
             toast.classList.add('hide');
             var c = 0;
             sweepTimer = setInterval(function () {
@@ -726,6 +1117,24 @@
             if (sweepTimer) { clearInterval(sweepTimer); sweepTimer = null; }
             mowedCount = total;
             pctEl.textContent = '100%';
+            document.title = '✅ LAWN CLEARED · MO BASHAGHA';
+            // mow time + personal best (only for fully hand-mowed runs)
+            if (!skipped && startTime !== null) {
+                var secs = (performance.now() - startTime) / 1000;
+                var line = 'CLEARED IN ' + secs.toFixed(1) + 'S';
+                var best = null;
+                try { best = parseFloat(localStorage.getItem('mowBest')); } catch (e) { /* private mode */ }
+                if (best && !isNaN(best)) {
+                    if (secs < best) line += ' · ★ NEW BEST!';
+                    else line += ' · BEST: ' + best.toFixed(1) + 'S';
+                }
+                if (!best || isNaN(best) || secs < best) {
+                    try { localStorage.setItem('mowBest', secs.toFixed(1)); } catch (e) { /* ignore */ }
+                }
+                var timeEl = document.getElementById('clearTime');
+                timeEl.textContent = line;
+                timeEl.hidden = false;
+            }
             grass.classList.add('gone');
             body.classList.add('done');
             banner.classList.add('show');
@@ -738,6 +1147,14 @@
         /* ---------- boot ---------- */
         buildSprites();
         initGrid();
+        spawnFlies(mode === 'night' ? 22 : mode === 'dusk' ? 7 : 0);
+
+        // two random critters per visit
+        var pool = ['frog', 'snake', 'mole', 'butterfly'];
+        for (var sp = 0; sp < 2; sp++) {
+            critters.push(makeCritter(pool.splice((Math.random() * pool.length) | 0, 1)[0]));
+        }
+
         requestAnimationFrame(windLoop);
         requestAnimationFrame(fxLoop);
 
@@ -747,6 +1164,18 @@
             clearTimeout(resizeT);
             resizeT = setTimeout(initGrid, 120);
         });
+
+        // small debug/testing handle
+        window.LAWN = {
+            finish: finishLawn,
+            setMode: setMode,
+            progress: function () { return total ? mowedCount / total : 0; },
+            spawnCritter: function (t) { critters.push(makeCritter(t)); },
+            clearCritters: function () { critters = []; },
+            blip: function () {
+                if (soundOn && audio && audio.state === 'running') blip(880, audio.currentTime, 0.07, 0.08);
+            }
+        };
     })();
     </script>
 </body>
