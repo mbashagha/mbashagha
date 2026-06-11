@@ -911,6 +911,18 @@
                 fctx.fillRect(p.x | 0, p.y | 0, p.size, p.size);
             }
             fctx.globalAlpha = 1;
+            // pulse the last few unmowed patches so they're easy to find
+            var left = total - mowedCount;
+            if (!finished && total && mowedCount > 0 && left <= Math.max(10, total * 0.02)) {
+                fctx.globalAlpha = 0.35 + 0.35 * Math.sin(now * 0.01);
+                fctx.strokeStyle = '#ffd740';
+                fctx.lineWidth = 3;
+                for (var ti = 0; ti < total; ti++) {
+                    if (mowed[ti]) continue;
+                    fctx.strokeRect((ti % cols) * TILE + 2, ((ti / cols) | 0) * TILE + 2, TILE - 4, TILE - 4);
+                }
+                fctx.globalAlpha = 1;
+            }
             drawFlies(now);
             requestAnimationFrame(fxLoop);
         }
@@ -1031,10 +1043,12 @@
             requestAnimationFrame(function () {
                 hudQueued = false;
                 var pct = total ? Math.floor((mowedCount / total) * 100) : 0;
-                pctEl.textContent = (finished ? 100 : pct) + '%';
+                var left = total - mowedCount;
+                pctEl.textContent = finished ? '100%'
+                    : (left > 0 && left <= 20 ? left + ' LEFT!' : pct + '%');
                 if (!finished && pct > 0) document.title = '🌱 ' + pct + '% MOWED · MO BASHAGHA';
                 if (!finished && mowedCount / total > 0.08) toast.classList.add('hide');
-                if (!finished && mowedCount >= total * 0.985) finishLawn();
+                if (!finished && mowedCount >= total) finishLawn();
             });
         }
 
