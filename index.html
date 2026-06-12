@@ -20,7 +20,7 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@200;300;500;600&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -138,6 +138,21 @@
         #grass { z-index: 5; transition: opacity 0.7s ease; }
         #grass.gone { opacity: 0; }
         #fx { z-index: 6; }
+
+        #gl {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+            transition: opacity 0.9s ease;
+        }
+
+        #gl.gone { opacity: 0; }
+        body.ultra #gl { display: block; }
+        body.ultra #grass { display: none; }
 
         /* ---------- toast ---------- */
         #toast {
@@ -265,8 +280,188 @@
         body.dusk { --mow-a: #a9a24f; --mow-b: #b3ad57; }
         body.night { --mow-a: #3a5a48; --mow-b: #436a52; }
 
+        /* ================= ULTRA (next-gen) theme ================= */
+
+        #cutter {
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 9;
+            pointer-events: none;
+            display: none;
+            will-change: transform;
+        }
+
+        body.ultra:not(.done) #cutter.on { display: block; }
+        body.ultra #mower { display: none !important; }
+
+        #cutter .ring, #cutter .arc {
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            left: 0;
+            top: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+        }
+
+        #cutter .ring {
+            border: 1.5px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 0 18px rgba(255, 240, 180, 0.4), inset 0 0 14px rgba(255, 240, 180, 0.18);
+        }
+
+        #cutter .arc {
+            border: 2px solid transparent;
+            border-top-color: var(--gold);
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        body.ultra {
+            font-family: 'Outfit', sans-serif;
+            --mow-a: #5d8f3c;
+            --mow-b: #67993f;
+            /* smooth turf: wide soft stripes + vignette instead of the pixel checker */
+            background-image:
+                radial-gradient(ellipse at 50% 38%, rgba(255, 255, 245, 0.14), rgba(0, 0, 0, 0.30)),
+                repeating-linear-gradient(90deg, var(--mow-b) 0 110px, transparent 110px 220px);
+        }
+
+        body.ultra.dusk { --mow-a: #8c8444; --mow-b: #968d4a; }
+        body.ultra.night { --mow-a: #24382c; --mow-b: #2a4032; }
+
+        body.ultra .panel {
+            background: rgba(8, 14, 10, 0.55);
+            -webkit-backdrop-filter: blur(18px) saturate(1.3);
+            backdrop-filter: blur(18px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            color: #fff;
+        }
+
+        body.ultra .tag {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.45em;
+        }
+
+        body.ultra h1 {
+            font-weight: 200;
+            font-size: clamp(2rem, 7vw, 3.1rem);
+            letter-spacing: 0.18em;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+        }
+
+        body.ultra .sub {
+            color: rgba(255, 255, 255, 0.65);
+            font-weight: 300;
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+        }
+
+        body.ultra .blink { animation: fadeblink 1.4s ease-in-out infinite; }
+        @keyframes fadeblink { 50% { opacity: 0.1; } }
+
+        body.ultra .menu a {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            box-shadow: none;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.35em;
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        body.ultra .menu a::before { content: none; }
+
+        body.ultra .menu a:hover, body.ultra .menu a:focus-visible {
+            background: rgba(255, 215, 64, 0.12);
+            border-color: var(--gold);
+            box-shadow: 0 0 24px rgba(255, 215, 64, 0.25);
+            transform: none;
+        }
+
+        body.ultra .tiny { color: rgba(255, 255, 255, 0.4); letter-spacing: 0.25em; font-weight: 300; }
+
+        body.ultra .hud, body.ultra #controls button {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            font-size: 0.72rem;
+        }
+
+        body.ultra #progress, body.ultra #controls button {
+            background: rgba(8, 14, 10, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 999px;
+            padding: 0.6rem 1.05rem;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        body.ultra #controls button:hover, body.ultra #controls button:focus-visible {
+            background: rgba(255, 215, 64, 0.18);
+            border-color: var(--gold);
+        }
+
+        body.ultra #toast {
+            background: rgba(8, 14, 10, 0.55);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            animation: floaty 3s ease-in-out infinite;
+        }
+
+        @keyframes floaty { 50% { transform: translateX(-50%) translateY(6px); } }
+
+        body.ultra #toast h2 {
+            font-weight: 600;
+            letter-spacing: 0.4em;
+            font-size: 0.95rem;
+        }
+
+        body.ultra #toast p {
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        body.ultra #banner .inner {
+            background: rgba(5, 10, 7, 0.6);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 64, 0.5);
+            border-radius: 18px;
+            animation: popsoft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes popsoft {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        body.ultra #banner h2 {
+            font-weight: 200;
+            letter-spacing: 0.4em;
+            text-shadow: 0 0 40px rgba(255, 215, 64, 0.7);
+        }
+
+        body.ultra #banner p, body.ultra #banner .time {
+            font-weight: 300;
+            letter-spacing: 0.3em;
+        }
+
         @media (prefers-reduced-motion: reduce) {
-            .blink, #toast { animation: none; }
+            .blink, #toast, #cutter .arc { animation: none; }
         }
 
         @media (max-width: 480px) {
@@ -291,6 +486,7 @@
     </main>
 
     <canvas id="grass"></canvas>
+    <canvas id="gl"></canvas>
     <canvas id="fx"></canvas>
 
     <div id="toast">
@@ -301,9 +497,12 @@
     <div id="progress" class="hud" role="status">LAWN MOWED: <span class="pct">0%</span></div>
     <div id="controls" class="hud">
         <button id="mowall" type="button">MOW ALL ⏭</button>
+        <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">ULTRA</button>
         <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
+
+    <div id="cutter" aria-hidden="true"><span class="ring"></span><span class="arc"></span></div>
 
     <div id="mower" aria-hidden="true">
         <svg class="sprite" width="64" height="48" viewBox="0 0 16 12" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
@@ -362,6 +561,15 @@
         var mowallBtn = document.getElementById('mowall');
         var muteBtn = document.getElementById('mute');
         var modeBtn = document.getElementById('modebtn');
+        var gfxBtn = document.getElementById('gfxbtn');
+        var glCv = document.getElementById('gl');
+        var cutter = document.getElementById('cutter');
+
+        /* ---------- graphics mode (retro pixels vs ultra WebGL) ---------- */
+        var qgfx = (location.search.match(/[?&]gfx=(retro|ultra)/) || [])[1];
+        var sgfx = null;
+        try { sgfx = localStorage.getItem('gfxMode'); } catch (e) { /* ignore */ }
+        var gfx = qgfx || (sgfx === 'ultra' ? 'ultra' : 'retro');
 
         /* ---------- day / dusk / night mode ---------- */
         var qmode = (location.search.match(/[?&]mode=(day|dusk|night)/) || [])[1];
@@ -483,6 +691,178 @@
             setMode(order[(order.indexOf(mode) + 1) % 3]);
         });
 
+        /* ---------- ULTRA renderer (procedural WebGL grass) ---------- */
+        // Photographic color sets per time of day [tall-dark, tall-light, cut-dark, cut-light].
+        var UPALS = {
+            day:   { t0: [0.07, 0.23, 0.07], t1: [0.41, 0.64, 0.22], c0: [0.40, 0.58, 0.24], c1: [0.52, 0.70, 0.30], amb: 1.0 },
+            dusk:  { t0: [0.16, 0.15, 0.05], t1: [0.62, 0.52, 0.18], c0: [0.52, 0.47, 0.20], c1: [0.64, 0.57, 0.24], amb: 0.85 },
+            night: { t0: [0.015, 0.05, 0.04], t1: [0.10, 0.24, 0.17], c0: [0.09, 0.18, 0.13], c1: [0.12, 0.23, 0.17], amb: 0.5 }
+        };
+
+        var gl = null, glOK = false, glProg = null, glU = {}, maskTex = null;
+        var maskData = null, maskDirty = true;
+        var dprU = Math.min(window.devicePixelRatio || 1, 1.5);
+        var ultraRunning = false;
+        var finishedAt = 0;
+
+        var FRAG = [
+            'precision mediump float;',
+            'uniform vec2 uRes;',
+            'uniform float uTime;',
+            'uniform sampler2D uMask;',
+            'uniform vec2 uGridPx;',
+            'uniform vec3 uT0, uT1, uC0, uC1;',
+            'uniform float uAmb;',
+            'uniform vec2 uCursor;',
+            'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }',
+            'float noise(vec2 p){',
+            '  vec2 i = floor(p), f = fract(p);',
+            '  vec2 u = f * f * (3.0 - 2.0 * f);',
+            '  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),',
+            '             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);',
+            '}',
+            'float fbm(vec2 p){',
+            '  float v = 0.0, a = 0.5;',
+            '  for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; }',
+            '  return v;',
+            '}',
+            'void main(){',
+            '  vec2 p = gl_FragCoord.xy;',
+            '  vec2 uv = p / uRes;',
+            '  vec2 mp = vec2(p.x, uRes.y - p.y);',
+            '  float m = texture2D(uMask, mp / uGridPx).r;',
+            // wind field: slow rolling waves across the lawn
+            '  float w = fbm(p * 0.0035 + vec2(uTime * 0.30, uTime * 0.06));',
+            '  float wave = sin(p.x * 0.0045 + p.y * 0.0022 + uTime * 1.4 + w * 5.0);',
+            // tall grass: vertical blade streaks sheared by the wind
+            '  float blades = noise(vec2(p.x * 0.28 + wave * 7.0 + w * 14.0, p.y * 0.035));',
+            '  float blades2 = noise(vec2(p.x * 0.10 - wave * 4.0, p.y * 0.020 + 7.0));',
+            '  float clump = fbm(p * 0.012 + w * 0.6);',
+            '  float tallMix = clamp(blades * 0.55 + blades2 * 0.30 + clump * 0.45, 0.0, 1.0);',
+            '  vec3 tall = mix(uT0, uT1, tallMix);',
+            '  float sheen = smoothstep(0.55, 1.0, wave * 0.5 + w * 0.7) * 0.22;',
+            '  tall += sheen * vec3(0.9, 1.0, 0.6) * uAmb;',
+            // cut turf: fine texture + mow stripes
+            '  float turf = noise(p * 0.09) * 0.6 + noise(p * 0.025) * 0.4;',
+            '  float stripe = 0.96 + 0.07 * step(0.5, fract(p.x / 192.0));',
+            '  vec3 cut = mix(uC0, uC1, turf) * stripe;',
+            // blend with darkened fresh-cut edge
+            '  float blend = smoothstep(0.32, 0.68, m);',
+            '  float edge = smoothstep(0.10, 0.5, m) * smoothstep(0.90, 0.5, m);',
+            '  vec3 col = mix(tall, cut, blend);',
+            '  col *= 1.0 - edge * 0.28;',
+            // soft light halo around the cutter
+            '  float d = distance(p, uCursor);',
+            '  col += exp(-d * d / 18000.0) * vec3(0.30, 0.28, 0.16) * uAmb;',
+            // cinematic grade: vignette + grain
+            '  vec2 q = uv * (1.0 - uv);',
+            '  float vig = pow(q.x * q.y * 15.0, 0.18);',
+            '  col *= mix(0.55, 1.08, vig);',
+            '  col += (hash(p + fract(uTime) * 61.7) - 0.5) * 0.035;',
+            '  gl_FragColor = vec4(col, 1.0);',
+            '}'
+        ].join('\n');
+
+        function initGL() {
+            try {
+                gl = glCv.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: false }) ||
+                     glCv.getContext('experimental-webgl');
+            } catch (e) { gl = null; }
+            if (!gl) { gfxBtn.style.display = 'none'; return; }
+            function sh(type, src) {
+                var s = gl.createShader(type);
+                gl.shaderSource(s, src);
+                gl.compileShader(s);
+                if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+                return s;
+            }
+            try {
+                glProg = gl.createProgram();
+                gl.attachShader(glProg, sh(gl.VERTEX_SHADER, 'attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }'));
+                gl.attachShader(glProg, sh(gl.FRAGMENT_SHADER, FRAG));
+                gl.linkProgram(glProg);
+                if (!gl.getProgramParameter(glProg, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(glProg));
+            } catch (e) {
+                gfxBtn.style.display = 'none';
+                gl = null;
+                return;
+            }
+            gl.useProgram(glProg);
+            var buf = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+            var loc = gl.getAttribLocation(glProg, 'aPos');
+            gl.enableVertexAttribArray(loc);
+            gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+            ['uRes', 'uTime', 'uMask', 'uGridPx', 'uT0', 'uT1', 'uC0', 'uC1', 'uAmb', 'uCursor'].forEach(function (n) {
+                glU[n] = gl.getUniformLocation(glProg, n);
+            });
+            maskTex = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, maskTex);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+            glOK = true;
+        }
+
+        function resizeGL() {
+            if (!glOK) return;
+            glCv.width = Math.round(window.innerWidth * dprU);
+            glCv.height = Math.round(window.innerHeight * dprU);
+            gl.viewport(0, 0, glCv.width, glCv.height);
+            maskData = new Uint8Array(total);
+            maskDirty = true;
+        }
+
+        function uploadMask() {
+            for (var i = 0; i < total; i++) maskData[i] = mowed[i] ? 255 : 0;
+            gl.bindTexture(gl.TEXTURE_2D, maskTex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, cols, rows, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, maskData);
+        }
+
+        function ultraLoop(t) {
+            if (gfx !== 'ultra' || !glOK) { ultraRunning = false; return; }
+            if (finished && finishedAt && performance.now() - finishedAt > 1600) { ultraRunning = false; return; }
+            if (maskDirty) { uploadMask(); maskDirty = false; }
+            var pal = UPALS[mode];
+            gl.uniform2f(glU.uRes, glCv.width, glCv.height);
+            gl.uniform1f(glU.uTime, t * 0.001);
+            gl.uniform1i(glU.uMask, 0);
+            gl.uniform2f(glU.uGridPx, cols * TILE * dprU, rows * TILE * dprU);
+            gl.uniform3fv(glU.uT0, pal.t0);
+            gl.uniform3fv(glU.uT1, pal.t1);
+            gl.uniform3fv(glU.uC0, pal.c0);
+            gl.uniform3fv(glU.uC1, pal.c1);
+            gl.uniform1f(glU.uAmb, pal.amb);
+            gl.uniform2f(glU.uCursor,
+                (lastX === null ? -9999 : lastX * dprU),
+                (lastY === null ? -9999 : glCv.height - lastY * dprU));
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            requestAnimationFrame(ultraLoop);
+        }
+
+        function startUltra() {
+            if (!glOK || ultraRunning) return;
+            ultraRunning = true;
+            requestAnimationFrame(ultraLoop);
+        }
+
+        function setGfx(g, save) {
+            if (g === 'ultra' && !glOK) g = 'retro';
+            gfx = g;
+            body.classList.toggle('ultra', g === 'ultra');
+            gfxBtn.textContent = g === 'ultra' ? '8-BIT' : 'ULTRA';
+            if (g === 'ultra') { maskDirty = true; startUltra(); }
+            if (save) { try { localStorage.setItem('gfxMode', g); } catch (e) { /* ignore */ } }
+        }
+
+        gfxBtn.addEventListener('click', function () {
+            setGfx(gfx === 'ultra' ? 'retro' : 'ultra', true);
+            if (soundOn && audio && audio.state === 'running') blip(gfx === 'ultra' ? 220 : 660, audio.currentTime, 0.1, 0.08);
+        });
+
         /* ---------- grid ---------- */
         function initGrid() {
             var w = window.innerWidth, h = window.innerHeight;
@@ -511,6 +891,7 @@
             mowed = newMowed; variants = newVar; phases = newPhase;
             total = cols * rows;
             drawGrass();
+            resizeGL();
         }
 
         var frame = 0;
@@ -530,6 +911,7 @@
         var lastTick = 0;
         function windLoop(t) {
             if (finished) return;
+            if (gfx !== 'retro') { requestAnimationFrame(windLoop); return; }
             if (t - lastTick > 160) {
                 lastTick = t;
                 frame = (frame + 1) % FRAMES;
@@ -544,16 +926,29 @@
 
         function spawnClippings(x, y, n) {
             for (var i = 0; i < n; i++) {
-                parts.push({
-                    x: x + (Math.random() - 0.5) * TILE,
-                    y: y + (Math.random() - 0.5) * TILE,
-                    vx: (Math.random() - 0.5) * 2.4,
-                    vy: -1.5 - Math.random() * 2.2,
-                    life: 1,
-                    size: 3 + ((Math.random() * 2) | 0) * 2,
-                    color: ['#1d5e23', '#2f7d33', '#6abf69'][(Math.random() * 3) | 0],
-                    g: 0.18
-                });
+                if (gfx === 'ultra') {
+                    parts.push({
+                        x: x + (Math.random() - 0.5) * TILE,
+                        y: y + (Math.random() - 0.5) * TILE,
+                        vx: (Math.random() - 0.5) * 1.8,
+                        vy: -1.2 - Math.random() * 2,
+                        life: 0.9,
+                        w: 2, h: 5 + ((Math.random() * 6) | 0),
+                        color: ['#3f7d2f', '#5b9c3a', '#7ab94f'][(Math.random() * 3) | 0],
+                        g: 0.12
+                    });
+                } else {
+                    parts.push({
+                        x: x + (Math.random() - 0.5) * TILE,
+                        y: y + (Math.random() - 0.5) * TILE,
+                        vx: (Math.random() - 0.5) * 2.4,
+                        vy: -1.5 - Math.random() * 2.2,
+                        life: 1,
+                        size: 3 + ((Math.random() * 2) | 0) * 2,
+                        color: ['#1d5e23', '#2f7d33', '#6abf69'][(Math.random() * 3) | 0],
+                        g: 0.18
+                    });
+                }
             }
         }
 
@@ -561,6 +956,24 @@
 
         function spawnConfetti() {
             var cx = fx.width / 2, cy = fx.height / 2;
+            if (gfx === 'ultra') {
+                // drifting golden light motes instead of hard confetti
+                for (var j = 0; j < 80; j++) {
+                    var aj = Math.random() * Math.PI * 2;
+                    var sj = 1 + Math.random() * 4;
+                    parts.push({
+                        x: cx, y: cy,
+                        vx: Math.cos(aj) * sj,
+                        vy: Math.sin(aj) * sj - 1.2,
+                        life: 2 + Math.random() * 1.5,
+                        size: 3 + ((Math.random() * 3) | 0),
+                        color: ['#ffd740', '#fff6c2', '#ffe97a'][(Math.random() * 3) | 0],
+                        g: 0.025,
+                        glow: true
+                    });
+                }
+                return;
+            }
             for (var i = 0; i < 160; i++) {
                 var a = Math.random() * Math.PI * 2;
                 var sp = 3 + Math.random() * 7;
@@ -885,6 +1298,18 @@
                 if (fl.y < -10) fl.y = fx.height + 10;
                 if (fl.y > fx.height + 10) fl.y = -10;
                 var glow = 0.5 + 0.5 * Math.sin(now * 0.004 + fl.p * 3);
+                if (gfx === 'ultra') {
+                    // soft bokeh orbs
+                    fctx.globalAlpha = 0.25 * glow + 0.06;
+                    fctx.fillStyle = '#ffe97a';
+                    fctx.shadowColor = '#ffe97a';
+                    fctx.shadowBlur = 12;
+                    fctx.beginPath();
+                    fctx.arc(fl.x, fl.y, 2.4, 0, 6.2832);
+                    fctx.fill();
+                    fctx.shadowBlur = 0;
+                    continue;
+                }
                 fctx.globalAlpha = 0.14 * glow;
                 fctx.fillStyle = '#ffee58';
                 fctx.fillRect(fl.x - 4, fl.y - 4, 12, 12);
@@ -898,9 +1323,11 @@
         function fxLoop(now) {
             now = now || 0;
             fctx.clearRect(0, 0, fx.width, fx.height);
-            for (var ci = critters.length - 1; ci >= 0; ci--) {
-                updateCritter(critters[ci], now);
-                if (critters[ci].gone) critters.splice(ci, 1);
+            if (gfx === 'retro') { // pixel critters only live in the retro lawn
+                for (var ci = critters.length - 1; ci >= 0; ci--) {
+                    updateCritter(critters[ci], now);
+                    if (critters[ci].gone) critters.splice(ci, 1);
+                }
             }
             for (var i = parts.length - 1; i >= 0; i--) {
                 var p = parts[i];
@@ -908,7 +1335,9 @@
                 if (p.life <= 0) { parts.splice(i, 1); continue; }
                 fctx.globalAlpha = Math.min(1, p.life);
                 fctx.fillStyle = p.color;
-                fctx.fillRect(p.x | 0, p.y | 0, p.size, p.size);
+                if (p.glow) { fctx.shadowColor = p.color; fctx.shadowBlur = 10; }
+                fctx.fillRect(p.x | 0, p.y | 0, p.w || p.size, p.h || p.size);
+                if (p.glow) fctx.shadowBlur = 0;
             }
             fctx.globalAlpha = 1;
             // pulse the last few unmowed patches so they're easy to find
@@ -916,11 +1345,13 @@
             if (!finished && total && mowedCount > 0 && left <= Math.max(10, total * 0.02)) {
                 fctx.globalAlpha = 0.35 + 0.35 * Math.sin(now * 0.01);
                 fctx.strokeStyle = '#ffd740';
-                fctx.lineWidth = 3;
+                fctx.lineWidth = gfx === 'ultra' ? 2 : 3;
+                if (gfx === 'ultra') { fctx.shadowColor = '#ffd740'; fctx.shadowBlur = 14; }
                 for (var ti = 0; ti < total; ti++) {
                     if (mowed[ti]) continue;
                     fctx.strokeRect((ti % cols) * TILE + 2, ((ti / cols) | 0) * TILE + 2, TILE - 4, TILE - 4);
                 }
+                fctx.shadowBlur = 0;
                 fctx.globalAlpha = 1;
             }
             drawFlies(now);
@@ -984,12 +1415,45 @@
             osc.start(t0); osc.stop(t0 + dur);
         }
 
+        var noiseBuf = null;
+
+        function whoosh() { // soft organic cutting sound for ultra mode
+            if (!noiseBuf) {
+                noiseBuf = audio.createBuffer(1, (audio.sampleRate * 0.5) | 0, audio.sampleRate);
+                var d = noiseBuf.getChannelData(0);
+                for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+            }
+            var t = audio.currentTime;
+            var src = audio.createBufferSource();
+            src.buffer = noiseBuf;
+            var f = audio.createBiquadFilter();
+            f.type = 'lowpass';
+            f.frequency.value = 700 + Math.random() * 600;
+            var g = audio.createGain();
+            g.gain.setValueAtTime(0.18, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+            src.connect(f); f.connect(g); g.connect(audio.destination);
+            src.start(t, Math.random() * 0.3);
+            src.stop(t + 0.18);
+        }
+
+        function chimeNote(freq, t0, dur, vol) {
+            var o = audio.createOscillator(), g = audio.createGain();
+            o.type = 'sine';
+            o.frequency.value = freq;
+            g.gain.setValueAtTime(vol, t0);
+            g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+            o.connect(g).connect(audio.destination);
+            o.start(t0); o.stop(t0 + dur);
+        }
+
         function whirr() {
             if (!soundOn || !audio) return;
             var now = performance.now();
             if (now - lastWhirr < 95) return;
             lastWhirr = now;
             if (audio.state !== 'running') { ensureAudio(); return; }
+            if (gfx === 'ultra') { whoosh(); return; }
             // Three layers: low chug + mid body + bright tick so it carries
             // on small phone speakers.
             blip(80 + Math.random() * 70, audio.currentTime, 0.08, 0.1);
@@ -1000,6 +1464,13 @@
         function victoryTune() {
             if (!soundOn || !audio) return;
             if (audio.state !== 'running') { ensureAudio(); return; }
+            if (gfx === 'ultra') {
+                var t = audio.currentTime;
+                chimeNote(523, t, 1.4, 0.12);
+                chimeNote(784, t + 0.18, 1.6, 0.11);
+                chimeNote(1047, t + 0.36, 2.0, 0.08);
+                return;
+            }
             var notes = [523, 659, 784, 1047];
             for (var i = 0; i < notes.length; i++) {
                 blip(notes[i], audio.currentTime + i * 0.13, 0.22, 0.13);
@@ -1072,6 +1543,7 @@
             }
             if (did) {
                 if (startTime === null && !skipped) startTime = performance.now();
+                maskDirty = true;
                 whirr(); updateHud();
             }
         }
@@ -1081,9 +1553,11 @@
         function onMove(e) {
             if (finished) return;
             var x = e.clientX, y = e.clientY;
-            // mower cursor
+            // mower cursor (retro) + cutter ring (ultra)
             mowerEl.style.opacity = '1';
             mowerEl.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+            cutter.classList.add('on');
+            cutter.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
             if (lastX !== null && x < lastX - 2) mowerEl.classList.add('flip');
             else if (lastX !== null && x > lastX + 2) mowerEl.classList.remove('flip');
             // interpolate so fast swipes leave no gaps
@@ -1119,6 +1593,7 @@
                         if (Math.random() < 0.12) spawnClippings((c + 0.5) * TILE, (r + 0.5) * TILE, 2);
                     }
                 }
+                maskDirty = true;
                 whirr(); updateHud();
                 if (c >= cols) { clearInterval(sweepTimer); sweepTimer = null; }
             }, 16);
@@ -1150,6 +1625,9 @@
                 timeEl.hidden = false;
             }
             grass.classList.add('gone');
+            glCv.classList.add('gone');
+            finishedAt = performance.now();
+            maskDirty = true;
             body.classList.add('done');
             banner.classList.add('show');
             spawnConfetti();
@@ -1160,7 +1638,9 @@
 
         /* ---------- boot ---------- */
         buildSprites();
+        initGL();
         initGrid();
+        setGfx(gfx, false);
         spawnFlies(mode === 'night' ? 22 : mode === 'dusk' ? 7 : 0);
 
         // two random critters per visit
@@ -1183,6 +1663,7 @@
         window.LAWN = {
             finish: finishLawn,
             setMode: setMode,
+            setGfx: setGfx,
             progress: function () { return total ? mowedCount / total : 0; },
             spawnCritter: function (t) { critters.push(makeCritter(t)); },
             clearCritters: function () { critters = []; },
