@@ -295,28 +295,23 @@
         body.ultra:not(.done) #cutter.on { display: block; }
         body.ultra #mower { display: none !important; }
 
-        #cutter .ring, #cutter .arc {
-            position: absolute;
-            width: 46px;
-            height: 46px;
-            left: 0;
-            top: 0;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
+        #cutter .rm {
+            display: block;
+            transform: translate(-55%, -78%);
+            animation: mowshake 0.09s linear infinite;
         }
 
-        #cutter .ring {
-            border: 1.5px solid rgba(255, 255, 255, 0.85);
-            box-shadow: 0 0 18px rgba(255, 240, 180, 0.4), inset 0 0 14px rgba(255, 240, 180, 0.18);
+        #cutter.flip .rm { transform: translate(-45%, -78%) scaleX(-1); }
+
+        @keyframes mowshake {
+            0%, 100% { margin-top: 0; }
+            50% { margin-top: -0.8px; }
         }
 
-        #cutter .arc {
-            border: 2px solid transparent;
-            border-top-color: var(--gold);
-            animation: spin 0.6s linear infinite;
-        }
+        #cutter .wheel { transform-origin: 40px 68px; animation: wheelspin 0.45s linear infinite; }
+        #cutter .wheel2 { transform-origin: 88px 71px; animation: wheelspin 0.34s linear infinite; }
 
-        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes wheelspin { to { transform: rotate(360deg); } }
 
         body.ultra {
             font-family: 'Outfit', sans-serif;
@@ -502,7 +497,66 @@
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
 
-    <div id="cutter" aria-hidden="true"><span class="ring"></span><span class="arc"></span></div>
+    <div id="cutter" aria-hidden="true">
+        <svg class="rm" width="110" height="86" viewBox="0 0 110 86" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="deckG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#ff6f5e"/>
+                    <stop offset="0.45" stop-color="#d63a2a"/>
+                    <stop offset="1" stop-color="#8e1f14"/>
+                </linearGradient>
+                <linearGradient id="metalG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#f4f6f8"/>
+                    <stop offset="0.5" stop-color="#b9c1c9"/>
+                    <stop offset="1" stop-color="#7c858d"/>
+                </linearGradient>
+                <radialGradient id="wheelG" cx="0.35" cy="0.35" r="0.85">
+                    <stop offset="0" stop-color="#4a4f55"/>
+                    <stop offset="0.6" stop-color="#23262a"/>
+                    <stop offset="1" stop-color="#0c0d0f"/>
+                </radialGradient>
+                <radialGradient id="hubG" cx="0.4" cy="0.4" r="0.7">
+                    <stop offset="0" stop-color="#eef1f4"/>
+                    <stop offset="1" stop-color="#9aa2ab"/>
+                </radialGradient>
+                <filter id="blurSh" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2.2"/>
+                </filter>
+            </defs>
+            <ellipse cx="56" cy="79" rx="42" ry="5.5" fill="rgba(0,0,0,0.35)" filter="url(#blurSh)"/>
+            <!-- handle -->
+            <path d="M14 8 L44 47" stroke="#2b2f33" stroke-width="5.5" stroke-linecap="round"/>
+            <path d="M16 7 L45 45" stroke="#5d646b" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M7 12 Q12 2 22 6" stroke="#d63a2a" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <!-- engine -->
+            <rect x="50" y="25" width="26" height="20" rx="4.5" fill="url(#metalG)"/>
+            <rect x="54" y="20" width="11" height="7" rx="2.5" fill="#3a4046"/>
+            <rect x="52" y="31" width="22" height="2.4" rx="1.2" fill="rgba(0,0,0,0.22)"/>
+            <circle cx="71" cy="35" r="4.6" fill="#3a4046"/>
+            <circle cx="71" cy="35" r="2.1" fill="#9aa2ab"/>
+            <!-- deck -->
+            <path d="M30 50 q1 -9 12 -10 h36 q13 1 16 11 l2 11 H29 z" fill="url(#deckG)"/>
+            <ellipse cx="62" cy="45" rx="27" ry="4.5" fill="rgba(255,255,255,0.28)"/>
+            <rect x="31" y="56" width="64" height="2.4" rx="1.2" fill="rgba(0,0,0,0.18)"/>
+            <!-- wheels -->
+            <g class="wheel">
+                <circle cx="40" cy="68" r="12.5" fill="url(#wheelG)"/>
+                <circle cx="40" cy="68" r="4.6" fill="url(#hubG)"/>
+                <rect x="39" y="56.5" width="2" height="8.5" rx="1" fill="rgba(255,255,255,0.16)"/>
+            </g>
+            <g class="wheel2">
+                <circle cx="88" cy="71" r="9.5" fill="url(#wheelG)"/>
+                <circle cx="88" cy="71" r="3.4" fill="url(#hubG)"/>
+                <rect x="87.2" y="62.5" width="1.6" height="6.5" rx="0.8" fill="rgba(255,255,255,0.16)"/>
+            </g>
+            <!-- grass spray -->
+            <g class="spray" fill="#7ab94f">
+                <rect x="101" y="54" width="3" height="8" rx="1.5"/>
+                <rect x="105" y="62" width="2.4" height="6" rx="1.2"/>
+                <rect x="100" y="69" width="3" height="4.5" rx="1.5"/>
+            </g>
+        </svg>
+    </div>
 
     <div id="mower" aria-hidden="true">
         <svg class="sprite" width="64" height="48" viewBox="0 0 16 12" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
@@ -701,12 +755,16 @@
 
         var gl = null, glOK = false, glProg = null, glU = {}, maskTex = null;
         var maskData = null, maskDirty = true;
-        var dprU = Math.min(window.devicePixelRatio || 1, 1.5);
+        var dprU = Math.min(window.devicePixelRatio || 1, 2);
         var ultraRunning = false;
         var finishedAt = 0;
 
         var FRAG = [
+            '#ifdef GL_FRAGMENT_PRECISION_HIGH',
+            'precision highp float;',
+            '#else',
             'precision mediump float;',
+            '#endif',
             'uniform vec2 uRes;',
             'uniform float uTime;',
             'uniform sampler2D uMask;',
@@ -723,7 +781,7 @@
             '}',
             'float fbm(vec2 p){',
             '  float v = 0.0, a = 0.5;',
-            '  for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; }',
+            '  for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.07; a *= 0.5; }',
             '  return v;',
             '}',
             'void main(){',
@@ -731,34 +789,45 @@
             '  vec2 uv = p / uRes;',
             '  vec2 mp = vec2(p.x, uRes.y - p.y);',
             '  float m = texture2D(uMask, mp / uGridPx).r;',
-            // wind field: slow rolling waves across the lawn
-            '  float w = fbm(p * 0.0035 + vec2(uTime * 0.30, uTime * 0.06));',
-            '  float wave = sin(p.x * 0.0045 + p.y * 0.0022 + uTime * 1.4 + w * 5.0);',
-            // tall grass: vertical blade streaks sheared by the wind
-            '  float blades = noise(vec2(p.x * 0.28 + wave * 7.0 + w * 14.0, p.y * 0.035));',
-            '  float blades2 = noise(vec2(p.x * 0.10 - wave * 4.0, p.y * 0.020 + 7.0));',
-            '  float clump = fbm(p * 0.012 + w * 0.6);',
-            '  float tallMix = clamp(blades * 0.55 + blades2 * 0.30 + clump * 0.45, 0.0, 1.0);',
-            '  vec3 tall = mix(uT0, uT1, tallMix);',
-            '  float sheen = smoothstep(0.55, 1.0, wave * 0.5 + w * 0.7) * 0.22;',
-            '  tall += sheen * vec3(0.9, 1.0, 0.6) * uAmb;',
-            // cut turf: fine texture + mow stripes
-            '  float turf = noise(p * 0.09) * 0.6 + noise(p * 0.025) * 0.4;',
-            '  float stripe = 0.96 + 0.07 * step(0.5, fract(p.x / 192.0));',
-            '  vec3 cut = mix(uC0, uC1, turf) * stripe;',
-            // blend with darkened fresh-cut edge
-            '  float blend = smoothstep(0.32, 0.68, m);',
-            '  float edge = smoothstep(0.10, 0.5, m) * smoothstep(0.90, 0.5, m);',
+            // wind: gusts rolling across the field
+            '  float w = fbm(p * 0.0028 + vec2(uTime * 0.45, uTime * 0.10));',
+            '  float gust = sin(p.x * 0.0030 + p.y * 0.0016 + uTime * 1.7 + w * 6.0);',
+            '  float shear = gust * 8.0 + w * 16.0;',
+            // tall grass: three scales of sharp blade strands, sheared by wind
+            '  float s1 = noise(vec2(p.x * 0.95 + shear, p.y * 0.07));',
+            '  float s2 = noise(vec2(p.x * 0.42 - shear * 0.6, p.y * 0.045 + 13.7));',
+            '  float s3 = noise(vec2(p.x * 0.17 + shear * 0.35, p.y * 0.028 + 47.0));',
+            '  float strand = smoothstep(0.18, 0.88, s1 * 0.5 + s2 * 0.32 + s3 * 0.18);',
+            '  float patch = fbm(p * 0.006 + 3.1);',
+            '  vec3 tall = mix(uT0, uT1, strand);',
+            '  tall = mix(tall, tall * vec3(1.16, 1.04, 0.55), smoothstep(0.55, 0.85, patch) * 0.4);',
+            // sun glints on blade tips, stronger on gust crests
+            '  float glint = smoothstep(0.80, 0.96, noise(vec2(p.x * 1.4 + shear * 1.3, p.y * 0.5)))',
+            '              * (0.4 + 0.6 * smoothstep(-0.3, 1.0, gust));',
+            '  tall += glint * vec3(0.32, 0.38, 0.18) * uAmb;',
+            '  tall *= 0.82 + 0.28 * smoothstep(-1.0, 1.0, gust) * uAmb;',
+            // cut turf: dense fine texture, alternating mow-stripe sheen, clipping flecks
+            '  float t1 = noise(p * 0.55);',
+            '  float t2 = noise(p * 0.16 + 7.7);',
+            '  float t3 = fbm(p * 0.045 + 1.3);',
+            '  vec3 cut = mix(uC0, uC1, clamp(t1 * 0.45 + t2 * 0.30 + t3 * 0.35, 0.0, 1.0));',
+            '  cut *= 0.94 + 0.115 * step(0.5, fract(p.x / 260.0));',
+            '  cut *= 0.97 + 0.06 * noise(vec2(p.y * 0.9, p.x * 0.04));',
+            '  float fleck = smoothstep(0.965, 0.99, noise(p * 0.85 + 31.0));',
+            '  cut = mix(cut, vec3(0.72, 0.78, 0.38) * uAmb, fleck * 0.55);',
+            // crisp-but-organic boundary with a shadowed fresh-cut edge
+            '  float blend = smoothstep(0.42, 0.58, m);',
+            '  float edge = smoothstep(0.18, 0.5, m) * smoothstep(0.82, 0.5, m);',
             '  vec3 col = mix(tall, cut, blend);',
-            '  col *= 1.0 - edge * 0.28;',
-            // soft light halo around the cutter
+            '  col *= 1.0 - edge * 0.22;',
+            // soft light following the mower
             '  float d = distance(p, uCursor);',
-            '  col += exp(-d * d / 18000.0) * vec3(0.30, 0.28, 0.16) * uAmb;',
-            // cinematic grade: vignette + grain
+            '  col += exp(-d * d / 16000.0) * vec3(0.22, 0.20, 0.10) * uAmb;',
+            // grade: gentle vignette + fine grain
             '  vec2 q = uv * (1.0 - uv);',
-            '  float vig = pow(q.x * q.y * 15.0, 0.18);',
-            '  col *= mix(0.55, 1.08, vig);',
-            '  col += (hash(p + fract(uTime) * 61.7) - 0.5) * 0.035;',
+            '  float vig = pow(q.x * q.y * 15.0, 0.12);',
+            '  col *= mix(0.72, 1.06, vig);',
+            '  col += (hash(p + fract(uTime) * 61.7) - 0.5) * 0.022;',
             '  gl_FragColor = vec4(col, 1.0);',
             '}'
         ].join('\n');
@@ -855,6 +924,7 @@
             body.classList.toggle('ultra', g === 'ultra');
             gfxBtn.textContent = g === 'ultra' ? '8-BIT' : 'ULTRA';
             if (g === 'ultra') { maskDirty = true; startUltra(); }
+            syncEngine();
             if (save) { try { localStorage.setItem('gfxMode', g); } catch (e) { /* ignore */ } }
         }
 
@@ -1340,6 +1410,11 @@
                 if (p.glow) fctx.shadowBlur = 0;
             }
             fctx.globalAlpha = 1;
+            // engine throttle eases back to idle ~0.7s after the last cut
+            if (engine && now - lastEngUpd > 120) {
+                lastEngUpd = now;
+                engineRev(Math.max(0, 1 - (now - lastMowMs) / 700));
+            }
             // pulse the last few unmowed patches so they're easy to find
             var left = total - mowedCount;
             if (!finished && total && mowedCount > 0 && left <= Math.max(10, total * 0.02)) {
@@ -1366,6 +1441,7 @@
             var live = soundOn && audio && audio.state === 'running';
             muteBtn.textContent = live ? '🔊' : '🔇';
             muteBtn.setAttribute('aria-pressed', String(live));
+            syncEngine();
         }
 
         var iosUnlocked = false;
@@ -1415,26 +1491,72 @@
             osc.start(t0); osc.stop(t0 + dur);
         }
 
+        /* ---------- continuous mower engine (ultra mode) ---------- */
         var noiseBuf = null;
+        var engine = null;
+        var lastMowMs = 0;
+        var lastEngUpd = 0;
 
-        function whoosh() { // soft organic cutting sound for ultra mode
+        function getNoiseBuf() {
             if (!noiseBuf) {
                 noiseBuf = audio.createBuffer(1, (audio.sampleRate * 0.5) | 0, audio.sampleRate);
                 var d = noiseBuf.getChannelData(0);
                 for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
             }
+            return noiseBuf;
+        }
+
+        function buildEngine() {
+            // small petrol engine: detuned saw + square through a lowpass,
+            // putt-putt amplitude modulation, plus an airy noise bed
             var t = audio.currentTime;
-            var src = audio.createBufferSource();
-            src.buffer = noiseBuf;
-            var f = audio.createBiquadFilter();
-            f.type = 'lowpass';
-            f.frequency.value = 700 + Math.random() * 600;
-            var g = audio.createGain();
-            g.gain.setValueAtTime(0.18, t);
-            g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
-            src.connect(f); f.connect(g); g.connect(audio.destination);
-            src.start(t, Math.random() * 0.3);
-            src.stop(t + 0.18);
+            var eg = audio.createGain(); eg.gain.value = 0;
+            var lp = audio.createBiquadFilter();
+            lp.type = 'lowpass'; lp.frequency.value = 380; lp.Q.value = 2;
+            var am = audio.createGain(); am.gain.value = 0.6;
+            var o1 = audio.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 46;
+            var o2 = audio.createOscillator(); o2.type = 'square'; o2.frequency.value = 92.7;
+            var og2 = audio.createGain(); og2.gain.value = 0.35;
+            var lfo = audio.createOscillator(); lfo.type = 'square'; lfo.frequency.value = 19;
+            var lfoG = audio.createGain(); lfoG.gain.value = 0.28;
+            var ns = audio.createBufferSource(); ns.buffer = getNoiseBuf(); ns.loop = true;
+            var bp = audio.createBiquadFilter();
+            bp.type = 'bandpass'; bp.frequency.value = 300; bp.Q.value = 0.6;
+            var ng = audio.createGain(); ng.gain.value = 0.22;
+            lfo.connect(lfoG); lfoG.connect(am.gain);
+            o1.connect(am);
+            o2.connect(og2); og2.connect(am);
+            ns.connect(bp); bp.connect(ng); ng.connect(am);
+            am.connect(lp); lp.connect(eg); eg.connect(audio.destination);
+            o1.start(t); o2.start(t); lfo.start(t); ns.start(t);
+            eg.gain.setTargetAtTime(0.05, t, 0.25); // fade in to idle
+            engine = { eg: eg, lp: lp, o1: o1, o2: o2, lfo: lfo, ns: ns };
+        }
+
+        function killEngine() {
+            if (!engine) return;
+            var e = engine;
+            engine = null;
+            e.eg.gain.setTargetAtTime(0.0001, audio.currentTime, 0.12);
+            setTimeout(function () {
+                try { e.o1.stop(); e.o2.stop(); e.lfo.stop(); e.ns.stop(); } catch (err) { /* ignore */ }
+            }, 500);
+        }
+
+        function engineRev(r) { // 0 = idle, 1 = cutting
+            if (!engine) return;
+            var t = audio.currentTime;
+            engine.o1.frequency.setTargetAtTime(46 + r * 28, t, 0.09);
+            engine.o2.frequency.setTargetAtTime(92.7 + r * 56, t, 0.09);
+            engine.lp.frequency.setTargetAtTime(380 + r * 650, t, 0.09);
+            engine.lfo.frequency.setTargetAtTime(19 + r * 9, t, 0.12);
+            engine.eg.gain.setTargetAtTime(0.05 + r * 0.075, t, 0.09);
+        }
+
+        function syncEngine() {
+            var want = gfx === 'ultra' && soundOn && audio && audio.state === 'running' && !finished && !reduced;
+            if (want && !engine) buildEngine();
+            else if (!want && engine) killEngine();
         }
 
         function chimeNote(freq, t0, dur, vol) {
@@ -1453,7 +1575,7 @@
             if (now - lastWhirr < 95) return;
             lastWhirr = now;
             if (audio.state !== 'running') { ensureAudio(); return; }
-            if (gfx === 'ultra') { whoosh(); return; }
+            if (gfx === 'ultra') { lastMowMs = performance.now(); syncEngine(); return; }
             // Three layers: low chug + mid body + bright tick so it carries
             // on small phone speakers.
             blip(80 + Math.random() * 70, audio.currentTime, 0.08, 0.1);
@@ -1558,8 +1680,8 @@
             mowerEl.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
             cutter.classList.add('on');
             cutter.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
-            if (lastX !== null && x < lastX - 2) mowerEl.classList.add('flip');
-            else if (lastX !== null && x > lastX + 2) mowerEl.classList.remove('flip');
+            if (lastX !== null && x < lastX - 2) { mowerEl.classList.add('flip'); cutter.classList.add('flip'); }
+            else if (lastX !== null && x > lastX + 2) { mowerEl.classList.remove('flip'); cutter.classList.remove('flip'); }
             // interpolate so fast swipes leave no gaps
             if (lastX === null) { mowAt(x, y, true); }
             else {
@@ -1628,6 +1750,7 @@
             glCv.classList.add('gone');
             finishedAt = performance.now();
             maskDirty = true;
+            syncEngine();
             body.classList.add('done');
             banner.classList.add('show');
             spawnConfetti();
