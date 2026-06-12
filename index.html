@@ -21,6 +21,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@200;300;500;600&display=swap" rel="stylesheet">
+    <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.min.js", "postprocessing": "./vendor/postprocessing.js" } }
+    </script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -139,20 +142,26 @@
         #grass.gone { opacity: 0; }
         #fx { z-index: 6; }
 
-        #gl {
+        body.ultra #grass, body.ultra #fx { display: none; }
+
+        /* in ultra the 3D canvas is opaque, so the card overlays it */
+        body.ultra .scene { position: relative; z-index: 7; pointer-events: none; }
+        body.ultra .panel { pointer-events: auto; transition: opacity 0.5s ease; }
+
+        #ultraload {
             position: fixed;
             inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-            display: none;
-            transition: opacity 0.9s ease;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 22, 12, 0.92);
+            color: var(--gold);
+            font-size: clamp(0.8rem, 3vw, 1.1rem);
+            letter-spacing: 0.15em;
         }
 
-        #gl.gone { opacity: 0; }
-        body.ultra #gl { display: block; }
-        body.ultra #grass { display: none; }
+        #ultraload[hidden] { display: none; }
 
         /* ---------- toast ---------- */
         #toast {
@@ -282,36 +291,7 @@
 
         /* ================= ULTRA (next-gen) theme ================= */
 
-        #cutter {
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 9;
-            pointer-events: none;
-            display: none;
-            will-change: transform;
-        }
-
-        body.ultra:not(.done) #cutter.on { display: block; }
         body.ultra #mower { display: none !important; }
-
-        #cutter .rm {
-            display: block;
-            transform: translate(-55%, -82%);
-            animation: mowshake 0.12s linear infinite;
-        }
-
-        #cutter.flip .rm { transform: translate(-45%, -82%) scaleX(-1); }
-
-        @keyframes mowshake {
-            0%, 100% { margin-top: 0; }
-            50% { margin-top: -0.4px; }
-        }
-
-        #cutter .wheel { transform-origin: 40px 86px; animation: wheelspin 0.5s linear infinite; }
-        #cutter .wheel2 { transform-origin: 108px 92px; animation: wheelspin 0.37s linear infinite; }
-
-        @keyframes wheelspin { to { transform: rotate(360deg); } }
 
         body.ultra {
             font-family: 'Outfit', sans-serif;
@@ -462,7 +442,7 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .blink, #toast, #cutter .arc { animation: none; }
+            .blink, #toast { animation: none; }
         }
 
         @media (max-width: 480px) {
@@ -487,7 +467,6 @@
     </main>
 
     <canvas id="grass"></canvas>
-    <canvas id="gl"></canvas>
     <canvas id="fx"></canvas>
 
     <div id="toast">
@@ -501,107 +480,6 @@
         <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">ULTRA</button>
         <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
-    </div>
-
-    <div id="cutter" aria-hidden="true">
-        <svg class="rm" width="126" height="100" viewBox="0 0 140 110" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="deckG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#ef5348"/>
-                    <stop offset="0.4" stop-color="#cc2a1c"/>
-                    <stop offset="1" stop-color="#7e150c"/>
-                </linearGradient>
-                <linearGradient id="skirtG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#33373c"/>
-                    <stop offset="1" stop-color="#101214"/>
-                </linearGradient>
-                <linearGradient id="aluG" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0" stop-color="#e8ecf0"/>
-                    <stop offset="0.5" stop-color="#aab2ba"/>
-                    <stop offset="1" stop-color="#737b83"/>
-                </linearGradient>
-                <linearGradient id="hatchG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#3a3f45"/>
-                    <stop offset="1" stop-color="#16181b"/>
-                </linearGradient>
-                <radialGradient id="tireG" cx="0.35" cy="0.32" r="0.9">
-                    <stop offset="0" stop-color="#3c4046"/>
-                    <stop offset="0.55" stop-color="#1d1f23"/>
-                    <stop offset="1" stop-color="#070809"/>
-                </radialGradient>
-                <radialGradient id="rimG" cx="0.4" cy="0.38" r="0.8">
-                    <stop offset="0" stop-color="#52575e"/>
-                    <stop offset="0.7" stop-color="#2b2e33"/>
-                    <stop offset="1" stop-color="#1a1c1f"/>
-                </radialGradient>
-                <radialGradient id="capG" cx="0.4" cy="0.38" r="0.8">
-                    <stop offset="0" stop-color="#e8554a"/>
-                    <stop offset="1" stop-color="#8e1a10"/>
-                </radialGradient>
-                <filter id="blurSh" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2.6"/>
-                </filter>
-            </defs>
-            <!-- ground shadow -->
-            <ellipse cx="72" cy="102" rx="54" ry="6" fill="rgba(0,0,0,0.38)" filter="url(#blurSh)"/>
-            <!-- handlebar: twin aluminium tubes with fold joint, cable and grip -->
-            <path d="M34 64 L12 14" stroke="#5d646b" stroke-width="5" stroke-linecap="round"/>
-            <path d="M40 66 L18 16" stroke="url(#aluG)" stroke-width="4.4" stroke-linecap="round"/>
-            <path d="M5 20 Q3 6 16 8 L20 9" stroke="#b9281a" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-            <path d="M6 18 Q5 9 15 10" stroke="rgba(255,255,255,0.3)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-            <circle cx="29" cy="41" r="4.2" fill="#c62828"/>
-            <circle cx="29" cy="41" r="1.8" fill="#5e0f08"/>
-            <path d="M14 13 C 24 34 28 46 36 62" stroke="#0c0d0e" stroke-width="1.4" fill="none" opacity="0.75"/>
-            <!-- deck: red housing over black skirt -->
-            <path d="M22 86 L128 90 L126 78 L24 76 Z" fill="url(#skirtG)"/>
-            <path d="M20 80 Q18 62 38 56 L66 52 Q104 48 118 60 Q128 68 128 80 L127 84 L21 84 Z" fill="url(#deckG)"/>
-            <path d="M28 62 Q50 52 90 51 Q110 51 118 61" stroke="rgba(255,255,255,0.30)" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M22 76 L127 79" stroke="rgba(0,0,0,0.30)" stroke-width="2.2"/>
-            <!-- battery hatch with window -->
-            <rect x="58" y="40" width="40" height="18" rx="5" fill="url(#hatchG)"/>
-            <rect x="62" y="43" width="20" height="7" rx="2.5" fill="#23262b"/>
-            <rect x="63" y="44" width="8" height="5" rx="1.5" fill="rgba(120,180,220,0.25)"/>
-            <circle cx="91" cy="48" r="2.6" fill="#c62828"/>
-            <!-- side vents -->
-            <g fill="rgba(0,0,0,0.35)">
-                <rect x="104" y="66" width="3" height="9" rx="1.5" transform="rotate(8 104 66)"/>
-                <rect x="110" y="66" width="3" height="9" rx="1.5" transform="rotate(8 110 66)"/>
-                <rect x="116" y="67" width="3" height="9" rx="1.5" transform="rotate(8 116 67)"/>
-            </g>
-            <!-- rear wheel (large, spoked hub) -->
-            <g class="wheel">
-                <circle cx="40" cy="86" r="18" fill="url(#tireG)"/>
-                <circle cx="40" cy="86" r="11" fill="url(#rimG)"/>
-                <g fill="#0e0f11">
-                    <circle cx="40" cy="79.4" r="2.4"/>
-                    <circle cx="46.3" cy="84" r="2.4"/>
-                    <circle cx="43.9" cy="91.4" r="2.4"/>
-                    <circle cx="36.1" cy="91.4" r="2.4"/>
-                    <circle cx="33.7" cy="84" r="2.4"/>
-                </g>
-                <circle cx="40" cy="86" r="3.6" fill="url(#capG)"/>
-            </g>
-            <!-- front wheel -->
-            <g class="wheel2">
-                <circle cx="108" cy="92" r="13" fill="url(#tireG)"/>
-                <circle cx="108" cy="92" r="7.6" fill="url(#rimG)"/>
-                <g fill="#0e0f11">
-                    <circle cx="108" cy="87.4" r="1.7"/>
-                    <circle cx="112.4" cy="90.6" r="1.7"/>
-                    <circle cx="110.7" cy="95.8" r="1.7"/>
-                    <circle cx="105.3" cy="95.8" r="1.7"/>
-                    <circle cx="103.6" cy="90.6" r="1.7"/>
-                </g>
-                <circle cx="108" cy="92" r="2.6" fill="url(#capG)"/>
-            </g>
-            <!-- grass spray from the chute -->
-            <g class="spray">
-                <rect x="130" y="62" width="2.2" height="9" rx="1.1" fill="#6da33e" transform="rotate(18 130 62)"/>
-                <rect x="134" y="72" width="1.8" height="7" rx="0.9" fill="#86b54e" transform="rotate(30 134 72)"/>
-                <rect x="129" y="80" width="2.2" height="5.5" rx="1.1" fill="#5c9436" transform="rotate(10 129 80)"/>
-                <rect x="135" y="84" width="1.6" height="4.5" rx="0.8" fill="#9cc25e" transform="rotate(40 135 84)"/>
-            </g>
-        </svg>
     </div>
 
     <div id="mower" aria-hidden="true">
@@ -630,6 +508,8 @@
             <rect x="15" y="9" width="1" height="1" fill="#7cb342"/>
         </svg>
     </div>
+
+    <div id="ultraload" hidden>LOADING ULTRA<span class="blink">▮</span></div>
 
     <div id="banner">
         <div class="inner">
@@ -662,8 +542,6 @@
         var muteBtn = document.getElementById('mute');
         var modeBtn = document.getElementById('modebtn');
         var gfxBtn = document.getElementById('gfxbtn');
-        var glCv = document.getElementById('gl');
-        var cutter = document.getElementById('cutter');
 
         /* ---------- graphics mode (retro pixels vs ultra WebGL) ---------- */
         var qgfx = (location.search.match(/[?&]gfx=(retro|ultra)/) || [])[1];
@@ -784,6 +662,7 @@
                 drawGrass();
             }
             spawnFlies(m === 'night' ? 22 : m === 'dusk' ? 7 : 0);
+            if (ultraCtl) ultraCtl.setMode(m);
         }
 
         modeBtn.addEventListener('click', function () {
@@ -791,180 +670,61 @@
             setMode(order[(order.indexOf(mode) + 1) % 3]);
         });
 
-        /* ---------- ULTRA renderer (procedural WebGL grass) ---------- */
-        // Photographic color sets per time of day [tall-dark, tall-light, cut-dark, cut-light].
-        var UPALS = {
-            day:   { t0: [0.07, 0.23, 0.07], t1: [0.41, 0.64, 0.22], c0: [0.40, 0.58, 0.24], c1: [0.52, 0.70, 0.30], amb: 1.0 },
-            dusk:  { t0: [0.16, 0.15, 0.05], t1: [0.62, 0.52, 0.18], c0: [0.52, 0.47, 0.20], c1: [0.64, 0.57, 0.24], amb: 0.85 },
-            night: { t0: [0.015, 0.05, 0.04], t1: [0.10, 0.24, 0.17], c0: [0.09, 0.18, 0.13], c1: [0.12, 0.23, 0.17], amb: 0.5 }
+        /* ---------- ULTRA v2 (Three.js, lazy-loaded from ultra.js) ---------- */
+        var ultraCtl = null, ultraLoading = false;
+        var mowQueue = [];
+        var maskVersion = 0;
+
+        var BRIDGE = {
+            state: function () {
+                return { cols: cols, rows: rows, mowed: mowed, finished: finished, mode: mode, maskVersion: maskVersion };
+            },
+            mowWorld: function (tx, tz) { mowAt(tx * TILE, tz * TILE, false); },
+            popMows: function () {
+                if (!mowQueue.length) return mowQueue;
+                var q = mowQueue;
+                mowQueue = [];
+                return q;
+            },
+            fail: function () {
+                gfxBtn.style.display = 'none';
+                setGfx('retro', true);
+            }
         };
 
-        var gl = null, glOK = false, glProg = null, glU = {}, maskTex = null;
-        var maskData = null, maskDirty = true;
-        var dprU = Math.min(window.devicePixelRatio || 1, 2);
-        var ultraRunning = false;
-        var finishedAt = 0;
-
-        var FRAG = [
-            '#ifdef GL_FRAGMENT_PRECISION_HIGH',
-            'precision highp float;',
-            '#else',
-            'precision mediump float;',
-            '#endif',
-            'uniform vec2 uRes;',
-            'uniform float uTime;',
-            'uniform sampler2D uMask;',
-            'uniform vec2 uGridPx;',
-            'uniform vec3 uT0, uT1, uC0, uC1;',
-            'uniform float uAmb;',
-            'uniform vec2 uCursor;',
-            'float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }',
-            'float noise(vec2 p){',
-            '  vec2 i = floor(p), f = fract(p);',
-            '  vec2 u = f * f * (3.0 - 2.0 * f);',
-            '  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),',
-            '             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);',
-            '}',
-            'float fbm(vec2 p){',
-            '  float v = 0.0, a = 0.5;',
-            '  for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.07; a *= 0.5; }',
-            '  return v;',
-            '}',
-            'void main(){',
-            '  vec2 p = gl_FragCoord.xy;',
-            '  vec2 uv = p / uRes;',
-            '  vec2 mp = vec2(p.x, uRes.y - p.y);',
-            '  float m = texture2D(uMask, mp / uGridPx).r;',
-            // ragged grass-tuft boundary: mowed areas go transparent and
-            // reveal the page (striped CSS turf + the card) underneath
-            '  float rag = (noise(p * 0.16) - 0.5) * 0.26 + (noise(p * 0.5) - 0.5) * 0.10;',
-            '  float mq = clamp(m + rag, 0.0, 1.0);',
-            '  float a = 1.0 - smoothstep(0.36, 0.64, mq);',
-            '  if (a < 0.004) { gl_FragColor = vec4(0.0); return; }',
-            // wind: gusts rolling across the field
-            '  float w = fbm(p * 0.0028 + vec2(uTime * 0.45, uTime * 0.10));',
-            '  float gust = sin(p.x * 0.0030 + p.y * 0.0016 + uTime * 1.7 + w * 6.0);',
-            '  float shear = gust * 8.0 + w * 16.0;',
-            // tall grass: three scales of sharp blade strands, sheared by wind
-            '  float s1 = noise(vec2(p.x * 0.95 + shear, p.y * 0.07));',
-            '  float s2 = noise(vec2(p.x * 0.42 - shear * 0.6, p.y * 0.045 + 13.7));',
-            '  float s3 = noise(vec2(p.x * 0.17 + shear * 0.35, p.y * 0.028 + 47.0));',
-            '  float strand = smoothstep(0.18, 0.88, s1 * 0.5 + s2 * 0.32 + s3 * 0.18);',
-            '  float patch = fbm(p * 0.006 + 3.1);',
-            '  vec3 tall = mix(uT0, uT1, strand);',
-            '  tall = mix(tall, tall * vec3(1.16, 1.04, 0.55), smoothstep(0.55, 0.85, patch) * 0.4);',
-            // sun glints on blade tips, stronger on gust crests
-            '  float glint = smoothstep(0.80, 0.96, noise(vec2(p.x * 1.4 + shear * 1.3, p.y * 0.5)))',
-            '              * (0.4 + 0.6 * smoothstep(-0.3, 1.0, gust));',
-            '  tall += glint * vec3(0.32, 0.38, 0.18) * uAmb;',
-            '  tall *= 0.82 + 0.28 * smoothstep(-1.0, 1.0, gust) * uAmb;',
-            // shadowed fresh-cut edge
-            '  float edge = smoothstep(0.2, 0.5, mq) * smoothstep(0.8, 0.5, mq);',
-            '  vec3 col = tall * (1.0 - edge * 0.2);',
-            // soft light following the mower
-            '  float d = distance(p, uCursor);',
-            '  col += exp(-d * d / 16000.0) * vec3(0.22, 0.20, 0.10) * uAmb;',
-            // grade: gentle vignette + fine grain
-            '  vec2 q = uv * (1.0 - uv);',
-            '  float vig = pow(q.x * q.y * 15.0, 0.12);',
-            '  col *= mix(0.72, 1.06, vig);',
-            '  col += (hash(p + fract(uTime) * 61.7) - 0.5) * 0.022;',
-            '  gl_FragColor = vec4(col * a, a);',
-            '}'
-        ].join('\n');
-
-        function initGL() {
-            try {
-                gl = glCv.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: false }) ||
-                     glCv.getContext('experimental-webgl');
-            } catch (e) { gl = null; }
-            if (!gl) { gfxBtn.style.display = 'none'; return; }
-            function sh(type, src) {
-                var s = gl.createShader(type);
-                gl.shaderSource(s, src);
-                gl.compileShader(s);
-                if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-                return s;
-            }
-            try {
-                glProg = gl.createProgram();
-                gl.attachShader(glProg, sh(gl.VERTEX_SHADER, 'attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }'));
-                gl.attachShader(glProg, sh(gl.FRAGMENT_SHADER, FRAG));
-                gl.linkProgram(glProg);
-                if (!gl.getProgramParameter(glProg, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(glProg));
-            } catch (e) {
+        function loadUltra() {
+            if (ultraLoading) return;
+            ultraLoading = true;
+            var ld = document.getElementById('ultraload');
+            ld.hidden = false;
+            import('./ultra.js').then(function (mod) {
+                ultraCtl = mod.initUltra(BRIDGE);
+                ultraCtl.setMode(mode);
+                ld.hidden = true;
+                ultraLoading = false;
+                if (gfx === 'ultra') ultraCtl.start();
+                else ultraCtl.stop();
+            }).catch(function (err) {
+                ld.hidden = true;
+                ultraLoading = false;
+                ultraCtl = null;
                 gfxBtn.style.display = 'none';
-                gl = null;
-                return;
-            }
-            gl.useProgram(glProg);
-            var buf = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-            var loc = gl.getAttribLocation(glProg, 'aPos');
-            gl.enableVertexAttribArray(loc);
-            gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-            ['uRes', 'uTime', 'uMask', 'uGridPx', 'uT0', 'uT1', 'uC0', 'uC1', 'uAmb', 'uCursor'].forEach(function (n) {
-                glU[n] = gl.getUniformLocation(glProg, n);
+                if (gfx === 'ultra') setGfx('retro', true);
+                if (window.console) console.error('ULTRA init failed:', err);
             });
-            maskTex = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, maskTex);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-            glOK = true;
-        }
-
-        function resizeGL() {
-            if (!glOK) return;
-            glCv.width = Math.round(window.innerWidth * dprU);
-            glCv.height = Math.round(window.innerHeight * dprU);
-            gl.viewport(0, 0, glCv.width, glCv.height);
-            maskData = new Uint8Array(total);
-            maskDirty = true;
-        }
-
-        function uploadMask() {
-            for (var i = 0; i < total; i++) maskData[i] = mowed[i] ? 255 : 0;
-            gl.bindTexture(gl.TEXTURE_2D, maskTex);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, cols, rows, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, maskData);
-        }
-
-        function ultraLoop(t) {
-            if (gfx !== 'ultra' || !glOK) { ultraRunning = false; return; }
-            if (finished && finishedAt && performance.now() - finishedAt > 1600) { ultraRunning = false; return; }
-            if (maskDirty) { uploadMask(); maskDirty = false; }
-            var pal = UPALS[mode];
-            gl.uniform2f(glU.uRes, glCv.width, glCv.height);
-            gl.uniform1f(glU.uTime, t * 0.001);
-            gl.uniform1i(glU.uMask, 0);
-            gl.uniform2f(glU.uGridPx, cols * TILE * dprU, rows * TILE * dprU);
-            gl.uniform3fv(glU.uT0, pal.t0);
-            gl.uniform3fv(glU.uT1, pal.t1);
-            gl.uniform3fv(glU.uC0, pal.c0);
-            gl.uniform3fv(glU.uC1, pal.c1);
-            gl.uniform1f(glU.uAmb, pal.amb);
-            gl.uniform2f(glU.uCursor,
-                (lastX === null ? -9999 : lastX * dprU),
-                (lastY === null ? -9999 : glCv.height - lastY * dprU));
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-            requestAnimationFrame(ultraLoop);
-        }
-
-        function startUltra() {
-            if (!glOK || ultraRunning) return;
-            ultraRunning = true;
-            requestAnimationFrame(ultraLoop);
         }
 
         function setGfx(g, save) {
-            if (g === 'ultra' && !glOK) g = 'retro';
             gfx = g;
             body.classList.toggle('ultra', g === 'ultra');
             gfxBtn.textContent = g === 'ultra' ? '8-BIT' : 'ULTRA';
-            if (g === 'ultra') { maskDirty = true; startUltra(); }
+            if (g === 'ultra') {
+                if (ultraCtl) ultraCtl.start();
+                else loadUltra();
+            } else if (ultraCtl) {
+                ultraCtl.stop();
+            }
+            updatePanelReveal();
             syncEngine();
             if (save) { try { localStorage.setItem('gfxMode', g); } catch (e) { /* ignore */ } }
         }
@@ -1002,7 +762,6 @@
             mowed = newMowed; variants = newVar; phases = newPhase;
             total = cols * rows;
             drawGrass();
-            resizeGL();
         }
 
         var frame = 0;
@@ -1676,6 +1435,19 @@
         var startTime = null;   // first manual mow
         var skipped = false;    // MOW ALL used: run doesn't count for best time
 
+        var panelEl = document.querySelector('.panel');
+
+        function updatePanelReveal() {
+            if (gfx === 'ultra' && !finished) {
+                var pr = total ? mowedCount / total : 0;
+                panelEl.style.opacity = Math.min(1, pr * 1.3 + 0.04);
+                panelEl.style.pointerEvents = pr > 0.5 ? 'auto' : 'none';
+            } else {
+                panelEl.style.opacity = '';
+                panelEl.style.pointerEvents = '';
+            }
+        }
+
         function updateHud() {
             if (hudQueued) return;
             hudQueued = true;
@@ -1687,6 +1459,7 @@
                     : (left > 0 && left <= 20 ? left + ' LEFT!' : pct + '%');
                 if (!finished && pct > 0) document.title = '🌱 ' + pct + '% MOWED · MO BASHAGHA';
                 if (!finished && mowedCount / total > 0.08) toast.classList.add('hide');
+                updatePanelReveal();
                 if (!finished && mowedCount >= total) finishLawn();
             });
         }
@@ -1706,12 +1479,13 @@
                     if (dxp * dxp + dyp * dyp > maxD2) continue;
                     mowed[i] = 1; mowedCount++; did = true;
                     gctx.clearRect(c * TILE, r * TILE, TILE, TILE);
+                    if (gfx === 'ultra' && mowQueue.length < 64) mowQueue.push({ c: c, r: r });
                     if (withParticles) spawnClippings(cx, cy, 3);
                 }
             }
             if (did) {
                 if (startTime === null && !skipped) startTime = performance.now();
-                maskDirty = true;
+                maskVersion++;
                 whirr(); updateHud();
             }
         }
@@ -1720,14 +1494,13 @@
 
         function onMove(e) {
             if (finished) return;
+            if (gfx === 'ultra') return; // 3D mode raycasts its own mowing
             var x = e.clientX, y = e.clientY;
-            // mower cursor (retro) + cutter ring (ultra)
+            // mower cursor
             mowerEl.style.opacity = '1';
             mowerEl.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
-            cutter.classList.add('on');
-            cutter.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
-            if (lastX !== null && x < lastX - 2) { mowerEl.classList.add('flip'); cutter.classList.add('flip'); }
-            else if (lastX !== null && x > lastX + 2) { mowerEl.classList.remove('flip'); cutter.classList.remove('flip'); }
+            if (lastX !== null && x < lastX - 2) mowerEl.classList.add('flip');
+            else if (lastX !== null && x > lastX + 2) mowerEl.classList.remove('flip');
             // interpolate so fast swipes leave no gaps
             if (lastX === null) { mowAt(x, y, true); }
             else {
@@ -1761,7 +1534,7 @@
                         if (Math.random() < 0.12) spawnClippings((c + 0.5) * TILE, (r + 0.5) * TILE, 2);
                     }
                 }
-                maskDirty = true;
+                maskVersion++;
                 whirr(); updateHud();
                 if (c >= cols) { clearInterval(sweepTimer); sweepTimer = null; }
             }, 16);
@@ -1793,9 +1566,8 @@
                 timeEl.hidden = false;
             }
             grass.classList.add('gone');
-            glCv.classList.add('gone');
-            finishedAt = performance.now();
-            maskDirty = true;
+            maskVersion++;
+            updatePanelReveal();
             syncEngine();
             body.classList.add('done');
             banner.classList.add('show');
@@ -1807,7 +1579,6 @@
 
         /* ---------- boot ---------- */
         buildSprites();
-        initGL();
         initGrid();
         setGfx(gfx, false);
         spawnFlies(mode === 'night' ? 22 : mode === 'dusk' ? 7 : 0);
@@ -1823,7 +1594,7 @@
 
         var resizeT = null;
         window.addEventListener('resize', function () {
-            if (finished) return;
+            if (finished || ultraCtl) return;
             clearTimeout(resizeT);
             resizeT = setTimeout(initGrid, 120);
         });
