@@ -297,30 +297,36 @@
 
         #cutter .rm {
             display: block;
-            transform: translate(-55%, -78%);
-            animation: mowshake 0.09s linear infinite;
+            transform: translate(-55%, -82%);
+            animation: mowshake 0.12s linear infinite;
         }
 
-        #cutter.flip .rm { transform: translate(-45%, -78%) scaleX(-1); }
+        #cutter.flip .rm { transform: translate(-45%, -82%) scaleX(-1); }
 
         @keyframes mowshake {
             0%, 100% { margin-top: 0; }
-            50% { margin-top: -0.8px; }
+            50% { margin-top: -0.4px; }
         }
 
-        #cutter .wheel { transform-origin: 40px 68px; animation: wheelspin 0.45s linear infinite; }
-        #cutter .wheel2 { transform-origin: 88px 71px; animation: wheelspin 0.34s linear infinite; }
+        #cutter .wheel { transform-origin: 40px 86px; animation: wheelspin 0.5s linear infinite; }
+        #cutter .wheel2 { transform-origin: 108px 92px; animation: wheelspin 0.37s linear infinite; }
 
         @keyframes wheelspin { to { transform: rotate(360deg); } }
 
         body.ultra {
             font-family: 'Outfit', sans-serif;
-            --mow-a: #5d8f3c;
+            --mow-a: #74a23f;
             --mow-b: #67993f;
-            /* smooth turf: wide soft stripes + vignette instead of the pixel checker */
+            /* smooth striped turf: vignette + grain + soft alternating bands */
             background-image:
-                radial-gradient(ellipse at 50% 38%, rgba(255, 255, 245, 0.14), rgba(0, 0, 0, 0.30)),
-                repeating-linear-gradient(90deg, var(--mow-b) 0 110px, transparent 110px 220px);
+                radial-gradient(ellipse at 50% 38%, rgba(255, 255, 245, 0.13), rgba(0, 0, 0, 0.30)),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.16 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
+                repeating-linear-gradient(90deg,
+                    rgba(255, 246, 160, 0.20) 0px,
+                    rgba(255, 246, 160, 0.20) 80px,
+                    rgba(10, 40, 0, 0.14) 130px,
+                    rgba(10, 40, 0, 0.14) 190px,
+                    rgba(255, 246, 160, 0.20) 240px);
         }
 
         body.ultra.dusk { --mow-a: #8c8444; --mow-b: #968d4a; }
@@ -498,62 +504,102 @@
     </div>
 
     <div id="cutter" aria-hidden="true">
-        <svg class="rm" width="110" height="86" viewBox="0 0 110 86" xmlns="http://www.w3.org/2000/svg">
+        <svg class="rm" width="126" height="100" viewBox="0 0 140 110" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="deckG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#ff6f5e"/>
-                    <stop offset="0.45" stop-color="#d63a2a"/>
-                    <stop offset="1" stop-color="#8e1f14"/>
+                    <stop offset="0" stop-color="#ef5348"/>
+                    <stop offset="0.4" stop-color="#cc2a1c"/>
+                    <stop offset="1" stop-color="#7e150c"/>
                 </linearGradient>
-                <linearGradient id="metalG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0" stop-color="#f4f6f8"/>
-                    <stop offset="0.5" stop-color="#b9c1c9"/>
-                    <stop offset="1" stop-color="#7c858d"/>
+                <linearGradient id="skirtG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#33373c"/>
+                    <stop offset="1" stop-color="#101214"/>
                 </linearGradient>
-                <radialGradient id="wheelG" cx="0.35" cy="0.35" r="0.85">
-                    <stop offset="0" stop-color="#4a4f55"/>
-                    <stop offset="0.6" stop-color="#23262a"/>
-                    <stop offset="1" stop-color="#0c0d0f"/>
+                <linearGradient id="aluG" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#e8ecf0"/>
+                    <stop offset="0.5" stop-color="#aab2ba"/>
+                    <stop offset="1" stop-color="#737b83"/>
+                </linearGradient>
+                <linearGradient id="hatchG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stop-color="#3a3f45"/>
+                    <stop offset="1" stop-color="#16181b"/>
+                </linearGradient>
+                <radialGradient id="tireG" cx="0.35" cy="0.32" r="0.9">
+                    <stop offset="0" stop-color="#3c4046"/>
+                    <stop offset="0.55" stop-color="#1d1f23"/>
+                    <stop offset="1" stop-color="#070809"/>
                 </radialGradient>
-                <radialGradient id="hubG" cx="0.4" cy="0.4" r="0.7">
-                    <stop offset="0" stop-color="#eef1f4"/>
-                    <stop offset="1" stop-color="#9aa2ab"/>
+                <radialGradient id="rimG" cx="0.4" cy="0.38" r="0.8">
+                    <stop offset="0" stop-color="#52575e"/>
+                    <stop offset="0.7" stop-color="#2b2e33"/>
+                    <stop offset="1" stop-color="#1a1c1f"/>
+                </radialGradient>
+                <radialGradient id="capG" cx="0.4" cy="0.38" r="0.8">
+                    <stop offset="0" stop-color="#e8554a"/>
+                    <stop offset="1" stop-color="#8e1a10"/>
                 </radialGradient>
                 <filter id="blurSh" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="2.2"/>
+                    <feGaussianBlur stdDeviation="2.6"/>
                 </filter>
             </defs>
-            <ellipse cx="56" cy="79" rx="42" ry="5.5" fill="rgba(0,0,0,0.35)" filter="url(#blurSh)"/>
-            <!-- handle -->
-            <path d="M14 8 L44 47" stroke="#2b2f33" stroke-width="5.5" stroke-linecap="round"/>
-            <path d="M16 7 L45 45" stroke="#5d646b" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M7 12 Q12 2 22 6" stroke="#d63a2a" stroke-width="6" stroke-linecap="round" fill="none"/>
-            <!-- engine -->
-            <rect x="50" y="25" width="26" height="20" rx="4.5" fill="url(#metalG)"/>
-            <rect x="54" y="20" width="11" height="7" rx="2.5" fill="#3a4046"/>
-            <rect x="52" y="31" width="22" height="2.4" rx="1.2" fill="rgba(0,0,0,0.22)"/>
-            <circle cx="71" cy="35" r="4.6" fill="#3a4046"/>
-            <circle cx="71" cy="35" r="2.1" fill="#9aa2ab"/>
-            <!-- deck -->
-            <path d="M30 50 q1 -9 12 -10 h36 q13 1 16 11 l2 11 H29 z" fill="url(#deckG)"/>
-            <ellipse cx="62" cy="45" rx="27" ry="4.5" fill="rgba(255,255,255,0.28)"/>
-            <rect x="31" y="56" width="64" height="2.4" rx="1.2" fill="rgba(0,0,0,0.18)"/>
-            <!-- wheels -->
+            <!-- ground shadow -->
+            <ellipse cx="72" cy="102" rx="54" ry="6" fill="rgba(0,0,0,0.38)" filter="url(#blurSh)"/>
+            <!-- handlebar: twin aluminium tubes with fold joint, cable and grip -->
+            <path d="M34 64 L12 14" stroke="#5d646b" stroke-width="5" stroke-linecap="round"/>
+            <path d="M40 66 L18 16" stroke="url(#aluG)" stroke-width="4.4" stroke-linecap="round"/>
+            <path d="M5 20 Q3 6 16 8 L20 9" stroke="#b9281a" stroke-width="7.5" stroke-linecap="round" fill="none"/>
+            <path d="M6 18 Q5 9 15 10" stroke="rgba(255,255,255,0.3)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <circle cx="29" cy="41" r="4.2" fill="#c62828"/>
+            <circle cx="29" cy="41" r="1.8" fill="#5e0f08"/>
+            <path d="M14 13 C 24 34 28 46 36 62" stroke="#0c0d0e" stroke-width="1.4" fill="none" opacity="0.75"/>
+            <!-- deck: red housing over black skirt -->
+            <path d="M22 86 L128 90 L126 78 L24 76 Z" fill="url(#skirtG)"/>
+            <path d="M20 80 Q18 62 38 56 L66 52 Q104 48 118 60 Q128 68 128 80 L127 84 L21 84 Z" fill="url(#deckG)"/>
+            <path d="M28 62 Q50 52 90 51 Q110 51 118 61" stroke="rgba(255,255,255,0.30)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M22 76 L127 79" stroke="rgba(0,0,0,0.30)" stroke-width="2.2"/>
+            <!-- battery hatch with window -->
+            <rect x="58" y="40" width="40" height="18" rx="5" fill="url(#hatchG)"/>
+            <rect x="62" y="43" width="20" height="7" rx="2.5" fill="#23262b"/>
+            <rect x="63" y="44" width="8" height="5" rx="1.5" fill="rgba(120,180,220,0.25)"/>
+            <circle cx="91" cy="48" r="2.6" fill="#c62828"/>
+            <!-- side vents -->
+            <g fill="rgba(0,0,0,0.35)">
+                <rect x="104" y="66" width="3" height="9" rx="1.5" transform="rotate(8 104 66)"/>
+                <rect x="110" y="66" width="3" height="9" rx="1.5" transform="rotate(8 110 66)"/>
+                <rect x="116" y="67" width="3" height="9" rx="1.5" transform="rotate(8 116 67)"/>
+            </g>
+            <!-- rear wheel (large, spoked hub) -->
             <g class="wheel">
-                <circle cx="40" cy="68" r="12.5" fill="url(#wheelG)"/>
-                <circle cx="40" cy="68" r="4.6" fill="url(#hubG)"/>
-                <rect x="39" y="56.5" width="2" height="8.5" rx="1" fill="rgba(255,255,255,0.16)"/>
+                <circle cx="40" cy="86" r="18" fill="url(#tireG)"/>
+                <circle cx="40" cy="86" r="11" fill="url(#rimG)"/>
+                <g fill="#0e0f11">
+                    <circle cx="40" cy="79.4" r="2.4"/>
+                    <circle cx="46.3" cy="84" r="2.4"/>
+                    <circle cx="43.9" cy="91.4" r="2.4"/>
+                    <circle cx="36.1" cy="91.4" r="2.4"/>
+                    <circle cx="33.7" cy="84" r="2.4"/>
+                </g>
+                <circle cx="40" cy="86" r="3.6" fill="url(#capG)"/>
             </g>
+            <!-- front wheel -->
             <g class="wheel2">
-                <circle cx="88" cy="71" r="9.5" fill="url(#wheelG)"/>
-                <circle cx="88" cy="71" r="3.4" fill="url(#hubG)"/>
-                <rect x="87.2" y="62.5" width="1.6" height="6.5" rx="0.8" fill="rgba(255,255,255,0.16)"/>
+                <circle cx="108" cy="92" r="13" fill="url(#tireG)"/>
+                <circle cx="108" cy="92" r="7.6" fill="url(#rimG)"/>
+                <g fill="#0e0f11">
+                    <circle cx="108" cy="87.4" r="1.7"/>
+                    <circle cx="112.4" cy="90.6" r="1.7"/>
+                    <circle cx="110.7" cy="95.8" r="1.7"/>
+                    <circle cx="105.3" cy="95.8" r="1.7"/>
+                    <circle cx="103.6" cy="90.6" r="1.7"/>
+                </g>
+                <circle cx="108" cy="92" r="2.6" fill="url(#capG)"/>
             </g>
-            <!-- grass spray -->
-            <g class="spray" fill="#7ab94f">
-                <rect x="101" y="54" width="3" height="8" rx="1.5"/>
-                <rect x="105" y="62" width="2.4" height="6" rx="1.2"/>
-                <rect x="100" y="69" width="3" height="4.5" rx="1.5"/>
+            <!-- grass spray from the chute -->
+            <g class="spray">
+                <rect x="130" y="62" width="2.2" height="9" rx="1.1" fill="#6da33e" transform="rotate(18 130 62)"/>
+                <rect x="134" y="72" width="1.8" height="7" rx="0.9" fill="#86b54e" transform="rotate(30 134 72)"/>
+                <rect x="129" y="80" width="2.2" height="5.5" rx="1.1" fill="#5c9436" transform="rotate(10 129 80)"/>
+                <rect x="135" y="84" width="1.6" height="4.5" rx="0.8" fill="#9cc25e" transform="rotate(40 135 84)"/>
             </g>
         </svg>
     </div>
@@ -806,15 +852,18 @@
             '              * (0.4 + 0.6 * smoothstep(-0.3, 1.0, gust));',
             '  tall += glint * vec3(0.32, 0.38, 0.18) * uAmb;',
             '  tall *= 0.82 + 0.28 * smoothstep(-1.0, 1.0, gust) * uAmb;',
-            // cut turf: dense fine texture, alternating mow-stripe sheen, clipping flecks
-            '  float t1 = noise(p * 0.55);',
-            '  float t2 = noise(p * 0.16 + 7.7);',
-            '  float t3 = fbm(p * 0.045 + 1.3);',
-            '  vec3 cut = mix(uC0, uC1, clamp(t1 * 0.45 + t2 * 0.30 + t3 * 0.35, 0.0, 1.0));',
-            '  cut *= 0.94 + 0.115 * step(0.5, fract(p.x / 260.0));',
-            '  cut *= 0.97 + 0.06 * noise(vec2(p.y * 0.9, p.x * 0.04));',
-            '  float fleck = smoothstep(0.965, 0.99, noise(p * 0.85 + 31.0));',
-            '  cut = mix(cut, vec3(0.72, 0.78, 0.38) * uAmb, fleck * 0.55);',
+            // cut turf: directional grain + soft-edged mow stripes (light bands lean yellow)
+            '  float g1 = noise(vec2(p.x * 0.7, p.y * 0.22));',
+            '  float g2 = noise(vec2(p.x * 0.26, p.y * 0.075) + 7.7);',
+            '  float mot = fbm(p * 0.012 + 1.3);',
+            '  vec3 cut = mix(uC0, uC1, clamp(g1 * 0.42 + g2 * 0.33 + mot * 0.40, 0.0, 1.0));',
+            '  float sx = p.x + (noise(vec2(p.y * 0.012, 3.7)) - 0.5) * 36.0;',
+            '  float st = fract(sx / 340.0);',
+            '  float band = smoothstep(0.02, 0.20, st) - smoothstep(0.52, 0.70, st);',
+            '  cut *= mix(vec3(0.84, 0.93, 0.80), vec3(1.10, 1.07, 0.66), band);',
+            '  cut *= 0.90 + 0.20 * fbm(p * 0.004 + 9.0);',
+            '  float fleck = smoothstep(0.96, 0.99, noise(p * 0.8 + 31.0));',
+            '  cut = mix(cut, vec3(0.74, 0.80, 0.40) * uAmb, fleck * 0.45);',
             // crisp-but-organic boundary with a shadowed fresh-cut edge
             '  float blend = smoothstep(0.42, 0.58, m);',
             '  float edge = smoothstep(0.18, 0.5, m) * smoothstep(0.82, 0.5, m);',
@@ -1507,30 +1556,36 @@
         }
 
         function buildEngine() {
-            // small petrol engine: detuned saw + square through a lowpass,
-            // putt-putt amplitude modulation, plus an airy noise bed
+            // electric mower: a barely-there smooth motor hum at idle, and a
+            // broadband grass-shredding swish that fades in while cutting
             var t = audio.currentTime;
             var eg = audio.createGain(); eg.gain.value = 0;
-            var lp = audio.createBiquadFilter();
-            lp.type = 'lowpass'; lp.frequency.value = 380; lp.Q.value = 2;
-            var am = audio.createGain(); am.gain.value = 0.6;
-            var o1 = audio.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 46;
-            var o2 = audio.createOscillator(); o2.type = 'square'; o2.frequency.value = 92.7;
-            var og2 = audio.createGain(); og2.gain.value = 0.35;
-            var lfo = audio.createOscillator(); lfo.type = 'square'; lfo.frequency.value = 19;
-            var lfoG = audio.createGain(); lfoG.gain.value = 0.28;
+            // motor hum: triangle + soft octave, very quiet
+            var o1 = audio.createOscillator(); o1.type = 'triangle'; o1.frequency.value = 118;
+            var o2 = audio.createOscillator(); o2.type = 'sine'; o2.frequency.value = 236;
+            var humG = audio.createGain(); humG.gain.value = 0.018;
+            var og2 = audio.createGain(); og2.gain.value = 0.4;
+            // faint high blade whine
+            var o3 = audio.createOscillator(); o3.type = 'sine'; o3.frequency.value = 1750;
+            var whineG = audio.createGain(); whineG.gain.value = 0.004;
+            // cutting layer: noise through two filters (swish + body), gated by rev
             var ns = audio.createBufferSource(); ns.buffer = getNoiseBuf(); ns.loop = true;
-            var bp = audio.createBiquadFilter();
-            bp.type = 'bandpass'; bp.frequency.value = 300; bp.Q.value = 0.6;
-            var ng = audio.createGain(); ng.gain.value = 0.22;
-            lfo.connect(lfoG); lfoG.connect(am.gain);
-            o1.connect(am);
-            o2.connect(og2); og2.connect(am);
-            ns.connect(bp); bp.connect(ng); ng.connect(am);
-            am.connect(lp); lp.connect(eg); eg.connect(audio.destination);
-            o1.start(t); o2.start(t); lfo.start(t); ns.start(t);
-            eg.gain.setTargetAtTime(0.05, t, 0.25); // fade in to idle
-            engine = { eg: eg, lp: lp, o1: o1, o2: o2, lfo: lfo, ns: ns };
+            var swish = audio.createBiquadFilter();
+            swish.type = 'bandpass'; swish.frequency.value = 1500; swish.Q.value = 0.45;
+            var swishG = audio.createGain(); swishG.gain.value = 0;
+            var bodyF = audio.createBiquadFilter();
+            bodyF.type = 'lowpass'; bodyF.frequency.value = 520;
+            var bodyG = audio.createGain(); bodyG.gain.value = 0;
+            o1.connect(humG);
+            o2.connect(og2); og2.connect(humG);
+            o3.connect(whineG);
+            ns.connect(swish); swish.connect(swishG);
+            ns.connect(bodyF); bodyF.connect(bodyG);
+            humG.connect(eg); whineG.connect(eg); swishG.connect(eg); bodyG.connect(eg);
+            eg.connect(audio.destination);
+            o1.start(t); o2.start(t); o3.start(t); ns.start(t);
+            eg.gain.setTargetAtTime(1, t, 0.3); // master fade-in; layers carry levels
+            engine = { eg: eg, o1: o1, o2: o2, o3: o3, ns: ns, humG: humG, whineG: whineG, swishG: swishG, bodyG: bodyG, swish: swish };
         }
 
         function killEngine() {
@@ -1539,18 +1594,21 @@
             engine = null;
             e.eg.gain.setTargetAtTime(0.0001, audio.currentTime, 0.12);
             setTimeout(function () {
-                try { e.o1.stop(); e.o2.stop(); e.lfo.stop(); e.ns.stop(); } catch (err) { /* ignore */ }
+                try { e.o1.stop(); e.o2.stop(); e.o3.stop(); e.ns.stop(); } catch (err) { /* ignore */ }
             }, 500);
         }
 
-        function engineRev(r) { // 0 = idle, 1 = cutting
+        function engineRev(r) { // 0 = idle hum, 1 = cutting grass
             if (!engine) return;
             var t = audio.currentTime;
-            engine.o1.frequency.setTargetAtTime(46 + r * 28, t, 0.09);
-            engine.o2.frequency.setTargetAtTime(92.7 + r * 56, t, 0.09);
-            engine.lp.frequency.setTargetAtTime(380 + r * 650, t, 0.09);
-            engine.lfo.frequency.setTargetAtTime(19 + r * 9, t, 0.12);
-            engine.eg.gain.setTargetAtTime(0.05 + r * 0.075, t, 0.09);
+            engine.o1.frequency.setTargetAtTime(118 + r * 26, t, 0.1);
+            engine.o2.frequency.setTargetAtTime(236 + r * 52, t, 0.1);
+            engine.humG.gain.setTargetAtTime(0.018 + r * 0.012, t, 0.1);
+            engine.whineG.gain.setTargetAtTime(0.004 + r * 0.010, t, 0.1);
+            // the grass sound is the star: swish + low body fade in with movement
+            engine.swishG.gain.setTargetAtTime(r * 0.10, t, 0.07);
+            engine.bodyG.gain.setTargetAtTime(r * 0.05, t, 0.07);
+            engine.swish.frequency.setTargetAtTime(1500 + r * 600, t, 0.1);
         }
 
         function syncEngine() {
