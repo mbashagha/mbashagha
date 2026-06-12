@@ -491,9 +491,15 @@ export function initUltra(bridge) {
     }
     redistribute();
 
-    /* ---------- the card, lying on the lawn (CSS3D, perspective-matched) ---------- */
+    /* ---------- the card, hidden UNDER the grass ----------
+       Desktop: a CSS3D object lying on the lawn, perspective-matched.
+       Both: clipped by a screen-space CSS mask built from the mow grid,
+       so the card is only visible where the grass above it is cut —
+       exactly like the 8-bit reveal. */
     const panel = document.querySelector('.panel');
+    const sceneEl = document.querySelector('.scene');
     let css3d = null, cssScene = null, cardHome = null, cardObj = null;
+    let maskTarget = null;
     let cardTick = 0;
     if (panel && !matchMedia('(pointer: coarse)').matches) {
         css3d = new CSS3DRenderer();
@@ -508,9 +514,37 @@ export function initUltra(bridge) {
         cssScene = new THREE.Scene();
         cssScene.add(cardObj);
     }
+    maskTarget = css3d ? css3d.domElement : sceneEl;
+
+    // screen-space reveal mask from the shared mow grid
+    const cssMaskCv = document.createElement('canvas');
+    cssMaskCv.width = COLS;
+    cssMaskCv.height = ROWS;
+    const cssMaskCtx = cssMaskCv.getContext('2d');
+    const cssMaskImg = cssMaskCtx.createImageData(COLS, ROWS);
+    let cssMaskVersion = -1;
+    function updateCssMask(force) {
+        if (!maskTarget) return;
+        const s = bridge.state();
+        if (!force && s.maskVersion === cssMaskVersion) return;
+        cssMaskVersion = s.maskVersion;
+        const d = cssMaskImg.data;
+        const mowed = s.mowed;
+        for (let i = 0; i < mowed.length; i++) {
+            const o = i * 4;
+            d[o] = d[o + 1] = d[o + 2] = 255;
+            d[o + 3] = mowed[i] ? 255 : 0;
+        }
+        cssMaskCtx.putImageData(cssMaskImg, 0, 0);
+        const url = 'url(' + cssMaskCv.toDataURL() + ')';
+        maskTarget.style.webkitMaskImage = url;
+        maskTarget.style.maskImage = url;
+        maskTarget.style.webkitMaskSize = '100% 100%';
+        maskTarget.style.maskSize = '100% 100%';
+    }
 
     function updateCardReveal() {
-        if (!cardObj) return;
+        if (!panel) return;
         const s = bridge.state();
         const r = panel.getBoundingClientRect();
         let tot = 0, mw = 0;
@@ -522,21 +556,25 @@ export function initUltra(bridge) {
             for (let cc = c0; cc <= c1; cc++) { tot++; if (s.mowed[rr * s.cols + cc]) mw++; }
         }
         const frac = s.finished ? 1 : (tot ? mw / tot : 0);
-        panel.style.opacity = Math.min(1, frac * 1.25 + 0.02);
         panel.style.pointerEvents = (s.finished || frac > 0.55) ? 'auto' : 'none';
     }
 
     function adoptCard() {
-        if (!cardObj) return;
-        document.body.classList.add('card3d');
-        css3d.domElement.style.display = 'block';
-        panel.style.opacity = 0.02;
+        if (!panel) return;
+        document.body.classList.add('card3d'); // index.html hands the card over to us
+        if (css3d) css3d.domElement.style.display = 'block';
+        panel.style.opacity = '1'; // the mask does the hiding
+        updateCssMask(true);
     }
     function releaseCard() {
-        if (!cardObj) return;
+        if (!panel) return;
         document.body.classList.remove('card3d');
-        css3d.domElement.style.display = 'none';
-        cardHome.appendChild(panel);
+        if (css3d) {
+            css3d.domElement.style.display = 'none';
+            cardHome.appendChild(panel);
+        }
+        maskTarget.style.webkitMaskImage = '';
+        maskTarget.style.maskImage = '';
         panel.style.position = '';
         panel.style.transform = '';
         panel.style.opacity = '';
@@ -624,9 +662,10 @@ export function initUltra(bridge) {
         placeCamera();
 
         composer.render();
-        if (css3d) {
-            css3d.render(cssScene, camera);
-            if (++cardTick % 8 === 0 || s.finished) updateCardReveal();
+        if (cardObj) css3d.render(cssScene, camera);
+        if (panel && (++cardTick % 6 === 0 || s.finished)) {
+            updateCssMask();
+            updateCardReveal();
         }
     }
 

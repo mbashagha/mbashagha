@@ -1551,6 +1551,8 @@
             finished = true;
             if (sweepTimer) { clearInterval(sweepTimer); sweepTimer = null; }
             mowedCount = total;
+            for (var fi = 0; fi < total; fi++) mowed[fi] = 1;
+            gctx.clearRect(0, 0, grass.width, grass.height);
             pctEl.textContent = '100%';
             document.title = '✅ LAWN CLEARED · MO BASHAGHA';
             // mow time + personal best (only for fully hand-mowed runs)
