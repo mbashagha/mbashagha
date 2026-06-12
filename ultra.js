@@ -11,6 +11,7 @@ import {
     ToneMappingEffect, ToneMappingMode,
     SMAAEffect, TiltShiftEffect, BlendFunction
 } from 'postprocessing';
+import { CSS3DRenderer, CSS3DObject } from './vendor/CSS3DRenderer.js';
 
 export function initUltra(bridge) {
     const st = bridge.state();
@@ -62,28 +63,17 @@ export function initUltra(bridge) {
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(pal.fog, pal.fogD);
 
-    /* ---------- camera (oblique cinematic) ---------- */
+    /* ---------- camera (fixed steep oblique; the whole screen is lawn) ---------- */
     const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.5, 600);
-    const ELEV = THREE.MathUtils.degToRad(35);
-    let camDist = 10;
-    function fitCamera() {
-        // fit the lawn width to the horizontal FOV, with a small margin
-        const vFov = THREE.MathUtils.degToRad(camera.fov);
-        const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
-        const dW = (W * 0.5 * 0.92) / Math.tan(hFov / 2);
-        const dH = (H * 0.58) / Math.tan(vFov / 2);
-        camDist = Math.max(dW, dH);
-    }
-    fitCamera();
-    const camBase = new THREE.Vector3();
+    const ELEV = THREE.MathUtils.degToRad(50);
+    const CAM_H = 24;
     let pushIn = 0; // LEVEL CLEAR camera push
-    const par = { x: 0, y: 0 }; // pointer parallax
 
     function placeCamera() {
-        const d = camDist * (1 - 0.12 * pushIn);
-        camBase.set(0, Math.sin(ELEV) * d, Math.cos(ELEV) * d);
-        camera.position.set(camBase.x + par.x * 1.6, camBase.y + par.y * 0.8, camBase.z);
-        camera.lookAt(0, 0, -H * 0.1);
+        const k = 1 - 0.10 * pushIn;
+        camera.position.set(0, CAM_H * k, (CAM_H / Math.tan(ELEV)) * k);
+        camera.lookAt(0, 0, 0);
+        camera.updateMatrixWorld();
     }
     placeCamera();
 
@@ -234,21 +224,19 @@ export function initUltra(bridge) {
 
     const grassGeo = bladeGeometry();
     grassGeo.instanceCount = BLADES;
+    const iPosArr = new Float32Array(BLADES * 2);
     {
-        const iPos = new Float32Array(BLADES * 2);
         const iDat = new Float32Array(BLADES * 4); // scale, angle, phase, shade
         for (let i = 0; i < BLADES; i++) {
-            iPos[i * 2] = (Math.random() - 0.5) * W;
-            iPos[i * 2 + 1] = (Math.random() - 0.5) * H;
             iDat[i * 4] = 0.55 + Math.random() * 0.5;       // height scale
             iDat[i * 4 + 1] = Math.random() * Math.PI * 2;  // yaw
             iDat[i * 4 + 2] = Math.random();                // phase
             iDat[i * 4 + 3] = Math.random();                // shade
         }
-        grassGeo.setAttribute('iPos', new THREE.InstancedBufferAttribute(iPos, 2));
+        grassGeo.setAttribute('iPos', new THREE.InstancedBufferAttribute(iPosArr, 2));
         grassGeo.setAttribute('iDat', new THREE.InstancedBufferAttribute(iDat, 4));
     }
-    grassGeo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Math.sqrt(W * W + H * H) * 0.5 + 5);
+    grassGeo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 400);
 
     const grassUni = {
         uTime: { value: 0 },
@@ -280,8 +268,11 @@ export function initUltra(bridge) {
             varying float vH, vCut, vShade, vFog;
             varying vec3 vWorld;
             void main() {
-                vec2 uv = (iPos + uGrid * 0.5) / uGrid;
-                float m = texture2D(uMask, uv).r;
+                // the mow grid is screen-space (same as the 8-bit game):
+                // sample the mask by the blade base's projected position
+                vec4 baseClip = projectionMatrix * viewMatrix * vec4(iPos.x, 0.0, iPos.y, 1.0);
+                vec2 suv = baseClip.xy / baseClip.w * 0.5 + 0.5;
+                float m = texture2D(uMask, vec2(suv.x, 1.0 - suv.y)).r;
                 float cut = smoothstep(0.35, 0.65, m);
                 float hgt = uBladeH * iDat.x * mix(1.0, 0.13, cut);
                 float cA = cos(iDat.y), sA = sin(iDat.y);
@@ -407,6 +398,7 @@ export function initUltra(bridge) {
     scene.add(clipMesh);
     const clips = [];
     const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _s = new THREE.Vector3(1, 1, 1);
+    const _v3 = new THREE.Vector3();
     function spawnClips(cx, cz, n) {
         for (let i = 0; i < n; i++) {
             if (clips.length >= CLIP_MAX) clips.shift();
@@ -465,17 +457,90 @@ export function initUltra(bridge) {
 
     function onPointer(e) {
         ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
-        par.x = ndc.x; par.y = ndc.y * 0.5;
         ray.setFromCamera(ndc, camera);
         if (ray.ray.intersectPlane(groundPlane, hit)) {
-            target.set(
-                THREE.MathUtils.clamp(hit.x, -W / 2, W / 2),
-                0,
-                THREE.MathUtils.clamp(hit.z, -H / 2, H / 2)
-            );
+            target.set(hit.x, 0, hit.z);
             hasPointer = true;
             lastMoveAt = performance.now();
         }
+    }
+
+    /* ---------- blade distribution over the visible ground ---------- */
+    const _c = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()];
+    function groundAtNdc(x, y, out) {
+        ray.setFromCamera(ndc.set(x, y), camera);
+        return ray.ray.intersectPlane(groundPlane, out);
+    }
+    function redistribute() {
+        placeCamera();
+        // screen corners (with margin) projected onto the ground
+        groundAtNdc(-1.08, -1.1, _c[0]); // bottom-left
+        groundAtNdc(1.08, -1.1, _c[1]);  // bottom-right
+        groundAtNdc(-1.08, 1.06, _c[2]); // top-left
+        groundAtNdc(1.08, 1.06, _c[3]);  // top-right
+        for (let i = 0; i < BLADES; i++) {
+            const u = Math.random(), v = Math.random();
+            const bx = _c[0].x + (_c[1].x - _c[0].x) * u;
+            const bz = _c[0].z + (_c[1].z - _c[0].z) * u;
+            const tx = _c[2].x + (_c[3].x - _c[2].x) * u;
+            const tz = _c[2].z + (_c[3].z - _c[2].z) * u;
+            iPosArr[i * 2] = bx + (tx - bx) * v;
+            iPosArr[i * 2 + 1] = bz + (tz - bz) * v;
+        }
+        grassGeo.getAttribute('iPos').needsUpdate = true;
+    }
+    redistribute();
+
+    /* ---------- the card, lying on the lawn (CSS3D, perspective-matched) ---------- */
+    const panel = document.querySelector('.panel');
+    let css3d = null, cssScene = null, cardHome = null, cardObj = null;
+    let cardTick = 0;
+    if (panel && !matchMedia('(pointer: coarse)').matches) {
+        css3d = new CSS3DRenderer();
+        css3d.setSize(innerWidth, innerHeight);
+        css3d.domElement.style.cssText = 'position:fixed;inset:0;z-index:6;pointer-events:none;';
+        document.body.appendChild(css3d.domElement);
+        cardHome = panel.parentNode;
+        cardObj = new CSS3DObject(panel);
+        cardObj.rotation.x = -Math.PI / 2 + 0.22; // lying on the lawn, slight tilt for readability
+        cardObj.position.set(0, 0.12, -0.5);
+        cardObj.scale.setScalar(0.032);
+        cssScene = new THREE.Scene();
+        cssScene.add(cardObj);
+    }
+
+    function updateCardReveal() {
+        if (!cardObj) return;
+        const s = bridge.state();
+        const r = panel.getBoundingClientRect();
+        let tot = 0, mw = 0;
+        const c0 = Math.max(0, Math.floor(r.left / innerWidth * s.cols));
+        const c1 = Math.min(s.cols - 1, Math.ceil(r.right / innerWidth * s.cols));
+        const r0 = Math.max(0, Math.floor(r.top / innerHeight * s.rows));
+        const r1 = Math.min(s.rows - 1, Math.ceil(r.bottom / innerHeight * s.rows));
+        for (let rr = r0; rr <= r1; rr++) {
+            for (let cc = c0; cc <= c1; cc++) { tot++; if (s.mowed[rr * s.cols + cc]) mw++; }
+        }
+        const frac = s.finished ? 1 : (tot ? mw / tot : 0);
+        panel.style.opacity = Math.min(1, frac * 1.25 + 0.02);
+        panel.style.pointerEvents = (s.finished || frac > 0.55) ? 'auto' : 'none';
+    }
+
+    function adoptCard() {
+        if (!cardObj) return;
+        document.body.classList.add('card3d');
+        css3d.domElement.style.display = 'block';
+        panel.style.opacity = 0.02;
+    }
+    function releaseCard() {
+        if (!cardObj) return;
+        document.body.classList.remove('card3d');
+        css3d.domElement.style.display = 'none';
+        cardHome.appendChild(panel);
+        panel.style.position = '';
+        panel.style.transform = '';
+        panel.style.opacity = '';
+        panel.style.pointerEvents = '';
     }
 
     /* ---------- mode switching ---------- */
@@ -535,7 +600,9 @@ export function initUltra(bridge) {
             const speed = Math.sqrt(vx * vx + vz * vz);
             if (speed > 0.015) {
                 yawTarget = Math.atan2(vz, vx) + Math.PI; // model faces -x? handle flip
-                bridge.mowWorld(mower.position.x + W / 2, mower.position.z + H / 2);
+                // mow grid is screen-space: cut where the mower appears on screen
+                _v3.copy(mower.position).project(camera);
+                bridge.mowScreen((_v3.x * 0.5 + 0.5) * innerWidth, (1 - (_v3.y * 0.5 + 0.5)) * innerHeight);
             }
             let dy = yawTarget - yaw;
             while (dy > Math.PI) dy -= Math.PI * 2;
@@ -546,12 +613,9 @@ export function initUltra(bridge) {
             prevMower.copy(mower.position);
         }
 
-        // clippings from newly mowed tiles
+        // clippings spray from the mower as tiles get cut
         const mows = bridge.popMows();
-        for (let i = 0; i < Math.min(mows.length, 6); i++) {
-            const mw = mows[(Math.random() * mows.length) | 0];
-            spawnClips(mw.c + 0.5 - W / 2, mw.r + 0.5 - H / 2, 3);
-        }
+        if (mows.length) spawnClips(mower.position.x, mower.position.z, Math.min(8, mows.length + 2));
         updateClips(dt);
 
         // LEVEL CLEAR: slow camera push-in
@@ -560,6 +624,10 @@ export function initUltra(bridge) {
         placeCamera();
 
         composer.render();
+        if (css3d) {
+            css3d.render(cssScene, camera);
+            if (++cardTick % 8 === 0 || s.finished) updateCardReveal();
+        }
     }
 
     /* ---------- lifecycle ---------- */
@@ -567,6 +635,7 @@ export function initUltra(bridge) {
         if (running) return;
         running = true;
         canvas.style.display = 'block';
+        adoptCard();
         last = performance.now();
         lastMoveAt = last;
         window.addEventListener('pointermove', onPointer);
@@ -577,6 +646,7 @@ export function initUltra(bridge) {
         running = false;
         cancelAnimationFrame(rafId);
         canvas.style.display = 'none';
+        releaseCard();
         window.removeEventListener('pointermove', onPointer);
         window.removeEventListener('pointerdown', onPointer);
     }
@@ -584,9 +654,10 @@ export function initUltra(bridge) {
     function onResize() {
         camera.aspect = innerWidth / innerHeight;
         camera.updateProjectionMatrix();
-        fitCamera();
         renderer.setSize(innerWidth, innerHeight);
         composer.setSize(innerWidth, innerHeight);
+        if (css3d) css3d.setSize(innerWidth, innerHeight);
+        redistribute();
     }
     window.addEventListener('resize', onResize);
 
