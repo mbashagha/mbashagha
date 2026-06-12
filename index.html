@@ -835,6 +835,12 @@
             '  vec2 uv = p / uRes;',
             '  vec2 mp = vec2(p.x, uRes.y - p.y);',
             '  float m = texture2D(uMask, mp / uGridPx).r;',
+            // ragged grass-tuft boundary: mowed areas go transparent and
+            // reveal the page (striped CSS turf + the card) underneath
+            '  float rag = (noise(p * 0.16) - 0.5) * 0.26 + (noise(p * 0.5) - 0.5) * 0.10;',
+            '  float mq = clamp(m + rag, 0.0, 1.0);',
+            '  float a = 1.0 - smoothstep(0.36, 0.64, mq);',
+            '  if (a < 0.004) { gl_FragColor = vec4(0.0); return; }',
             // wind: gusts rolling across the field
             '  float w = fbm(p * 0.0028 + vec2(uTime * 0.45, uTime * 0.10));',
             '  float gust = sin(p.x * 0.0030 + p.y * 0.0016 + uTime * 1.7 + w * 6.0);',
@@ -852,23 +858,9 @@
             '              * (0.4 + 0.6 * smoothstep(-0.3, 1.0, gust));',
             '  tall += glint * vec3(0.32, 0.38, 0.18) * uAmb;',
             '  tall *= 0.82 + 0.28 * smoothstep(-1.0, 1.0, gust) * uAmb;',
-            // cut turf: directional grain + soft-edged mow stripes (light bands lean yellow)
-            '  float g1 = noise(vec2(p.x * 0.7, p.y * 0.22));',
-            '  float g2 = noise(vec2(p.x * 0.26, p.y * 0.075) + 7.7);',
-            '  float mot = fbm(p * 0.012 + 1.3);',
-            '  vec3 cut = mix(uC0, uC1, clamp(g1 * 0.42 + g2 * 0.33 + mot * 0.40, 0.0, 1.0));',
-            '  float sx = p.x + (noise(vec2(p.y * 0.012, 3.7)) - 0.5) * 36.0;',
-            '  float st = fract(sx / 340.0);',
-            '  float band = smoothstep(0.02, 0.20, st) - smoothstep(0.52, 0.70, st);',
-            '  cut *= mix(vec3(0.84, 0.93, 0.80), vec3(1.10, 1.07, 0.66), band);',
-            '  cut *= 0.90 + 0.20 * fbm(p * 0.004 + 9.0);',
-            '  float fleck = smoothstep(0.96, 0.99, noise(p * 0.8 + 31.0));',
-            '  cut = mix(cut, vec3(0.74, 0.80, 0.40) * uAmb, fleck * 0.45);',
-            // crisp-but-organic boundary with a shadowed fresh-cut edge
-            '  float blend = smoothstep(0.42, 0.58, m);',
-            '  float edge = smoothstep(0.18, 0.5, m) * smoothstep(0.82, 0.5, m);',
-            '  vec3 col = mix(tall, cut, blend);',
-            '  col *= 1.0 - edge * 0.22;',
+            // shadowed fresh-cut edge
+            '  float edge = smoothstep(0.2, 0.5, mq) * smoothstep(0.8, 0.5, mq);',
+            '  vec3 col = tall * (1.0 - edge * 0.2);',
             // soft light following the mower
             '  float d = distance(p, uCursor);',
             '  col += exp(-d * d / 16000.0) * vec3(0.22, 0.20, 0.10) * uAmb;',
@@ -877,13 +869,13 @@
             '  float vig = pow(q.x * q.y * 15.0, 0.12);',
             '  col *= mix(0.72, 1.06, vig);',
             '  col += (hash(p + fract(uTime) * 61.7) - 0.5) * 0.022;',
-            '  gl_FragColor = vec4(col, 1.0);',
+            '  gl_FragColor = vec4(col * a, a);',
             '}'
         ].join('\n');
 
         function initGL() {
             try {
-                gl = glCv.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: false }) ||
+                gl = glCv.getContext('webgl', { antialias: false, alpha: true, premultipliedAlpha: true, preserveDrawingBuffer: false }) ||
                      glCv.getContext('experimental-webgl');
             } catch (e) { gl = null; }
             if (!gl) { gfxBtn.style.display = 'none'; return; }
@@ -1560,32 +1552,29 @@
             // broadband grass-shredding swish that fades in while cutting
             var t = audio.currentTime;
             var eg = audio.createGain(); eg.gain.value = 0;
-            // motor hum: triangle + soft octave, very quiet
-            var o1 = audio.createOscillator(); o1.type = 'triangle'; o1.frequency.value = 118;
-            var o2 = audio.createOscillator(); o2.type = 'sine'; o2.frequency.value = 236;
-            var humG = audio.createGain(); humG.gain.value = 0.018;
-            var og2 = audio.createGain(); og2.gain.value = 0.4;
-            // faint high blade whine
-            var o3 = audio.createOscillator(); o3.type = 'sine'; o3.frequency.value = 1750;
-            var whineG = audio.createGain(); whineG.gain.value = 0.004;
-            // cutting layer: noise through two filters (swish + body), gated by rev
+            // motor hum: low triangle + soft octave, barely audible at idle
+            var o1 = audio.createOscillator(); o1.type = 'triangle'; o1.frequency.value = 95;
+            var o2 = audio.createOscillator(); o2.type = 'sine'; o2.frequency.value = 190;
+            var humG = audio.createGain(); humG.gain.value = 0.012;
+            var og2 = audio.createGain(); og2.gain.value = 0.35;
+            // cutting layer: noise through two filters (swish + body); the body
+            // layer also provides a tiny idle "air" floor so idle isn't tonal
             var ns = audio.createBufferSource(); ns.buffer = getNoiseBuf(); ns.loop = true;
             var swish = audio.createBiquadFilter();
-            swish.type = 'bandpass'; swish.frequency.value = 1500; swish.Q.value = 0.45;
+            swish.type = 'bandpass'; swish.frequency.value = 1400; swish.Q.value = 0.4;
             var swishG = audio.createGain(); swishG.gain.value = 0;
             var bodyF = audio.createBiquadFilter();
-            bodyF.type = 'lowpass'; bodyF.frequency.value = 520;
-            var bodyG = audio.createGain(); bodyG.gain.value = 0;
+            bodyF.type = 'lowpass'; bodyF.frequency.value = 480;
+            var bodyG = audio.createGain(); bodyG.gain.value = 0.006;
             o1.connect(humG);
             o2.connect(og2); og2.connect(humG);
-            o3.connect(whineG);
             ns.connect(swish); swish.connect(swishG);
             ns.connect(bodyF); bodyF.connect(bodyG);
-            humG.connect(eg); whineG.connect(eg); swishG.connect(eg); bodyG.connect(eg);
+            humG.connect(eg); swishG.connect(eg); bodyG.connect(eg);
             eg.connect(audio.destination);
-            o1.start(t); o2.start(t); o3.start(t); ns.start(t);
+            o1.start(t); o2.start(t); ns.start(t);
             eg.gain.setTargetAtTime(1, t, 0.3); // master fade-in; layers carry levels
-            engine = { eg: eg, o1: o1, o2: o2, o3: o3, ns: ns, humG: humG, whineG: whineG, swishG: swishG, bodyG: bodyG, swish: swish };
+            engine = { eg: eg, o1: o1, o2: o2, ns: ns, humG: humG, swishG: swishG, bodyG: bodyG, swish: swish };
         }
 
         function killEngine() {
@@ -1594,21 +1583,20 @@
             engine = null;
             e.eg.gain.setTargetAtTime(0.0001, audio.currentTime, 0.12);
             setTimeout(function () {
-                try { e.o1.stop(); e.o2.stop(); e.o3.stop(); e.ns.stop(); } catch (err) { /* ignore */ }
+                try { e.o1.stop(); e.o2.stop(); e.ns.stop(); } catch (err) { /* ignore */ }
             }, 500);
         }
 
         function engineRev(r) { // 0 = idle hum, 1 = cutting grass
             if (!engine) return;
             var t = audio.currentTime;
-            engine.o1.frequency.setTargetAtTime(118 + r * 26, t, 0.1);
-            engine.o2.frequency.setTargetAtTime(236 + r * 52, t, 0.1);
-            engine.humG.gain.setTargetAtTime(0.018 + r * 0.012, t, 0.1);
-            engine.whineG.gain.setTargetAtTime(0.004 + r * 0.010, t, 0.1);
+            engine.o1.frequency.setTargetAtTime(95 + r * 20, t, 0.1);
+            engine.o2.frequency.setTargetAtTime(190 + r * 40, t, 0.1);
+            engine.humG.gain.setTargetAtTime(0.012 + r * 0.008, t, 0.1);
             // the grass sound is the star: swish + low body fade in with movement
-            engine.swishG.gain.setTargetAtTime(r * 0.10, t, 0.07);
-            engine.bodyG.gain.setTargetAtTime(r * 0.05, t, 0.07);
-            engine.swish.frequency.setTargetAtTime(1500 + r * 600, t, 0.1);
+            engine.swishG.gain.setTargetAtTime(r * 0.11, t, 0.07);
+            engine.bodyG.gain.setTargetAtTime(0.006 + r * 0.05, t, 0.07);
+            engine.swish.frequency.setTargetAtTime(1400 + r * 500, t, 0.1);
         }
 
         function syncEngine() {
