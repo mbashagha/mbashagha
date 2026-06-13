@@ -370,18 +370,21 @@ export function initUltra(bridge) {
         wheel(0.34, -0.62, -0.62);
         wheel(0.26, 0.68, 0.56);
         wheel(0.26, 0.68, -0.56);
-        // handlebar
-        const tube = new THREE.CylinderGeometry(0.045, 0.045, 2.1, 10);
+        // handlebar: two tubes from the rear-top of the deck, up and back,
+        // joined by a grip bar at the top
+        const HL = 1.85;
+        const tube = new THREE.CylinderGeometry(0.05, 0.05, HL, 10);
+        const tubeAngle = Math.atan2(1.2, 1.3); // leans the top toward -x (behind)
         for (const zz of [0.42, -0.42]) {
             const t = new THREE.Mesh(tube, alu);
-            t.position.set(-1.55, 1.45, zz);
-            t.rotation.z = THREE.MathUtils.degToRad(-52);
+            t.position.set(-1.4, 1.5, zz); // midpoint between deck-rear and grip
+            t.rotation.z = tubeAngle;
             t.castShadow = true;
             mower.add(t);
         }
-        const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.92, 10), red);
-        bar.rotation.x = Math.PI / 2;
-        bar.position.set(-2.18, 2.27, 0);
+        const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 1.0, 10), red);
+        bar.rotation.x = Math.PI / 2; // span across the two tube tops (z axis)
+        bar.position.set(-2.0, 2.15, 0);
         bar.castShadow = true;
         mower.add(bar);
     }
@@ -680,7 +683,7 @@ export function initUltra(bridge) {
             const vz = mower.position.z - prevMower.z;
             const speed = Math.sqrt(vx * vx + vz * vz);
             if (speed > 0.015) {
-                yawTarget = Math.atan2(vz, vx) + Math.PI; // model faces -x? handle flip
+                yawTarget = Math.atan2(vz, vx); // cutting deck (+x) leads, handle trails
                 // mow grid is screen-space: cut where the mower appears on screen
                 _v3.copy(mower.position).project(camera);
                 bridge.mowScreen((_v3.x * 0.5 + 0.5) * innerWidth, (1 - (_v3.y * 0.5 + 0.5)) * innerHeight);
