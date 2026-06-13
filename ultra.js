@@ -9,7 +9,7 @@ import {
     EffectComposer, RenderPass, EffectPass,
     BloomEffect, VignetteEffect, NoiseEffect,
     ToneMappingEffect, ToneMappingMode,
-    SMAAEffect, TiltShiftEffect, BlendFunction
+    SMAAEffect, BlendFunction
 } from 'postprocessing';
 import { CSS3DRenderer, CSS3DObject } from './vendor/CSS3DRenderer.js';
 
@@ -112,10 +112,7 @@ export function initUltra(bridge) {
     applySunDir();
 
     /* ---------- environment (procedural IBL for the mower's PBR) ---------- */
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    const envCache = {};
-    function buildEnv(modeName) {
-        if (envCache[modeName]) return envCache[modeName];
+    function buildEnvScene(modeName) {
         const p = PALS[modeName];
         const es = new THREE.Scene();
         es.add(new THREE.Mesh(
@@ -133,7 +130,13 @@ export function initUltra(bridge) {
         );
         sunBall.position.set(p.sunDir[0] * 45, p.sunDir[1] * 45, p.sunDir[2] * 45);
         es.add(sunBall);
-        envCache[modeName] = pmrem.fromScene(es, 0.05).texture;
+        return es;
+    }
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envCache = {};
+    function buildEnv(modeName) {
+        if (envCache[modeName]) return envCache[modeName];
+        envCache[modeName] = pmrem.fromScene(buildEnvScene(modeName), 0.05).texture;
         return envCache[modeName];
     }
     scene.environment = buildEnv(st.mode);
@@ -386,6 +389,39 @@ export function initUltra(bridge) {
     mower.scale.setScalar(1.35);
     mower.position.set(0, 0, H * 0.32);
 
+    /* ---------- foreground mower pass (drawn ON TOP of the card) ----------
+       The card is a CSS3D layer above the WebGL canvas, so a mower rendered
+       in the main scene sits beneath it. We render the mower a second time to
+       a transparent canvas stacked above the card. The main-scene mower stays
+       (it casts the ground shadow); the overlay copy aligns pixel-for-pixel. */
+    const fgRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: isMobile });
+    fgRenderer.setPixelRatio(DPR);
+    fgRenderer.setSize(innerWidth, innerHeight);
+    fgRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    fgRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+    const fgCanvas = fgRenderer.domElement;
+    fgCanvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:7;pointer-events:none;display:none;';
+    document.body.appendChild(fgCanvas);
+    const fgScene = new THREE.Scene();
+    const fgHemi = new THREE.HemisphereLight(pal.hemiSky, pal.hemiGnd, pal.hemiInt);
+    const fgSun = new THREE.DirectionalLight(pal.sunCol, pal.sunInt);
+    fgScene.add(fgHemi, fgSun, fgSun.target);
+    const fgPmrem = new THREE.PMREMGenerator(fgRenderer);
+    const fgEnvCache = {};
+    function buildFgEnv(modeName) {
+        if (fgEnvCache[modeName]) return fgEnvCache[modeName];
+        fgEnvCache[modeName] = fgPmrem.fromScene(buildEnvScene(modeName), 0.05).texture;
+        return fgEnvCache[modeName];
+    }
+    function syncFgLights(modeName) {
+        fgHemi.color.set(pal.hemiSky); fgHemi.groundColor.set(pal.hemiGnd); fgHemi.intensity = pal.hemiInt;
+        fgSun.color.set(pal.sunCol); fgSun.intensity = pal.sunInt;
+        fgSun.position.set(pal.sunDir[0] * 80, pal.sunDir[1] * 80, pal.sunDir[2] * 80);
+        fgSun.target.position.set(0, 0, 0);
+        fgScene.environment = buildFgEnv(modeName);
+    }
+    syncFgLights(st.mode);
+
     /* ---------- clippings (3D particles) ---------- */
     const CLIP_MAX = 240;
     const clipMesh = new THREE.InstancedMesh(
@@ -434,10 +470,7 @@ export function initUltra(bridge) {
     composer.addPass(new RenderPass(scene, camera));
     const fx = [];
     fx.push(new BloomEffect({ intensity: 0.5, luminanceThreshold: 0.72, mipmapBlur: true }));
-    if (!isMobile && typeof TiltShiftEffect === 'function') {
-        fx.push(new TiltShiftEffect({ offset: 0.0, rotation: 0, focusArea: 0.55, feather: 0.32 }));
-    }
-    fx.push(new VignetteEffect({ darkness: 0.45, offset: 0.28 }));
+    fx.push(new VignetteEffect({ darkness: 0.34, offset: 0.42 }));
     fx.push(new NoiseEffect({ blendFunction: BlendFunction.COLOR_DODGE, premultiply: true }));
     fx[fx.length - 1].blendMode.opacity.value = 0.04;
     fx.push(new ToneMappingEffect({ mode: ToneMappingMode.ACES_FILMIC }));
@@ -602,6 +635,7 @@ export function initUltra(bridge) {
         grassUni.uBase.value.set(pal.base);
         grassUni.uTip.value.set(pal.tip);
         grassUni.uStubble.value.fromArray(pal.stubble);
+        syncFgLights(m);
     }
 
     /* ---------- main loop ---------- */
@@ -662,6 +696,12 @@ export function initUltra(bridge) {
         placeCamera();
 
         composer.render();
+        // mower again, on its own layer above the card
+        scene.remove(mower);
+        fgScene.add(mower);
+        fgRenderer.render(fgScene, camera);
+        fgScene.remove(mower);
+        scene.add(mower);
         if (cardObj) css3d.render(cssScene, camera);
         if (panel && (++cardTick % 6 === 0 || s.finished)) {
             updateCssMask();
@@ -674,6 +714,7 @@ export function initUltra(bridge) {
         if (running) return;
         running = true;
         canvas.style.display = 'block';
+        fgCanvas.style.display = 'block';
         adoptCard();
         last = performance.now();
         lastMoveAt = last;
@@ -685,6 +726,7 @@ export function initUltra(bridge) {
         running = false;
         cancelAnimationFrame(rafId);
         canvas.style.display = 'none';
+        fgCanvas.style.display = 'none';
         releaseCard();
         window.removeEventListener('pointermove', onPointer);
         window.removeEventListener('pointerdown', onPointer);
@@ -695,6 +737,7 @@ export function initUltra(bridge) {
         camera.updateProjectionMatrix();
         renderer.setSize(innerWidth, innerHeight);
         composer.setSize(innerWidth, innerHeight);
+        fgRenderer.setSize(innerWidth, innerHeight);
         if (css3d) css3d.setSize(innerWidth, innerHeight);
         redistribute();
     }
