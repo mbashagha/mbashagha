@@ -4,23 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mo Bashagha — Product Designer</title>
-    <meta name="description" content="Mo Bashagha is a product designer at WhatsApp. Mow the lawn to enter.">
+    <meta name="description" content="Mo Bashagha is a product designer at WhatsApp. Mo the lawn to enter.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mobashagha.com/">
     <meta property="og:title" content="MO THE LAWN! — Mo Bashagha">
-    <meta property="og:description" content="Product designer at WhatsApp. Mow the lawn to enter the site. 🚜">
+    <meta property="og:description" content="Product designer at WhatsApp. Mo the lawn to enter the site. 🚜">
     <meta property="og:image" content="https://mobashagha.com/og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MO THE LAWN! — Mo Bashagha">
-    <meta name="twitter:description" content="Product designer at WhatsApp. Mow the lawn to enter the site. 🚜">
+    <meta name="twitter:description" content="Product designer at WhatsApp. Mo the lawn to enter the site. 🚜">
     <meta name="twitter:image" content="https://mobashagha.com/og.png">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@200;300;500;600&display=swap" rel="stylesheet">
+    <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.min.js", "postprocessing": "./vendor/postprocessing.js" } }
+    </script>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -138,6 +141,27 @@
         #grass { z-index: 5; transition: opacity 0.7s ease; }
         #grass.gone { opacity: 0; }
         #fx { z-index: 6; }
+
+        body.ultra #grass, body.ultra #fx { display: none; }
+
+        /* in ultra the 3D canvas is opaque, so the card overlays it */
+        body.ultra .scene { position: relative; z-index: 7; pointer-events: none; }
+        body.ultra .panel { pointer-events: auto; transition: opacity 0.5s ease; }
+
+        #ultraload {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(10, 22, 12, 0.92);
+            color: var(--gold);
+            font-size: clamp(0.8rem, 3vw, 1.1rem);
+            letter-spacing: 0.15em;
+        }
+
+        #ultraload[hidden] { display: none; }
 
         /* ---------- toast ---------- */
         #toast {
@@ -261,9 +285,181 @@
             line-height: 1.8;
         }
 
-        /* ---------- day / dusk / night palettes (mowed lawn) ---------- */
-        body.dusk { --mow-a: #a9a24f; --mow-b: #b3ad57; }
+        /* ---------- day / night palettes (mowed lawn) ---------- */
         body.night { --mow-a: #3a5a48; --mow-b: #436a52; }
+
+        /* dark card for night in 8-bit mode (ultra keeps its own glass panel) */
+        body.night:not(.ultra) .panel {
+            background: #173020;
+            border-color: #3f7d4a;
+            box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.4), inset 0 0 0 4px #224a30;
+        }
+        body.night:not(.ultra) h1 { color: #f4f1e6; text-shadow: 3px 3px 0 #0d2114; }
+        body.night:not(.ultra) .sub { color: #9ccc8f; }
+        body.night:not(.ultra) .tiny { color: #8fb389; }
+        body.night:not(.ultra) .menu a {
+            background: #224a30;
+            color: #f4f1e6;
+            border-color: #f4f1e6;
+            box-shadow: 4px 4px 0 #0d2114;
+        }
+        body.night:not(.ultra) .menu a:hover,
+        body.night:not(.ultra) .menu a:focus-visible {
+            background: var(--gold);
+            color: var(--ink);
+            box-shadow: 2px 2px 0 #0d2114;
+        }
+
+        /* ================= ULTRA (next-gen) theme ================= */
+
+        body.ultra #mower { display: none !important; }
+
+        body.ultra {
+            font-family: 'Outfit', sans-serif;
+            --mow-a: #74a23f;
+            --mow-b: #67993f;
+            /* smooth striped turf: vignette + grain + soft alternating bands */
+            background-image:
+                radial-gradient(ellipse at 50% 38%, rgba(255, 255, 245, 0.13), rgba(0, 0, 0, 0.30)),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.16 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"),
+                repeating-linear-gradient(90deg,
+                    rgba(255, 246, 160, 0.20) 0px,
+                    rgba(255, 246, 160, 0.20) 80px,
+                    rgba(10, 40, 0, 0.14) 130px,
+                    rgba(10, 40, 0, 0.14) 190px,
+                    rgba(255, 246, 160, 0.20) 240px);
+        }
+
+        body.ultra.night { --mow-a: #24382c; --mow-b: #2a4032; }
+
+        body.ultra .panel {
+            background: rgba(8, 14, 10, 0.55);
+            -webkit-backdrop-filter: blur(18px) saturate(1.3);
+            backdrop-filter: blur(18px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            color: #fff;
+        }
+
+        body.ultra .tag {
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.45em;
+        }
+
+        body.ultra h1 {
+            font-weight: 200;
+            font-size: clamp(2rem, 7vw, 3.1rem);
+            letter-spacing: 0.18em;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+        }
+
+        body.ultra .sub {
+            color: rgba(255, 255, 255, 0.65);
+            font-weight: 300;
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+        }
+
+        body.ultra .blink { animation: fadeblink 1.4s ease-in-out infinite; }
+        @keyframes fadeblink { 50% { opacity: 0.1; } }
+
+        body.ultra .menu a {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            box-shadow: none;
+            color: #fff;
+            font-weight: 500;
+            font-size: 0.85rem;
+            letter-spacing: 0.35em;
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        body.ultra .menu a::before { content: none; }
+
+        body.ultra .menu a:hover, body.ultra .menu a:focus-visible {
+            background: rgba(255, 215, 64, 0.12);
+            border-color: var(--gold);
+            box-shadow: 0 0 24px rgba(255, 215, 64, 0.25);
+            transform: none;
+        }
+
+        body.ultra .tiny { color: rgba(255, 255, 255, 0.4); letter-spacing: 0.25em; font-weight: 300; }
+
+        body.ultra .hud, body.ultra #controls button {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            font-size: 0.72rem;
+        }
+
+        body.ultra #progress, body.ultra #controls button {
+            background: rgba(8, 14, 10, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 999px;
+            padding: 0.6rem 1.05rem;
+            transition: background 0.25s ease, border-color 0.25s ease;
+        }
+
+        body.ultra #controls button:hover, body.ultra #controls button:focus-visible {
+            background: rgba(255, 215, 64, 0.18);
+            border-color: var(--gold);
+        }
+
+        body.ultra #toast {
+            background: rgba(8, 14, 10, 0.55);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            animation: floaty 3s ease-in-out infinite;
+        }
+
+        @keyframes floaty { 50% { transform: translateX(-50%) translateY(6px); } }
+
+        body.ultra #toast h2 {
+            font-weight: 600;
+            letter-spacing: 0.4em;
+            font-size: 0.95rem;
+        }
+
+        body.ultra #toast p {
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        body.ultra #banner .inner {
+            background: rgba(5, 10, 7, 0.6);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 64, 0.5);
+            border-radius: 18px;
+            animation: popsoft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes popsoft {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        body.ultra #banner h2 {
+            font-weight: 200;
+            letter-spacing: 0.4em;
+            text-shadow: 0 0 40px rgba(255, 215, 64, 0.7);
+        }
+
+        body.ultra #banner p, body.ultra #banner .time {
+            font-weight: 300;
+            letter-spacing: 0.3em;
+        }
 
         @media (prefers-reduced-motion: reduce) {
             .blink, #toast { animation: none; }
@@ -286,7 +482,7 @@
                 <a href="mailto:mbashagha@gmail.com">EMAIL</a>
                 <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LINKEDIN</a>
             </nav>
-            <p class="tiny">© <span id="year">2026</span> MO BASHAGHA · 8-BIT EDITION</p>
+            <p class="tiny">© <span id="year">2026</span> MO BASHAGHA · <span id="edition">8-BIT EDITION</span></p>
         </div>
     </main>
 
@@ -298,9 +494,10 @@
         <p>MOVE YOUR CURSOR (OR DRAG)<br>TO REVEAL THE SITE</p>
     </div>
 
-    <div id="progress" class="hud" role="status">LAWN MOWED: <span class="pct">0%</span></div>
+    <div id="progress" class="hud" role="status">LAWN MO'ED: <span class="pct">0%</span></div>
     <div id="controls" class="hud">
-        <button id="mowall" type="button">MOW ALL ⏭</button>
+        <button id="mowall" type="button">MO ALL ⏭</button>
+        <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">ULTRA</button>
         <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
@@ -332,10 +529,12 @@
         </svg>
     </div>
 
+    <div id="ultraload" hidden>LOADING ULTRA<span class="blink">▮</span></div>
+
     <div id="banner">
         <div class="inner">
             <h2>LEVEL CLEAR!</h2>
-            <p>LAWN 100% MOWED ★★★</p>
+            <p>LAWN 100% MO'ED ★★★</p>
             <p class="time" id="clearTime" hidden></p>
         </div>
     </div>
@@ -362,12 +561,19 @@
         var mowallBtn = document.getElementById('mowall');
         var muteBtn = document.getElementById('mute');
         var modeBtn = document.getElementById('modebtn');
+        var gfxBtn = document.getElementById('gfxbtn');
 
-        /* ---------- day / dusk / night mode ---------- */
-        var qmode = (location.search.match(/[?&]mode=(day|dusk|night)/) || [])[1];
+        /* ---------- graphics mode (retro pixels vs ultra WebGL) ---------- */
+        var qgfx = (location.search.match(/[?&]gfx=(retro|ultra)/) || [])[1];
+        var sgfx = null;
+        try { sgfx = localStorage.getItem('gfxMode'); } catch (e) { /* ignore */ }
+        var gfx = qgfx || (sgfx === 'ultra' ? 'ultra' : 'retro');
+
+        /* ---------- day / night mode ---------- */
+        var qmode = (location.search.match(/[?&]mode=(day|night)/) || [])[1];
         var hour = new Date().getHours();
-        var mode = qmode || (hour >= 21 || hour < 6 ? 'night' : hour >= 17 ? 'dusk' : 'day');
-        var MODE_ICON = { day: '☀️', dusk: '🌆', night: '🌙' };
+        var mode = qmode || (hour >= 19 || hour < 6 ? 'night' : 'day');
+        var MODE_ICON = { day: '☀️', night: '🌙' };
         if (mode !== 'day') body.classList.add(mode);
         modeBtn.textContent = MODE_ICON[mode];
 
@@ -407,7 +613,6 @@
         // Grass colors per time-of-day mode.
         var PALS = {
             day:   { base: ['#2f7d33', '#2a7430'], blade: '#1d5e23', tip: '#6abf69', mid: '#2f8f3a', speck: '#27632b' },
-            dusk:  { base: ['#717c30', '#697428'], blade: '#4d5821', tip: '#c2cc66', mid: '#86913a', speck: '#5d682a' },
             night: { base: ['#1f3b2f', '#1b352a'], blade: '#13291f', tip: '#4d7d65', mid: '#254b3c', speck: '#17312b' }
         };
 
@@ -467,7 +672,7 @@
         function setMode(m) {
             if (!PALS[m]) return;
             mode = m;
-            body.classList.remove('dusk', 'night');
+            body.classList.remove('night');
             if (m !== 'day') body.classList.add(m);
             modeBtn.textContent = MODE_ICON[m];
             buildSprites();
@@ -475,12 +680,82 @@
                 gctx.clearRect(0, 0, grass.width, grass.height);
                 drawGrass();
             }
-            spawnFlies(m === 'night' ? 22 : m === 'dusk' ? 7 : 0);
+            spawnFlies(m === 'night' ? 22 : 0);
+            if (ultraCtl) ultraCtl.setMode(m);
         }
 
         modeBtn.addEventListener('click', function () {
-            var order = ['day', 'dusk', 'night'];
-            setMode(order[(order.indexOf(mode) + 1) % 3]);
+            setMode(mode === 'day' ? 'night' : 'day');
+        });
+
+        /* ---------- ULTRA v2 (Three.js, lazy-loaded from ultra.js) ---------- */
+        var ultraCtl = null, ultraLoading = false;
+        var mowQueue = [];
+        var maskVersion = 0;
+
+        var BRIDGE = {
+            state: function () {
+                return { cols: cols, rows: rows, mowed: mowed, finished: finished, mode: mode, maskVersion: maskVersion };
+            },
+            mowWorld: function (tx, tz) { mowAt(tx * TILE, tz * TILE, false); },
+            mowScreen: function (px, py) {
+                // scale screen px into grid space (grid is locked once ultra loads)
+                mowAt(px * (cols * TILE) / window.innerWidth, py * (rows * TILE) / window.innerHeight, false);
+            },
+            popMows: function () {
+                if (!mowQueue.length) return mowQueue;
+                var q = mowQueue;
+                mowQueue = [];
+                return q;
+            },
+            fail: function () {
+                gfxBtn.style.display = 'none';
+                setGfx('retro', true);
+            }
+        };
+
+        function loadUltra() {
+            if (ultraLoading) return;
+            ultraLoading = true;
+            var ld = document.getElementById('ultraload');
+            ld.hidden = false;
+            import('./ultra.js').then(function (mod) {
+                ultraCtl = mod.initUltra(BRIDGE);
+                ultraCtl.setMode(mode);
+                ld.hidden = true;
+                ultraLoading = false;
+                if (gfx === 'ultra') ultraCtl.start();
+                else ultraCtl.stop();
+            }).catch(function (err) {
+                ld.hidden = true;
+                ultraLoading = false;
+                ultraCtl = null;
+                gfxBtn.style.display = 'none';
+                if (gfx === 'ultra') setGfx('retro', true);
+                if (window.console) console.error('ULTRA init failed:', err);
+            });
+        }
+
+        function setGfx(g, save) {
+            gfx = g;
+            body.classList.toggle('ultra', g === 'ultra');
+            gfxBtn.textContent = g === 'ultra' ? '8-BIT' : 'ULTRA';
+            var edition = document.getElementById('edition');
+            if (edition) edition.textContent = g === 'ultra' ? 'ULTRA EDITION' : '8-BIT EDITION';
+            if (g === 'ultra') {
+                if (ultraCtl) ultraCtl.start();
+                else loadUltra();
+            } else if (ultraCtl) {
+                ultraCtl.stop();
+            }
+            updatePanelReveal();
+            syncEngine();
+            if (save) { try { localStorage.setItem('gfxMode', g); } catch (e) { /* ignore */ } }
+        }
+
+        gfxBtn.addEventListener('click', function () {
+            setGfx(gfx === 'ultra' ? 'retro' : 'ultra', true);
+            if (soundOn && audio && audio.state === 'running') blip(gfx === 'ultra' ? 220 : 660, audio.currentTime, 0.1, 0.08);
         });
 
         /* ---------- grid ---------- */
@@ -530,6 +805,7 @@
         var lastTick = 0;
         function windLoop(t) {
             if (finished) return;
+            if (gfx !== 'retro') { requestAnimationFrame(windLoop); return; }
             if (t - lastTick > 160) {
                 lastTick = t;
                 frame = (frame + 1) % FRAMES;
@@ -544,16 +820,29 @@
 
         function spawnClippings(x, y, n) {
             for (var i = 0; i < n; i++) {
-                parts.push({
-                    x: x + (Math.random() - 0.5) * TILE,
-                    y: y + (Math.random() - 0.5) * TILE,
-                    vx: (Math.random() - 0.5) * 2.4,
-                    vy: -1.5 - Math.random() * 2.2,
-                    life: 1,
-                    size: 3 + ((Math.random() * 2) | 0) * 2,
-                    color: ['#1d5e23', '#2f7d33', '#6abf69'][(Math.random() * 3) | 0],
-                    g: 0.18
-                });
+                if (gfx === 'ultra') {
+                    parts.push({
+                        x: x + (Math.random() - 0.5) * TILE,
+                        y: y + (Math.random() - 0.5) * TILE,
+                        vx: (Math.random() - 0.5) * 1.8,
+                        vy: -1.2 - Math.random() * 2,
+                        life: 0.9,
+                        w: 2, h: 5 + ((Math.random() * 6) | 0),
+                        color: ['#3f7d2f', '#5b9c3a', '#7ab94f'][(Math.random() * 3) | 0],
+                        g: 0.12
+                    });
+                } else {
+                    parts.push({
+                        x: x + (Math.random() - 0.5) * TILE,
+                        y: y + (Math.random() - 0.5) * TILE,
+                        vx: (Math.random() - 0.5) * 2.4,
+                        vy: -1.5 - Math.random() * 2.2,
+                        life: 1,
+                        size: 3 + ((Math.random() * 2) | 0) * 2,
+                        color: ['#1d5e23', '#2f7d33', '#6abf69'][(Math.random() * 3) | 0],
+                        g: 0.18
+                    });
+                }
             }
         }
 
@@ -561,6 +850,24 @@
 
         function spawnConfetti() {
             var cx = fx.width / 2, cy = fx.height / 2;
+            if (gfx === 'ultra') {
+                // drifting golden light motes instead of hard confetti
+                for (var j = 0; j < 80; j++) {
+                    var aj = Math.random() * Math.PI * 2;
+                    var sj = 1 + Math.random() * 4;
+                    parts.push({
+                        x: cx, y: cy,
+                        vx: Math.cos(aj) * sj,
+                        vy: Math.sin(aj) * sj - 1.2,
+                        life: 2 + Math.random() * 1.5,
+                        size: 3 + ((Math.random() * 3) | 0),
+                        color: ['#ffd740', '#fff6c2', '#ffe97a'][(Math.random() * 3) | 0],
+                        g: 0.025,
+                        glow: true
+                    });
+                }
+                return;
+            }
             for (var i = 0; i < 160; i++) {
                 var a = Math.random() * Math.PI * 2;
                 var sp = 3 + Math.random() * 7;
@@ -860,7 +1167,7 @@
             cr.ty = TILE + Math.random() * (fx.height * 0.85);
         }
 
-        /* ---------- fireflies (night / dusk) ---------- */
+        /* ---------- fireflies (night) ---------- */
         var flies = [];
 
         function spawnFlies(n) {
@@ -885,6 +1192,18 @@
                 if (fl.y < -10) fl.y = fx.height + 10;
                 if (fl.y > fx.height + 10) fl.y = -10;
                 var glow = 0.5 + 0.5 * Math.sin(now * 0.004 + fl.p * 3);
+                if (gfx === 'ultra') {
+                    // soft bokeh orbs
+                    fctx.globalAlpha = 0.25 * glow + 0.06;
+                    fctx.fillStyle = '#ffe97a';
+                    fctx.shadowColor = '#ffe97a';
+                    fctx.shadowBlur = 12;
+                    fctx.beginPath();
+                    fctx.arc(fl.x, fl.y, 2.4, 0, 6.2832);
+                    fctx.fill();
+                    fctx.shadowBlur = 0;
+                    continue;
+                }
                 fctx.globalAlpha = 0.14 * glow;
                 fctx.fillStyle = '#ffee58';
                 fctx.fillRect(fl.x - 4, fl.y - 4, 12, 12);
@@ -898,9 +1217,11 @@
         function fxLoop(now) {
             now = now || 0;
             fctx.clearRect(0, 0, fx.width, fx.height);
-            for (var ci = critters.length - 1; ci >= 0; ci--) {
-                updateCritter(critters[ci], now);
-                if (critters[ci].gone) critters.splice(ci, 1);
+            if (gfx === 'retro') { // pixel critters only live in the retro lawn
+                for (var ci = critters.length - 1; ci >= 0; ci--) {
+                    updateCritter(critters[ci], now);
+                    if (critters[ci].gone) critters.splice(ci, 1);
+                }
             }
             for (var i = parts.length - 1; i >= 0; i--) {
                 var p = parts[i];
@@ -908,19 +1229,28 @@
                 if (p.life <= 0) { parts.splice(i, 1); continue; }
                 fctx.globalAlpha = Math.min(1, p.life);
                 fctx.fillStyle = p.color;
-                fctx.fillRect(p.x | 0, p.y | 0, p.size, p.size);
+                if (p.glow) { fctx.shadowColor = p.color; fctx.shadowBlur = 10; }
+                fctx.fillRect(p.x | 0, p.y | 0, p.w || p.size, p.h || p.size);
+                if (p.glow) fctx.shadowBlur = 0;
             }
             fctx.globalAlpha = 1;
+            // engine throttle eases back to idle ~0.7s after the last cut
+            if (engine && now - lastEngUpd > 120) {
+                lastEngUpd = now;
+                engineRev(Math.max(0, 1 - (now - lastMowMs) / 700));
+            }
             // pulse the last few unmowed patches so they're easy to find
             var left = total - mowedCount;
             if (!finished && total && mowedCount > 0 && left <= Math.max(10, total * 0.02)) {
                 fctx.globalAlpha = 0.35 + 0.35 * Math.sin(now * 0.01);
                 fctx.strokeStyle = '#ffd740';
-                fctx.lineWidth = 3;
+                fctx.lineWidth = gfx === 'ultra' ? 2 : 3;
+                if (gfx === 'ultra') { fctx.shadowColor = '#ffd740'; fctx.shadowBlur = 14; }
                 for (var ti = 0; ti < total; ti++) {
                     if (mowed[ti]) continue;
                     fctx.strokeRect((ti % cols) * TILE + 2, ((ti / cols) | 0) * TILE + 2, TILE - 4, TILE - 4);
                 }
+                fctx.shadowBlur = 0;
                 fctx.globalAlpha = 1;
             }
             drawFlies(now);
@@ -935,6 +1265,7 @@
             var live = soundOn && audio && audio.state === 'running';
             muteBtn.textContent = live ? '🔊' : '🔇';
             muteBtn.setAttribute('aria-pressed', String(live));
+            syncEngine();
         }
 
         var iosUnlocked = false;
@@ -984,12 +1315,96 @@
             osc.start(t0); osc.stop(t0 + dur);
         }
 
+        /* ---------- continuous mower engine (ultra mode) ---------- */
+        var noiseBuf = null;
+        var engine = null;
+        var lastMowMs = 0;
+        var lastEngUpd = 0;
+
+        function getNoiseBuf() {
+            if (!noiseBuf) {
+                noiseBuf = audio.createBuffer(1, (audio.sampleRate * 0.5) | 0, audio.sampleRate);
+                var d = noiseBuf.getChannelData(0);
+                for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+            }
+            return noiseBuf;
+        }
+
+        function buildEngine() {
+            // electric mower: a barely-there smooth motor hum at idle, and a
+            // broadband grass-shredding swish that fades in while cutting
+            var t = audio.currentTime;
+            var eg = audio.createGain(); eg.gain.value = 0;
+            // motor hum: low triangle + soft octave, barely audible at idle
+            var o1 = audio.createOscillator(); o1.type = 'triangle'; o1.frequency.value = 95;
+            var o2 = audio.createOscillator(); o2.type = 'sine'; o2.frequency.value = 190;
+            var humG = audio.createGain(); humG.gain.value = 0.012;
+            var og2 = audio.createGain(); og2.gain.value = 0.35;
+            // cutting layer: noise through two filters (swish + body); the body
+            // layer also provides a tiny idle "air" floor so idle isn't tonal
+            var ns = audio.createBufferSource(); ns.buffer = getNoiseBuf(); ns.loop = true;
+            var swish = audio.createBiquadFilter();
+            swish.type = 'bandpass'; swish.frequency.value = 1400; swish.Q.value = 0.4;
+            var swishG = audio.createGain(); swishG.gain.value = 0;
+            var bodyF = audio.createBiquadFilter();
+            bodyF.type = 'lowpass'; bodyF.frequency.value = 480;
+            var bodyG = audio.createGain(); bodyG.gain.value = 0.006;
+            o1.connect(humG);
+            o2.connect(og2); og2.connect(humG);
+            ns.connect(swish); swish.connect(swishG);
+            ns.connect(bodyF); bodyF.connect(bodyG);
+            humG.connect(eg); swishG.connect(eg); bodyG.connect(eg);
+            eg.connect(audio.destination);
+            o1.start(t); o2.start(t); ns.start(t);
+            eg.gain.setTargetAtTime(1, t, 0.3); // master fade-in; layers carry levels
+            engine = { eg: eg, o1: o1, o2: o2, ns: ns, humG: humG, swishG: swishG, bodyG: bodyG, swish: swish };
+        }
+
+        function killEngine() {
+            if (!engine) return;
+            var e = engine;
+            engine = null;
+            e.eg.gain.setTargetAtTime(0.0001, audio.currentTime, 0.12);
+            setTimeout(function () {
+                try { e.o1.stop(); e.o2.stop(); e.ns.stop(); } catch (err) { /* ignore */ }
+            }, 500);
+        }
+
+        function engineRev(r) { // 0 = idle hum, 1 = cutting grass
+            if (!engine) return;
+            var t = audio.currentTime;
+            engine.o1.frequency.setTargetAtTime(95 + r * 20, t, 0.1);
+            engine.o2.frequency.setTargetAtTime(190 + r * 40, t, 0.1);
+            engine.humG.gain.setTargetAtTime(0.012 + r * 0.008, t, 0.1);
+            // the grass sound is the star: swish + low body fade in with movement
+            engine.swishG.gain.setTargetAtTime(r * 0.11, t, 0.07);
+            engine.bodyG.gain.setTargetAtTime(0.006 + r * 0.05, t, 0.07);
+            engine.swish.frequency.setTargetAtTime(1400 + r * 500, t, 0.1);
+        }
+
+        function syncEngine() {
+            var want = gfx === 'ultra' && soundOn && audio && audio.state === 'running' && !finished && !reduced;
+            if (want && !engine) buildEngine();
+            else if (!want && engine) killEngine();
+        }
+
+        function chimeNote(freq, t0, dur, vol) {
+            var o = audio.createOscillator(), g = audio.createGain();
+            o.type = 'sine';
+            o.frequency.value = freq;
+            g.gain.setValueAtTime(vol, t0);
+            g.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+            o.connect(g).connect(audio.destination);
+            o.start(t0); o.stop(t0 + dur);
+        }
+
         function whirr() {
             if (!soundOn || !audio) return;
             var now = performance.now();
             if (now - lastWhirr < 95) return;
             lastWhirr = now;
             if (audio.state !== 'running') { ensureAudio(); return; }
+            if (gfx === 'ultra') { lastMowMs = performance.now(); syncEngine(); return; }
             // Three layers: low chug + mid body + bright tick so it carries
             // on small phone speakers.
             blip(80 + Math.random() * 70, audio.currentTime, 0.08, 0.1);
@@ -1000,6 +1415,13 @@
         function victoryTune() {
             if (!soundOn || !audio) return;
             if (audio.state !== 'running') { ensureAudio(); return; }
+            if (gfx === 'ultra') {
+                var t = audio.currentTime;
+                chimeNote(523, t, 1.4, 0.12);
+                chimeNote(784, t + 0.18, 1.6, 0.11);
+                chimeNote(1047, t + 0.36, 2.0, 0.08);
+                return;
+            }
             var notes = [523, 659, 784, 1047];
             for (var i = 0; i < notes.length; i++) {
                 blip(notes[i], audio.currentTime + i * 0.13, 0.22, 0.13);
@@ -1037,6 +1459,20 @@
         var startTime = null;   // first manual mow
         var skipped = false;    // MOW ALL used: run doesn't count for best time
 
+        var panelEl = document.querySelector('.panel');
+
+        function updatePanelReveal() {
+            if (body.classList.contains('card3d')) return; // ultra.js drives the 3D card
+            if (gfx === 'ultra' && !finished) {
+                var pr = total ? mowedCount / total : 0;
+                panelEl.style.opacity = Math.min(1, pr * 1.3 + 0.04);
+                panelEl.style.pointerEvents = pr > 0.5 ? 'auto' : 'none';
+            } else {
+                panelEl.style.opacity = '';
+                panelEl.style.pointerEvents = '';
+            }
+        }
+
         function updateHud() {
             if (hudQueued) return;
             hudQueued = true;
@@ -1046,8 +1482,9 @@
                 var left = total - mowedCount;
                 pctEl.textContent = finished ? '100%'
                     : (left > 0 && left <= 20 ? left + ' LEFT!' : pct + '%');
-                if (!finished && pct > 0) document.title = '🌱 ' + pct + '% MOWED · MO BASHAGHA';
+                if (!finished && pct > 0) document.title = '🌱 ' + pct + "% MO'ED · MO BASHAGHA";
                 if (!finished && mowedCount / total > 0.08) toast.classList.add('hide');
+                updatePanelReveal();
                 if (!finished && mowedCount >= total) finishLawn();
             });
         }
@@ -1067,11 +1504,13 @@
                     if (dxp * dxp + dyp * dyp > maxD2) continue;
                     mowed[i] = 1; mowedCount++; did = true;
                     gctx.clearRect(c * TILE, r * TILE, TILE, TILE);
+                    if (gfx === 'ultra' && mowQueue.length < 64) mowQueue.push({ c: c, r: r });
                     if (withParticles) spawnClippings(cx, cy, 3);
                 }
             }
             if (did) {
                 if (startTime === null && !skipped) startTime = performance.now();
+                maskVersion++;
                 whirr(); updateHud();
             }
         }
@@ -1080,6 +1519,7 @@
 
         function onMove(e) {
             if (finished) return;
+            if (gfx === 'ultra') return; // 3D mode raycasts its own mowing
             var x = e.clientX, y = e.clientY;
             // mower cursor
             mowerEl.style.opacity = '1';
@@ -1119,6 +1559,7 @@
                         if (Math.random() < 0.12) spawnClippings((c + 0.5) * TILE, (r + 0.5) * TILE, 2);
                     }
                 }
+                maskVersion++;
                 whirr(); updateHud();
                 if (c >= cols) { clearInterval(sweepTimer); sweepTimer = null; }
             }, 16);
@@ -1130,6 +1571,8 @@
             finished = true;
             if (sweepTimer) { clearInterval(sweepTimer); sweepTimer = null; }
             mowedCount = total;
+            for (var fi = 0; fi < total; fi++) mowed[fi] = 1;
+            gctx.clearRect(0, 0, grass.width, grass.height);
             pctEl.textContent = '100%';
             document.title = '✅ LAWN CLEARED · MO BASHAGHA';
             // mow time + personal best (only for fully hand-mowed runs)
@@ -1150,6 +1593,9 @@
                 timeEl.hidden = false;
             }
             grass.classList.add('gone');
+            maskVersion++;
+            updatePanelReveal();
+            syncEngine();
             body.classList.add('done');
             banner.classList.add('show');
             spawnConfetti();
@@ -1161,7 +1607,8 @@
         /* ---------- boot ---------- */
         buildSprites();
         initGrid();
-        spawnFlies(mode === 'night' ? 22 : mode === 'dusk' ? 7 : 0);
+        setGfx(gfx, false);
+        spawnFlies(mode === 'night' ? 22 : 0);
 
         // two random critters per visit
         var pool = ['frog', 'snake', 'mole', 'butterfly'];
@@ -1174,7 +1621,7 @@
 
         var resizeT = null;
         window.addEventListener('resize', function () {
-            if (finished) return;
+            if (finished || ultraCtl) return;
             clearTimeout(resizeT);
             resizeT = setTimeout(initGrid, 120);
         });
@@ -1183,6 +1630,7 @@
         window.LAWN = {
             finish: finishLawn,
             setMode: setMode,
+            setGfx: setGfx,
             progress: function () { return total ? mowedCount / total : 0; },
             spawnCritter: function (t) { critters.push(makeCritter(t)); },
             clearCritters: function () { critters = []; },
