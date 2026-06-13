@@ -1621,10 +1621,10 @@
         setGfx(gfx, false);
         spawnFlies(mode === 'night' ? 22 : 0);
 
-        // two random critters per visit
+        // all four critters, every visit
         var pool = ['frog', 'snake', 'mole', 'butterfly'];
-        for (var sp = 0; sp < 2; sp++) {
-            critters.push(makeCritter(pool.splice((Math.random() * pool.length) | 0, 1)[0]));
+        for (var sp = 0; sp < pool.length; sp++) {
+            critters.push(makeCritter(pool[sp]));
         }
 
         requestAnimationFrame(windLoop);
@@ -1644,6 +1644,7 @@
             setGfx: setGfx,
             progress: function () { return total ? mowedCount / total : 0; },
             spawnCritter: function (t) { critters.push(makeCritter(t)); },
+            critterTypes: function () { return critters.map(function (c) { return c.type; }); },
             clearCritters: function () { critters = []; },
             blip: function () {
                 if (soundOn && audio && audio.state === 'running') blip(880, audio.currentTime, 0.07, 0.08);
