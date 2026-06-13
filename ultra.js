@@ -552,10 +552,9 @@ export function initUltra(bridge) {
         cardObj.scale.setScalar(0.032);
         cssScene.add(cardObj);
     }
-    // Desktop reveals the card spatially via a CSS mask on the CSS3D layer.
-    // Mobile has no CSS3D card and a data-URL mask flickers on Safari, so it
-    // gets a smooth opacity reveal instead (maskTarget stays null).
-    maskTarget = css3d ? css3d.domElement : null;
+    // Both platforms reveal the card spatially via a CSS mask of the mowed
+    // shape — desktop on the CSS3D layer, mobile on the flat .scene overlay.
+    maskTarget = css3d ? css3d.domElement : sceneEl;
 
     // screen-space reveal mask from the shared mow grid
     const cssMaskCv = document.createElement('canvas');
@@ -564,11 +563,23 @@ export function initUltra(bridge) {
     const cssMaskCtx = cssMaskCv.getContext('2d');
     const cssMaskImg = cssMaskCtx.createImageData(COLS, ROWS);
     let cssMaskVersion = -1;
+    let lastMaskBuilt = 0;
+    if (maskTarget) maskTarget.style.willChange = 'mask-image';
+    function applyMask(url) {
+        if (!maskTarget) return;
+        maskTarget.style.webkitMaskImage = 'url(' + url + ')';
+        maskTarget.style.maskImage = 'url(' + url + ')';
+        maskTarget.style.webkitMaskSize = '100% 100%';
+        maskTarget.style.maskSize = '100% 100%';
+    }
     function updateCssMask(force) {
         if (!maskTarget) return;
         const s = bridge.state();
         if (!force && s.maskVersion === cssMaskVersion) return;
+        const now = performance.now();
+        if (!force && now - lastMaskBuilt < 100) return; // throttle rebuilds
         cssMaskVersion = s.maskVersion;
+        lastMaskBuilt = now;
         const d = cssMaskImg.data;
         const mowed = s.mowed;
         for (let i = 0; i < mowed.length; i++) {
@@ -577,11 +588,13 @@ export function initUltra(bridge) {
             d[o + 3] = mowed[i] ? 255 : 0;
         }
         cssMaskCtx.putImageData(cssMaskImg, 0, 0);
-        const url = 'url(' + cssMaskCv.toDataURL() + ')';
-        maskTarget.style.webkitMaskImage = url;
-        maskTarget.style.maskImage = url;
-        maskTarget.style.webkitMaskSize = '100% 100%';
-        maskTarget.style.maskSize = '100% 100%';
+        const url = cssMaskCv.toDataURL();
+        // Pre-decode before swapping so the previous mask stays put until the
+        // new one is ready — avoids the unmasked-frame flash on mobile Safari.
+        const img = new Image();
+        img.src = url;
+        if (img.decode) img.decode().then(function () { applyMask(url); }).catch(function () { applyMask(url); });
+        else applyMask(url);
     }
 
     function updateCardReveal() {
@@ -597,7 +610,6 @@ export function initUltra(bridge) {
             for (let cc = c0; cc <= c1; cc++) { tot++; if (s.mowed[rr * s.cols + cc]) mw++; }
         }
         const frac = s.finished ? 1 : (tot ? mw / tot : 0);
-        if (!css3d) panel.style.opacity = Math.min(1, frac * 1.3); // mobile: smooth reveal
         panel.style.pointerEvents = (s.finished || frac > 0.55) ? 'auto' : 'none';
     }
 
@@ -606,13 +618,11 @@ export function initUltra(bridge) {
         document.body.classList.add('card3d'); // index.html hands the card over to us
         if (css3d) {
             css3d.domElement.style.display = 'block';
-            panel.style.opacity = '1'; // the spatial mask does the hiding
             mountCardObj();            // fresh object => transform gets rewritten
-            updateCssMask(true);
-        } else {
-            panel.style.opacity = '0'; // mobile: opacity ramps up as we mow
-            updateCardReveal();
         }
+        panel.style.opacity = '1'; // the spatial mask does the hiding on both platforms
+        updateCssMask(true);
+        updateCardReveal();
     }
     function releaseCard() {
         if (!panel) return;

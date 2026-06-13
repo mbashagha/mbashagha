@@ -188,22 +188,10 @@
         @keyframes bob { 50% { transform: translateX(-50%) translateY(4px); } }
 
         /* ---------- HUD ---------- */
-        /* single top bar: groups can never overlap (they wrap if too tight) */
-        #hudbar {
-            position: fixed;
-            top: clamp(0.5rem, 2vw, 1rem);
-            left: clamp(0.5rem, 2vw, 1rem);
-            right: clamp(0.5rem, 2vw, 1rem);
-            z-index: 8;
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: clamp(0.3rem, 1.5vw, 0.6rem);
-            flex-wrap: wrap;
-            pointer-events: none; /* let the lawn be mowed across the top */
-        }
-
+        /* controls top-right, progress bottom-left: separate corners, no overlap */
         .hud {
+            position: fixed;
+            z-index: 8;
             font-size: clamp(0.42rem, 2.3vw, 0.55rem);
             color: #fff;
         }
@@ -221,20 +209,24 @@
             white-space: nowrap;
         }
 
-        #progress { pointer-events: none; }
+        #progress {
+            bottom: clamp(0.5rem, 2vw, 1rem);
+            left: clamp(0.5rem, 2vw, 1rem);
+            pointer-events: none;
+        }
         #progress .pct { color: var(--gold); }
 
         #controls {
+            top: clamp(0.5rem, 2vw, 1rem);
+            right: clamp(0.5rem, 2vw, 1rem);
             display: flex;
             gap: clamp(0.2rem, 1.2vw, 0.5rem);
-            flex-shrink: 0;
         }
 
         #controls button {
             font-family: 'Press Start 2P', monospace;
             font-size: clamp(0.42rem, 2.3vw, 0.55rem);
             color: #fff;
-            pointer-events: auto;
         }
 
         #controls button:hover, #controls button:focus-visible { background: #c62828; }
@@ -513,15 +505,13 @@
         <p>MOVE YOUR CURSOR (OR DRAG)<br>TO REVEAL THE SITE</p>
     </div>
 
-    <div id="hudbar">
-        <div id="progress" class="hud" role="status">LAWN MO'ED: <span class="pct">0%</span></div>
-        <div id="controls" class="hud">
-            <button id="mowall" type="button">MO ALL ⏭</button>
-            <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">ULTRA</button>
-            <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
-            <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
-        </div>
+    <div id="controls" class="hud">
+        <button id="mowall" type="button">MO ALL ⏭</button>
+        <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">ULTRA</button>
+        <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
+        <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
+    <div id="progress" class="hud" role="status">LAWN MO'ED: <span class="pct">0%</span></div>
 
     <div id="mower" aria-hidden="true">
         <svg class="sprite" width="64" height="48" viewBox="0 0 16 12" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
