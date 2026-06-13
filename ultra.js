@@ -540,11 +540,19 @@ export function initUltra(bridge) {
         css3d.domElement.style.cssText = 'position:fixed;inset:0;z-index:6;pointer-events:none;';
         document.body.appendChild(css3d.domElement);
         cardHome = panel.parentNode;
+        cssScene = new THREE.Scene();
+    }
+    // (Re)build the CSS3D card object. Recreated on every adopt so the
+    // renderer's per-object transform cache misses and rewrites the matrix —
+    // otherwise an unchanged camera/object after a mode toggle leaves the card
+    // with no transform and it renders at full native size.
+    function mountCardObj() {
+        if (!css3d) return;
+        if (cardObj) cssScene.remove(cardObj);
         cardObj = new CSS3DObject(panel);
         cardObj.rotation.x = -Math.PI / 2 + 0.22; // lying on the lawn, slight tilt for readability
         cardObj.position.set(0, 0.12, -0.5);
         cardObj.scale.setScalar(0.032);
-        cssScene = new THREE.Scene();
         cssScene.add(cardObj);
     }
     maskTarget = css3d ? css3d.domElement : sceneEl;
@@ -597,6 +605,7 @@ export function initUltra(bridge) {
         document.body.classList.add('card3d'); // index.html hands the card over to us
         if (css3d) css3d.domElement.style.display = 'block';
         panel.style.opacity = '1'; // the mask does the hiding
+        mountCardObj();            // fresh object => transform gets rewritten
         updateCssMask(true);
     }
     function releaseCard() {
