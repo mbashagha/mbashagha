@@ -29,12 +29,6 @@ export function initUltra(bridge) {
             base: 0x1e5a1d, tip: 0x7fb24a, stubble: [0.95, 0.92, 0.55],
             fog: 0xcfe3cf, fogD: 0.0035, groundTint: 0xffffff, envSun: 18
         },
-        dusk: {
-            skyTop: 0x53466e, skyBot: 0xf0a05a, sunDir: [0.85, 0.22, 0.25],
-            sunCol: 0xffac63, sunInt: 2.6, hemiSky: 0xb08bb0, hemiGnd: 0x4a3c20, hemiInt: 0.4,
-            base: 0x3d4a16, tip: 0xb0a04a, stubble: [1.0, 0.85, 0.5],
-            fog: 0xc89070, fogD: 0.005, groundTint: 0xddb890, envSun: 14
-        },
         night: {
             skyTop: 0x101c3a, skyBot: 0x32466b, sunDir: [0.3, 0.65, 0.4],
             sunCol: 0xb8d0f5, sunInt: 1.6, hemiSky: 0x44598a, hemiGnd: 0x1a2c20, hemiInt: 0.65,

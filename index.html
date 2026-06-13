@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mo Bashagha — Product Designer</title>
-    <meta name="description" content="Mo Bashagha is a product designer at WhatsApp. Mow the lawn to enter.">
+    <meta name="description" content="Mo Bashagha is a product designer at WhatsApp. Mo the lawn to enter.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mobashagha.com/">
     <meta property="og:title" content="MO THE LAWN! — Mo Bashagha">
-    <meta property="og:description" content="Product designer at WhatsApp. Mow the lawn to enter the site. 🚜">
+    <meta property="og:description" content="Product designer at WhatsApp. Mo the lawn to enter the site. 🚜">
     <meta property="og:image" content="https://mobashagha.com/og.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="MO THE LAWN! — Mo Bashagha">
-    <meta name="twitter:description" content="Product designer at WhatsApp. Mow the lawn to enter the site. 🚜">
+    <meta name="twitter:description" content="Product designer at WhatsApp. Mo the lawn to enter the site. 🚜">
     <meta name="twitter:image" content="https://mobashagha.com/og.png">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -285,9 +285,30 @@
             line-height: 1.8;
         }
 
-        /* ---------- day / dusk / night palettes (mowed lawn) ---------- */
-        body.dusk { --mow-a: #a9a24f; --mow-b: #b3ad57; }
+        /* ---------- day / night palettes (mowed lawn) ---------- */
         body.night { --mow-a: #3a5a48; --mow-b: #436a52; }
+
+        /* dark card for night in 8-bit mode (ultra keeps its own glass panel) */
+        body.night:not(.ultra) .panel {
+            background: #173020;
+            border-color: #3f7d4a;
+            box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.4), inset 0 0 0 4px #224a30;
+        }
+        body.night:not(.ultra) h1 { color: #f4f1e6; text-shadow: 3px 3px 0 #0d2114; }
+        body.night:not(.ultra) .sub { color: #9ccc8f; }
+        body.night:not(.ultra) .tiny { color: #8fb389; }
+        body.night:not(.ultra) .menu a {
+            background: #224a30;
+            color: #f4f1e6;
+            border-color: #f4f1e6;
+            box-shadow: 4px 4px 0 #0d2114;
+        }
+        body.night:not(.ultra) .menu a:hover,
+        body.night:not(.ultra) .menu a:focus-visible {
+            background: var(--gold);
+            color: var(--ink);
+            box-shadow: 2px 2px 0 #0d2114;
+        }
 
         /* ================= ULTRA (next-gen) theme ================= */
 
@@ -309,7 +330,6 @@
                     rgba(255, 246, 160, 0.20) 240px);
         }
 
-        body.ultra.dusk { --mow-a: #8c8444; --mow-b: #968d4a; }
         body.ultra.night { --mow-a: #24382c; --mow-b: #2a4032; }
 
         body.ultra .panel {
@@ -462,7 +482,7 @@
                 <a href="mailto:mbashagha@gmail.com">EMAIL</a>
                 <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LINKEDIN</a>
             </nav>
-            <p class="tiny">© <span id="year">2026</span> MO BASHAGHA · 8-BIT EDITION</p>
+            <p class="tiny">© <span id="year">2026</span> MO BASHAGHA · <span id="edition">8-BIT EDITION</span></p>
         </div>
     </main>
 
@@ -474,9 +494,9 @@
         <p>MOVE YOUR CURSOR (OR DRAG)<br>TO REVEAL THE SITE</p>
     </div>
 
-    <div id="progress" class="hud" role="status">LAWN MOWED: <span class="pct">0%</span></div>
+    <div id="progress" class="hud" role="status">LAWN MO'ED: <span class="pct">0%</span></div>
     <div id="controls" class="hud">
-        <button id="mowall" type="button">MOW ALL ⏭</button>
+        <button id="mowall" type="button">MO' ALL ⏭</button>
         <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">ULTRA</button>
         <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
@@ -514,7 +534,7 @@
     <div id="banner">
         <div class="inner">
             <h2>LEVEL CLEAR!</h2>
-            <p>LAWN 100% MOWED ★★★</p>
+            <p>LAWN 100% MO'ED ★★★</p>
             <p class="time" id="clearTime" hidden></p>
         </div>
     </div>
@@ -549,11 +569,11 @@
         try { sgfx = localStorage.getItem('gfxMode'); } catch (e) { /* ignore */ }
         var gfx = qgfx || (sgfx === 'ultra' ? 'ultra' : 'retro');
 
-        /* ---------- day / dusk / night mode ---------- */
-        var qmode = (location.search.match(/[?&]mode=(day|dusk|night)/) || [])[1];
+        /* ---------- day / night mode ---------- */
+        var qmode = (location.search.match(/[?&]mode=(day|night)/) || [])[1];
         var hour = new Date().getHours();
-        var mode = qmode || (hour >= 21 || hour < 6 ? 'night' : hour >= 17 ? 'dusk' : 'day');
-        var MODE_ICON = { day: '☀️', dusk: '🌆', night: '🌙' };
+        var mode = qmode || (hour >= 19 || hour < 6 ? 'night' : 'day');
+        var MODE_ICON = { day: '☀️', night: '🌙' };
         if (mode !== 'day') body.classList.add(mode);
         modeBtn.textContent = MODE_ICON[mode];
 
@@ -593,7 +613,6 @@
         // Grass colors per time-of-day mode.
         var PALS = {
             day:   { base: ['#2f7d33', '#2a7430'], blade: '#1d5e23', tip: '#6abf69', mid: '#2f8f3a', speck: '#27632b' },
-            dusk:  { base: ['#717c30', '#697428'], blade: '#4d5821', tip: '#c2cc66', mid: '#86913a', speck: '#5d682a' },
             night: { base: ['#1f3b2f', '#1b352a'], blade: '#13291f', tip: '#4d7d65', mid: '#254b3c', speck: '#17312b' }
         };
 
@@ -653,7 +672,7 @@
         function setMode(m) {
             if (!PALS[m]) return;
             mode = m;
-            body.classList.remove('dusk', 'night');
+            body.classList.remove('night');
             if (m !== 'day') body.classList.add(m);
             modeBtn.textContent = MODE_ICON[m];
             buildSprites();
@@ -661,13 +680,12 @@
                 gctx.clearRect(0, 0, grass.width, grass.height);
                 drawGrass();
             }
-            spawnFlies(m === 'night' ? 22 : m === 'dusk' ? 7 : 0);
+            spawnFlies(m === 'night' ? 22 : 0);
             if (ultraCtl) ultraCtl.setMode(m);
         }
 
         modeBtn.addEventListener('click', function () {
-            var order = ['day', 'dusk', 'night'];
-            setMode(order[(order.indexOf(mode) + 1) % 3]);
+            setMode(mode === 'day' ? 'night' : 'day');
         });
 
         /* ---------- ULTRA v2 (Three.js, lazy-loaded from ultra.js) ---------- */
@@ -722,6 +740,8 @@
             gfx = g;
             body.classList.toggle('ultra', g === 'ultra');
             gfxBtn.textContent = g === 'ultra' ? '8-BIT' : 'ULTRA';
+            var edition = document.getElementById('edition');
+            if (edition) edition.textContent = g === 'ultra' ? 'ULTRA EDITION' : '8-BIT EDITION';
             if (g === 'ultra') {
                 if (ultraCtl) ultraCtl.start();
                 else loadUltra();
@@ -1147,7 +1167,7 @@
             cr.ty = TILE + Math.random() * (fx.height * 0.85);
         }
 
-        /* ---------- fireflies (night / dusk) ---------- */
+        /* ---------- fireflies (night) ---------- */
         var flies = [];
 
         function spawnFlies(n) {
@@ -1462,7 +1482,7 @@
                 var left = total - mowedCount;
                 pctEl.textContent = finished ? '100%'
                     : (left > 0 && left <= 20 ? left + ' LEFT!' : pct + '%');
-                if (!finished && pct > 0) document.title = '🌱 ' + pct + '% MOWED · MO BASHAGHA';
+                if (!finished && pct > 0) document.title = '🌱 ' + pct + "% MO'ED · MO BASHAGHA";
                 if (!finished && mowedCount / total > 0.08) toast.classList.add('hide');
                 updatePanelReveal();
                 if (!finished && mowedCount >= total) finishLawn();
@@ -1588,7 +1608,7 @@
         buildSprites();
         initGrid();
         setGfx(gfx, false);
-        spawnFlies(mode === 'night' ? 22 : mode === 'dusk' ? 7 : 0);
+        spawnFlies(mode === 'night' ? 22 : 0);
 
         // two random critters per visit
         var pool = ['frog', 'snake', 'mole', 'butterfly'];
