@@ -552,7 +552,10 @@ export function initUltra(bridge) {
         cardObj.scale.setScalar(0.032);
         cssScene.add(cardObj);
     }
-    maskTarget = css3d ? css3d.domElement : sceneEl;
+    // Desktop reveals the card spatially via a CSS mask on the CSS3D layer.
+    // Mobile has no CSS3D card and a data-URL mask flickers on Safari, so it
+    // gets a smooth opacity reveal instead (maskTarget stays null).
+    maskTarget = css3d ? css3d.domElement : null;
 
     // screen-space reveal mask from the shared mow grid
     const cssMaskCv = document.createElement('canvas');
@@ -594,16 +597,22 @@ export function initUltra(bridge) {
             for (let cc = c0; cc <= c1; cc++) { tot++; if (s.mowed[rr * s.cols + cc]) mw++; }
         }
         const frac = s.finished ? 1 : (tot ? mw / tot : 0);
+        if (!css3d) panel.style.opacity = Math.min(1, frac * 1.3); // mobile: smooth reveal
         panel.style.pointerEvents = (s.finished || frac > 0.55) ? 'auto' : 'none';
     }
 
     function adoptCard() {
         if (!panel) return;
         document.body.classList.add('card3d'); // index.html hands the card over to us
-        if (css3d) css3d.domElement.style.display = 'block';
-        panel.style.opacity = '1'; // the mask does the hiding
-        mountCardObj();            // fresh object => transform gets rewritten
-        updateCssMask(true);
+        if (css3d) {
+            css3d.domElement.style.display = 'block';
+            panel.style.opacity = '1'; // the spatial mask does the hiding
+            mountCardObj();            // fresh object => transform gets rewritten
+            updateCssMask(true);
+        } else {
+            panel.style.opacity = '0'; // mobile: opacity ramps up as we mow
+            updateCardReveal();
+        }
     }
     function releaseCard() {
         if (!panel) return;
@@ -612,8 +621,10 @@ export function initUltra(bridge) {
             css3d.domElement.style.display = 'none';
             cardHome.appendChild(panel);
         }
-        maskTarget.style.webkitMaskImage = '';
-        maskTarget.style.maskImage = '';
+        if (maskTarget) {
+            maskTarget.style.webkitMaskImage = '';
+            maskTarget.style.maskImage = '';
+        }
         panel.style.position = '';
         panel.style.transform = '';
         panel.style.opacity = '';

@@ -191,29 +191,34 @@
         .hud {
             position: fixed;
             z-index: 8;
-            font-size: 0.55rem;
+            font-size: clamp(0.42rem, 2.3vw, 0.55rem);
             color: #fff;
         }
 
         #progress {
-            top: 1rem;
-            left: 1rem;
+            top: clamp(0.5rem, 2vw, 1rem);
+            left: clamp(0.5rem, 2vw, 1rem);
             background: rgba(13, 33, 16, 0.78);
             border: 3px solid var(--ink);
-            padding: 0.65rem 0.8rem;
+            padding: clamp(0.4rem, 1.7vw, 0.65rem) clamp(0.5rem, 2vw, 0.8rem);
         }
 
         #progress .pct { color: var(--gold); }
 
-        #controls { top: 1rem; right: 1rem; display: flex; gap: 0.5rem; }
+        #controls {
+            top: clamp(0.5rem, 2vw, 1rem);
+            right: clamp(0.5rem, 2vw, 1rem);
+            display: flex;
+            gap: clamp(0.2rem, 1.2vw, 0.5rem);
+        }
 
         #controls button {
             font-family: 'Press Start 2P', monospace;
-            font-size: 0.55rem;
+            font-size: clamp(0.42rem, 2.3vw, 0.55rem);
             color: #fff;
             background: rgba(13, 33, 16, 0.78);
             border: 3px solid var(--ink);
-            padding: 0.65rem 0.8rem;
+            padding: clamp(0.4rem, 1.7vw, 0.65rem) clamp(0.5rem, 2vw, 0.8rem);
         }
 
         #controls button:hover, #controls button:focus-visible { background: #c62828; }
@@ -393,8 +398,8 @@
         body.ultra .hud, body.ultra #controls button {
             font-family: 'Outfit', sans-serif;
             font-weight: 500;
-            letter-spacing: 0.2em;
-            font-size: 0.72rem;
+            letter-spacing: clamp(0.05em, 0.6vw, 0.2em);
+            font-size: clamp(0.46rem, 2.4vw, 0.72rem);
         }
 
         body.ultra #progress, body.ultra #controls button {
@@ -403,7 +408,7 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.22);
             border-radius: 999px;
-            padding: 0.6rem 1.05rem;
+            padding: clamp(0.4rem, 1.6vw, 0.6rem) clamp(0.55rem, 2.4vw, 1.05rem);
             transition: background 0.25s ease, border-color 0.25s ease;
         }
 
@@ -466,8 +471,6 @@
         }
 
         @media (max-width: 480px) {
-            #progress { font-size: 0.45rem; padding: 0.5rem 0.6rem; }
-            #controls button { font-size: 0.45rem; padding: 0.5rem 0.6rem; }
             #toast { top: 3.6rem; }
         }
     </style>
