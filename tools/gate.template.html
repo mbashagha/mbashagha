@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>MO'S WORK — PASSWORD</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --ink: #16301a;
+            --cream: #fffbe8;
+            --gold: #ffd740;
+            --mow-a: #8fc257;
+            --mow-b: #99cb61;
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            color: var(--ink);
+            background-color: var(--mow-a);
+            background-image:
+                repeating-linear-gradient(90deg, var(--mow-b) 0 48px, transparent 48px 96px),
+                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 48px, rgba(0, 0, 0, 0.04) 48px 96px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        ::selection { background: var(--gold); color: var(--ink); }
+
+        .panel {
+            background: var(--cream);
+            border: 4px solid var(--ink);
+            box-shadow: 10px 10px 0 rgba(20, 46, 18, 0.35), inset 0 0 0 4px #fff;
+            padding: clamp(1.5rem, 4vw, 2.75rem);
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .tag {
+            font-size: 0.55rem;
+            color: #c62828;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.4rem;
+        }
+
+        h1 {
+            font-size: clamp(1.1rem, 5vw, 1.6rem);
+            line-height: 1.5;
+            margin-bottom: 1.4rem;
+            text-shadow: 3px 3px 0 #c5e1a5;
+        }
+
+        .sub {
+            font-size: clamp(0.5rem, 2.2vw, 0.6rem);
+            line-height: 2;
+            color: #33691e;
+            margin-bottom: 1.8rem;
+        }
+
+        .blink { animation: blink 1s steps(1) infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        form { display: grid; gap: 0.85rem; margin-bottom: 1.6rem; }
+
+        input {
+            font-family: inherit;
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-align: center;
+            color: var(--ink);
+            background: #fff;
+            border: 3px solid var(--ink);
+            box-shadow: inset 3px 3px 0 rgba(22, 48, 26, 0.12);
+            padding: 0.95rem 1rem;
+            outline: none;
+            text-transform: uppercase;
+        }
+
+        input:focus { background: #fffde7; }
+
+        button {
+            font-family: inherit;
+            font-size: 0.7rem;
+            color: var(--ink);
+            border: 3px solid var(--ink);
+            padding: 0.95rem 1rem;
+            background: #fff;
+            box-shadow: 4px 4px 0 var(--ink);
+            cursor: pointer;
+            transition: transform 0.08s steps(2), box-shadow 0.08s steps(2);
+        }
+
+        button::before { content: '▶ '; visibility: hidden; }
+
+        button:hover, button:focus-visible {
+            background: var(--gold);
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+
+        button:hover::before, button:focus-visible::before { visibility: visible; }
+
+        button:disabled { opacity: 0.6; cursor: wait; }
+
+        .menu { display: none; gap: 0.85rem; margin-bottom: 1.6rem; }
+
+        .menu a {
+            display: block;
+            font-size: 0.6rem;
+            line-height: 1.7;
+            color: var(--ink);
+            text-decoration: none;
+            border: 3px solid var(--ink);
+            padding: 0.95rem 1rem;
+            background: #fff;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform 0.08s steps(2), box-shadow 0.08s steps(2);
+        }
+
+        .menu a small { display: block; font-size: 0.45rem; color: #6d8b5a; margin-top: 0.4rem; }
+
+        .menu a::before { content: '▶ '; visibility: hidden; }
+
+        .menu a:hover, .menu a:focus-visible {
+            background: var(--gold);
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+
+        .menu a:hover::before, .menu a:focus-visible::before { visibility: visible; }
+
+        body.open form { display: none; }
+        body.open .menu { display: grid; }
+        body.open .locked-sub { display: none; }
+        .open-sub { display: none; }
+        body.open .open-sub { display: block; }
+
+        #err {
+            display: none;
+            font-size: 0.5rem;
+            color: #c62828;
+            letter-spacing: 0.1em;
+            margin: -0.4rem 0 1rem;
+        }
+
+        body.wrong #err { display: block; }
+
+        body.wrong .panel { animation: shake 0.3s steps(2) 2; }
+        @keyframes shake {
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .tiny { font-size: 0.45rem; color: #6d8b5a; letter-spacing: 0.08em; }
+        .tiny a { color: inherit; }
+    </style>
+</head>
+<body>
+    <main class="panel">
+        <p class="tag">RESTRICTED AREA</p>
+        <h1>MO'S<br>WORK</h1>
+        <p class="sub locked-sub">ENTER PASSWORD<span class="blink">_</span></p>
+        <p class="sub open-sub">ACCESS GRANTED. PICK A PROPOSAL:</p>
+        <form id="f" autocomplete="off">
+            <input id="p" type="password" placeholder="********" aria-label="Password" autofocus>
+            <p id="err">WRONG PASSWORD. TRY AGAIN.</p>
+            <button type="submit">UNLOCK</button>
+        </form>
+        <nav class="menu" aria-label="Proposals">
+            <a href="deck/">PROPOSAL A: DECK<small>full-screen slides, like the figma deck</small></a>
+            <a href="story/">PROPOSAL B: STORY<small>one dark scrolling case-study page</small></a>
+            <a href="retro/">PROPOSAL C: RETRO<small>the lawn world continues</small></a>
+        </nav>
+        <p class="tiny"><a href="../">&larr; BACK TO THE LAWN</a></p>
+    </main>
+    <script>
+        (() => {
+            'use strict';
+            const CANARY = '__CANARY__';
+            const KEY = 'mo.work.pass';
+            const nextParam = new URLSearchParams(location.search).get('next');
+            const next = ['deck', 'story', 'retro'].includes(nextParam) ? nextParam : null;
+
+            async function tryPass(pass) {
+                const raw = Uint8Array.from(atob(CANARY), c => c.charCodeAt(0));
+                const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+                const key = await crypto.subtle.deriveKey(
+                    { name: 'PBKDF2', salt: raw.slice(0, 16), iterations: 300000, hash: 'SHA-256' },
+                    material, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+                await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.slice(16, 28) }, key, raw.slice(28));
+            }
+
+            function unlock() {
+                if (next) { location.replace(next + '/'); return; }
+                document.body.classList.add('open');
+            }
+
+            const saved = sessionStorage.getItem(KEY);
+            if (saved) tryPass(saved).then(unlock).catch(() => sessionStorage.removeItem(KEY));
+
+            const form = document.getElementById('f');
+            const input = document.getElementById('p');
+            form.addEventListener('submit', async e => {
+                e.preventDefault();
+                document.body.classList.remove('wrong');
+                const pass = input.value.trim();
+                if (!pass) return;
+                form.querySelector('button').disabled = true;
+                try {
+                    await tryPass(pass);
+                    sessionStorage.setItem(KEY, pass);
+                    unlock();
+                } catch {
+                    requestAnimationFrame(() => document.body.classList.add('wrong'));
+                    input.select();
+                } finally {
+                    form.querySelector('button').disabled = false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

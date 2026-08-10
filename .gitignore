@@ -1,0 +1,3 @@
+# Plaintext sources for the password-protected /work pages.
+# Never commit these: the repo is public and /work ships encrypted.
+work-src/
