@@ -301,8 +301,10 @@
             box-shadow: 2px 2px 0 rgba(22, 48, 26, 0.3);
         }
 
-        /* career milestones read differently from shipped work */
-        #work li.ms::before { background: #c62828; }
+        /* career milestones read differently from shipped work — amber rather
+           than the site red, which reads as an error next to an achievement.
+           Deeper than --gold so an 8px square still holds against the cream. */
+        #work li.ms::before { background: #f9a825; }
         #work li.ms { color: #0f2412; }
 
         /* lead-in labels sit in the body ink: the marker square carries the
@@ -313,7 +315,7 @@
             display: inline-block;
             width: 0.5rem;
             height: 0.5rem;
-            background: #c62828;
+            background: #f9a825;
             box-shadow: 2px 2px 0 rgba(22, 48, 26, 0.3);
         }
 
@@ -357,11 +359,18 @@
         body.night #work .doc::-webkit-scrollbar-track { background: #0d2114; }
         body.night #work .doc::-webkit-scrollbar-thumb { background: #3f7d4a; border-color: #0d2114; }
 
-        /* the gold plate stays gold — it is the one bright thing at night */
+        /* a full slab of --gold is far too hot against the dark sheet, so at
+           night the plate becomes a bordered panel and gold drops to accent
+           weight: the border and the label, nothing filled */
         body.night #work .now {
-            border-color: #0d2114;
-            box-shadow: 5px 5px 0 #0d2114;
+            background: #1d3a26;
+            border-color: #b8912b;
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
         }
+
+        body.night #work .now .k { color: #d9b74a; }
+        body.night #work .now .v { color: #f4f1e6; }
+        body.night #work .now .v2 { color: #a8c39f; }
 
         body.night #work .y {
             background: #224a30;
@@ -376,7 +385,7 @@
 
         body.night #work li::before { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
         body.night #work li.ms::before,
-        body.night #work .hint .key:not(.work) { background: #ef5350; }
+        body.night #work .hint .key:not(.work) { background: var(--gold); }
         body.night #work .hint .key { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
 
         body.night #work .yr + .yr { border-top-color: rgba(244, 241, 230, 0.18); }
