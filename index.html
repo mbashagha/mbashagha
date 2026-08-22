@@ -223,9 +223,10 @@
         #work .doc::-webkit-scrollbar-track { background: #ece6cf; }
         #work .doc::-webkit-scrollbar-thumb { background: var(--ink); border: 3px solid #ece6cf; }
 
-        /* "currently" plate */
+        /* "currently" plate: filled with the mown-lawn green, so it reads as a
+           patch of the cut grass the whole site is built on */
         #work .now {
-            background: var(--gold);
+            background: var(--mow-b);
             border: 3px solid var(--ink);
             box-shadow: 5px 5px 0 var(--ink);
             padding: clamp(0.9rem, 3vw, 1.2rem);
@@ -235,7 +236,7 @@
         #work .now .k {
             font-size: clamp(0.42rem, 1.8vw, 0.5rem);
             letter-spacing: 0.22em;
-            color: #7d5f00;
+            color: #1f4a12;
             margin-bottom: 0.85rem;
         }
 
@@ -249,7 +250,7 @@
             margin-top: 0.75rem;
             font-size: clamp(0.46rem, 1.85vw, 0.53rem);
             line-height: 2;
-            color: #5e4600;
+            color: #2b5218;
         }
 
         /* year rows */
@@ -340,59 +341,249 @@
         /* ---------- WORK sheet at night ----------
            Keyed on .night alone, not :not(.ultra): the sheet keeps one look in
            both graphics modes, and ULTRA's night scene is dark too. */
-        body.night #work { background: rgba(4, 12, 7, 0.9); }
+        body.night:not(.ultra) #work { background: rgba(4, 12, 7, 0.9); }
 
-        body.night #work .sheet {
+        body.night:not(.ultra) #work .sheet {
             background: #173020;
             border-color: #3f7d4a;
             box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 4px #224a30;
         }
 
-        body.night #work .bar { background: #0d2114; }
+        body.night:not(.ultra) #work .bar { background: #0d2114; }
 
-        body.night #work .doc {
+        body.night:not(.ultra) #work .doc {
             /* scanlines flip from dark-on-cream to light-on-dark */
             background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 4px);
             scrollbar-color: #3f7d4a #0d2114;
         }
 
-        body.night #work .doc::-webkit-scrollbar-track { background: #0d2114; }
-        body.night #work .doc::-webkit-scrollbar-thumb { background: #3f7d4a; border-color: #0d2114; }
+        body.night:not(.ultra) #work .doc::-webkit-scrollbar-track { background: #0d2114; }
+        body.night:not(.ultra) #work .doc::-webkit-scrollbar-thumb { background: #3f7d4a; border-color: #0d2114; }
 
         /* a full slab of --gold is far too hot against the dark sheet, so at
            night the plate becomes a bordered panel and gold drops to accent
            weight: the border and the label, nothing filled */
-        body.night #work .now {
+        body.night:not(.ultra) #work .now {
             background: #1d3a26;
             border-color: #b8912b;
             box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
         }
 
-        body.night #work .now .k { color: #d9b74a; }
-        body.night #work .now .v { color: #f4f1e6; }
-        body.night #work .now .v2 { color: #a8c39f; }
+        body.night:not(.ultra) #work .now .k { color: #d9b74a; }
+        body.night:not(.ultra) #work .now .v { color: #f4f1e6; }
+        body.night:not(.ultra) #work .now .v2 { color: #a8c39f; }
 
-        body.night #work .y {
+        body.night:not(.ultra) #work .y {
             background: #224a30;
             border-color: #f4f1e6;
             color: #f4f1e6;
             box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
         }
 
-        body.night #work li { color: #dfeeda; }
-        body.night #work .lead { color: #dfeeda; }
-        body.night #work li.ms { color: #f4f1e6; }
+        body.night:not(.ultra) #work li { color: #dfeeda; }
+        body.night:not(.ultra) #work .lead { color: #dfeeda; }
+        body.night:not(.ultra) #work li.ms { color: #f4f1e6; }
 
-        body.night #work li::before { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
-        body.night #work li.ms::before,
-        body.night #work .hint .key:not(.work) { background: var(--gold); }
-        body.night #work .hint .key { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
+        body.night:not(.ultra) #work li::before { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
+        body.night:not(.ultra) #work li.ms::before,
+        body.night:not(.ultra) #work .hint .key:not(.work) { background: var(--gold); }
+        body.night:not(.ultra) #work .hint .key { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
 
-        body.night #work .yr + .yr { border-top-color: rgba(244, 241, 230, 0.18); }
+        body.night:not(.ultra) #work .yr + .yr { border-top-color: rgba(244, 241, 230, 0.18); }
 
-        body.night #work .hint {
+        body.night:not(.ultra) #work .hint {
             border-top-color: rgba(244, 241, 230, 0.18);
             color: #8fb389;
+        }
+
+        /* ---------- WORK sheet in ULTRA ----------
+           The pixel sheet's devices — hard shadows, scanlines, square markers,
+           boxed years — are 8-bit vocabulary. ULTRA restates the same structure
+           in its own: dark glass, hairlines, Outfit at wide tracking, gold as a
+           point accent rather than a fill. */
+        body.ultra #work {
+            background: rgba(4, 8, 6, 0.55);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+        }
+
+        body.ultra #work .sheet {
+            padding: 0;
+            overflow: hidden;
+            background: rgba(8, 14, 10, 0.74);
+            -webkit-backdrop-filter: blur(24px) saturate(1.3);
+            backdrop-filter: blur(24px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+            animation: sheetup 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes sheetup {
+            0% { transform: translateY(16px) scale(0.985); opacity: 0; }
+            100% { transform: none; opacity: 1; }
+        }
+
+        body.ultra #work .bar {
+            background: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: clamp(1rem, 3vw, 1.4rem) clamp(1.1rem, 3.5vw, 1.8rem);
+        }
+
+        body.ultra #work .bar h2 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 200;
+            font-size: clamp(0.95rem, 3.6vw, 1.35rem);
+            letter-spacing: 0.35em;
+            color: #fff;
+            text-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+        }
+
+        /* the block cursor thins out and fades rather than hard-blinking */
+        body.ultra #work .bar h2 i {
+            width: 2px;
+            height: 1.05em;
+            background: var(--gold);
+            animation: fadeblink 1.4s ease-in-out infinite;
+        }
+
+        body.ultra #work .x {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            font-size: clamp(0.62rem, 2.2vw, 0.72rem);
+            letter-spacing: 0.3em;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 999px;
+            padding: 0.7rem 1.15rem;
+            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        body.ultra #work .x .xk { display: none; }
+
+        body.ultra #work .x:hover, body.ultra #work .x:focus-visible {
+            background: rgba(255, 215, 64, 0.12);
+            border-color: var(--gold);
+            box-shadow: 0 0 24px rgba(255, 215, 64, 0.25);
+        }
+
+        body.ultra #work .doc {
+            background: none; /* scanlines are a CRT device */
+            padding: clamp(1.5rem, 4.5vw, 2.4rem) clamp(1.1rem, 3.5vw, 2.2rem) clamp(1.8rem, 5vw, 2.6rem);
+            scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+        }
+
+        body.ultra #work .doc::-webkit-scrollbar { width: 10px; }
+        body.ultra #work .doc::-webkit-scrollbar-track { background: transparent; }
+
+        body.ultra #work .doc::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.22);
+            border: 3px solid transparent;
+            background-clip: content-box;
+            border-radius: 999px;
+        }
+
+        /* CURRENTLY: glass card with a gold hairline, not a gold fill */
+        body.ultra #work .now {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 215, 64, 0.45);
+            border-radius: 14px;
+            box-shadow: 0 0 40px rgba(255, 215, 64, 0.08);
+            padding: clamp(1.1rem, 3.5vw, 1.5rem);
+        }
+
+        body.ultra #work .now .k {
+            font-weight: 600;
+            font-size: 0.62rem;
+            letter-spacing: 0.45em;
+            color: var(--gold);
+        }
+
+        body.ultra #work .now .v {
+            font-weight: 300;
+            font-size: clamp(0.9rem, 2.6vw, 1.05rem);
+            letter-spacing: 0.06em;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        body.ultra #work .now .v2 {
+            font-weight: 300;
+            font-size: clamp(0.75rem, 2.2vw, 0.85rem);
+            letter-spacing: 0.14em;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        /* the year loses its box and becomes a quiet numeral in the margin */
+        body.ultra #work .yr { grid-template-columns: 6.5rem 1fr; }
+
+        body.ultra #work .y {
+            background: none;
+            border: none;
+            box-shadow: none;
+            padding: 0;
+            text-align: left;
+            font-weight: 200;
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            letter-spacing: 0.14em;
+            color: rgba(255, 255, 255, 0.5);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* a hairline rule carries the timeline instead of dashed dividers */
+        body.ultra #work .yr > ul {
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+            padding-left: clamp(1rem, 3vw, 1.6rem);
+            gap: 0.95rem;
+        }
+
+        body.ultra #work .yr + .yr { border-top: 1px solid rgba(255, 255, 255, 0.07); }
+
+        body.ultra #work li {
+            padding-left: 1.5rem;
+            font-weight: 300;
+            font-size: clamp(0.82rem, 2.3vw, 0.92rem);
+            letter-spacing: 0.02em;
+            line-height: 1.75;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* square pixels become dots; the milestone one carries a gold glow */
+        body.ultra #work li::before,
+        body.ultra #work .hint .key {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            box-shadow: none;
+        }
+
+        body.ultra #work li::before { top: 0.68em; }
+
+        body.ultra #work li.ms::before,
+        body.ultra #work .hint .key:not(.work) {
+            background: var(--gold);
+            box-shadow: 0 0 10px rgba(255, 215, 64, 0.65);
+        }
+
+        body.ultra #work li.ms { color: #fff; }
+
+        /* weight, not colour, separates a lead-in from its detail */
+        body.ultra #work .lead { font-weight: 500; color: #fff; }
+
+        body.ultra #work .hint {
+            border-top-color: rgba(255, 255, 255, 0.1);
+            font-weight: 300;
+            font-size: 0.68rem;
+            letter-spacing: 0.25em;
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        @media (max-width: 560px) {
+            /* stacked: the rule would hang off the year with nothing to carry */
+            body.ultra #work .yr > ul { border-left: none; padding-left: 0; }
         }
 
         /* ---------- game layers ---------- */
@@ -772,7 +963,7 @@
         <div class="sheet">
             <div class="bar">
                 <h2 id="worktitle">WORK HISTORY<i aria-hidden="true"></i></h2>
-                <button class="x" id="workclose" type="button" aria-label="Close work history">X CLOSE</button>
+                <button class="x" id="workclose" type="button" aria-label="Close work history"><span class="xk">X</span> CLOSE</button>
             </div>
 
             <div class="doc" id="workdoc" tabindex="0">
