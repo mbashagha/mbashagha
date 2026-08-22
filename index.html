@@ -104,10 +104,13 @@
 
         .menu { display: grid; gap: 0.85rem; margin-bottom: 2rem; }
 
-        .menu a {
+        .menu a, .menu button {
             display: block;
+            width: 100%;
+            font-family: 'Press Start 2P', monospace;
             font-size: 0.7rem;
             color: var(--ink);
+            text-align: center;
             text-decoration: none;
             border: 3px solid var(--ink);
             padding: 0.95rem 1rem;
@@ -116,17 +119,222 @@
             transition: transform 0.08s steps(2), box-shadow 0.08s steps(2);
         }
 
-        .menu a::before { content: '▶ '; visibility: hidden; }
+        .menu a::before, .menu button::before { content: '▶ '; visibility: hidden; }
 
-        .menu a:hover, .menu a:focus-visible {
+        .menu a:hover, .menu a:focus-visible,
+        .menu button:hover, .menu button:focus-visible {
             background: var(--gold);
             transform: translate(2px, 2px);
             box-shadow: 2px 2px 0 var(--ink);
         }
 
-        .menu a:hover::before, .menu a:focus-visible::before { visibility: visible; }
+        .menu a:hover::before, .menu a:focus-visible::before,
+        .menu button:hover::before, .menu button:focus-visible::before { visibility: visible; }
 
         .tiny { font-size: 0.45rem; color: #6d8b5a; letter-spacing: 0.08em; }
+
+        /* ---------- WORK sheet ---------- */
+        #work {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(0.5rem, 2.5vw, 2rem);
+            background: rgba(11, 28, 14, 0.86);
+        }
+
+        body.work-open #work { display: flex; }
+        body.work-open, body.work-open a, body.work-open button { cursor: auto; }
+        body.work-open { overflow: hidden; }
+        body.work-open #mower { display: none; }
+
+        #work .sheet {
+            display: flex;
+            flex-direction: column;
+            width: min(760px, 100%);
+            max-height: min(90dvh, 940px);
+            padding: 4px;
+            background: var(--cream);
+            border: 4px solid var(--ink);
+            box-shadow: 12px 12px 0 rgba(20, 46, 18, 0.45), inset 0 0 0 4px #fff;
+            animation: sheetin 0.16s steps(3) both;
+        }
+
+        @keyframes sheetin {
+            0% { transform: translateY(12px); opacity: 0; }
+            100% { transform: none; opacity: 1; }
+        }
+
+        #work .bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            background: var(--ink);
+            padding: clamp(0.75rem, 2.6vw, 1.05rem) clamp(0.85rem, 3vw, 1.35rem);
+        }
+
+        #work .bar h2 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: clamp(0.78rem, 3.4vw, 1rem);
+            color: var(--gold);
+            letter-spacing: 0.12em;
+        }
+
+        #work .bar h2 i {
+            width: 0.5em;
+            height: 0.95em;
+            background: var(--gold);
+            animation: blink 1s steps(1) infinite;
+        }
+
+        #work .x {
+            flex: none;
+            font-family: 'Press Start 2P', monospace;
+            font-size: clamp(0.5rem, 2.2vw, 0.62rem);
+            line-height: 1;
+            color: var(--cream);
+            background: transparent;
+            border: 3px solid rgba(255, 251, 232, 0.5);
+            padding: 0.55rem 0.6rem;
+            transition: background 0.08s steps(2);
+        }
+
+        #work .x:hover, #work .x:focus-visible { background: #c62828; border-color: var(--cream); }
+
+        /* scrolling document */
+        #work .doc {
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch;
+            padding: clamp(1.1rem, 4vw, 1.9rem) clamp(0.9rem, 3.4vw, 1.8rem) clamp(1.3rem, 4vw, 1.9rem);
+            /* faint CRT scanlines over the cream */
+            background: repeating-linear-gradient(0deg, rgba(22, 48, 26, 0.035) 0 1px, transparent 1px 4px);
+            scrollbar-width: thin;
+            scrollbar-color: var(--ink) #ece6cf;
+        }
+
+        #work .doc::-webkit-scrollbar { width: 12px; }
+        #work .doc::-webkit-scrollbar-track { background: #ece6cf; }
+        #work .doc::-webkit-scrollbar-thumb { background: var(--ink); border: 3px solid #ece6cf; }
+
+        /* "currently" plate */
+        #work .now {
+            background: var(--gold);
+            border: 3px solid var(--ink);
+            box-shadow: 5px 5px 0 var(--ink);
+            padding: clamp(0.9rem, 3vw, 1.2rem);
+            margin-bottom: clamp(1.5rem, 4.5vw, 2.2rem);
+        }
+
+        #work .now .k {
+            font-size: clamp(0.42rem, 1.8vw, 0.5rem);
+            letter-spacing: 0.22em;
+            color: #7d5f00;
+            margin-bottom: 0.85rem;
+        }
+
+        #work .now .v {
+            font-size: clamp(0.52rem, 2.1vw, 0.62rem);
+            line-height: 1.95;
+            color: var(--ink);
+        }
+
+        /* year rows */
+        #work .yr {
+            display: grid;
+            grid-template-columns: 5.5rem 1fr;
+            gap: clamp(0.75rem, 2.6vw, 1.5rem);
+            padding-bottom: clamp(1.2rem, 3.6vw, 1.7rem);
+        }
+
+        #work .yr + .yr {
+            border-top: 3px dashed rgba(22, 48, 26, 0.2);
+            padding-top: clamp(1.2rem, 3.6vw, 1.7rem);
+        }
+
+        #work .y {
+            position: sticky;
+            top: 0;
+            align-self: start;
+            font-size: clamp(0.5rem, 2.1vw, 0.6rem);
+            text-align: center;
+            color: var(--ink);
+            background: #fff;
+            border: 3px solid var(--ink);
+            box-shadow: 3px 3px 0 rgba(22, 48, 26, 0.28);
+            padding: 0.55rem 0.3rem;
+        }
+
+        #work ul { list-style: none; display: grid; gap: 0.8rem; }
+
+        #work li {
+            position: relative;
+            padding-left: 1.4rem;
+            font-size: clamp(0.5rem, 2vw, 0.57rem);
+            line-height: 2.05;
+            color: var(--ink);
+        }
+
+        /* markers are drawn, not typed: Press Start 2P has no ▸/★ glyph,
+           so a character bullet would fall back to a different face */
+        #work li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.62em;
+            width: 0.5rem;
+            height: 0.5rem;
+            background: #7cb342;
+            box-shadow: 2px 2px 0 rgba(22, 48, 26, 0.3);
+        }
+
+        /* career milestones read differently from shipped work */
+        #work li.ms::before { background: #c62828; }
+        #work li.ms { color: #0f2412; }
+
+        #work .lead { color: #c62828; }
+
+        #work .who {
+            font-size: clamp(0.46rem, 1.9vw, 0.52rem);
+            letter-spacing: 0.1em;
+            color: #33691e;
+            margin-bottom: 0.85rem;
+        }
+
+        #work .who + ul { margin-bottom: 0.2rem; }
+        #work .who ~ .who { margin-top: 1.25rem; }
+
+        #work .hint .key {
+            display: inline-block;
+            width: 0.5rem;
+            height: 0.5rem;
+            background: #c62828;
+            box-shadow: 2px 2px 0 rgba(22, 48, 26, 0.3);
+        }
+
+        #work .hint .key.work { background: #7cb342; }
+
+        #work .hint {
+            margin-top: clamp(1.3rem, 4vw, 1.9rem);
+            padding-top: clamp(1.1rem, 3.5vw, 1.5rem);
+            border-top: 3px solid rgba(22, 48, 26, 0.2);
+            text-align: center;
+            font-size: clamp(0.42rem, 1.8vw, 0.48rem);
+            line-height: 2;
+            color: #6d8b5a;
+            letter-spacing: 0.08em;
+        }
+
+        @media (max-width: 560px) {
+            #work .yr { grid-template-columns: 1fr; gap: 0.9rem; }
+            #work .y { position: static; justify-self: start; padding: 0.55rem 0.75rem; }
+        }
 
         /* ---------- game layers ---------- */
         #grass, #fx {
@@ -490,12 +698,147 @@
             <h1>MO BASHAGHA</h1>
             <p class="sub">CURRENTLY DESIGNING<br>WHATSAPP<span class="blink">▮</span></p>
             <nav class="menu">
+                <button id="workbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="work">WORK</button>
                 <a href="mailto:mbashagha@gmail.com">EMAIL</a>
                 <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LINKEDIN</a>
             </nav>
             <p class="tiny">© <span id="year">2026</span> MO BASHAGHA · <span id="edition">8-BIT EDITION</span></p>
         </div>
     </main>
+
+    <div id="work" role="dialog" aria-modal="true" aria-labelledby="worktitle">
+        <div class="sheet">
+            <div class="bar">
+                <h2 id="worktitle">WORK<i aria-hidden="true"></i></h2>
+                <button class="x" id="workclose" type="button" aria-label="Close work">X CLOSE</button>
+            </div>
+
+            <div class="doc" id="workdoc" tabindex="0">
+                <div class="now">
+                    <p class="k">CURRENTLY</p>
+                    <p class="v">Lead IC designer for WhatsApp Growth &amp; Broadcast Pillar</p>
+                </div>
+
+                <section class="yr">
+                    <p class="y">2026</p>
+                    <ul>
+                        <li><span class="lead">In progress:</span> New bets for US Growth and defining future of Status &amp; Channels.</li>
+                        <li><span class="lead">AI:</span> Defined and ran AI curriculum and learning series for designers and XFN.</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2025</p>
+                    <ul>
+                        <li><span class="lead">WhatsApp Channels:</span> Defining Interactivity Vision, shipping new interactive message type ‘Questions’, personalised recommendations and supported launch of monetisation projects.</li>
+                        <li><span class="lead">WhatsApp Status:</span> Designed new features to help people share with their close friends and allowing Channels to post to status.</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2024</p>
+                    <ul>
+                        <li>Redesigned Updates Tab</li>
+                        <li>Redesigned WhatsApp sharing flows</li>
+                        <li>Designed Channels directory and discovery</li>
+                        <li>Supported WhatsApp-wide redesign</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2023</p>
+                    <ul>
+                        <li class="ms">Promoted to IC7</li>
+                        <li>Shipped Channels and new Status experience globally — growing to 500M users in 7 weeks.</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2022</p>
+                    <ul>
+                        <li>Pitched (up to Mark) and got approval for 0-1 product called WhatsApp Channels.</li>
+                        <li>Designed and shipped Status reactions, profile rings and audience selection.</li>
+                        <li>Redesigned the WhatsApp camera, introducing camera modes.</li>
+                        <li>Designed new media editor tools such as pen tools and blur.</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2021</p>
+                    <ul>
+                        <li class="ms">Promoted to IC6</li>
+                        <li>Shipped E2E payment flows</li>
+                        <li>Shipped interactive business messages</li>
+                        <li class="ms">Moved from WhatsApp Commerce &amp; Payments to set up first consumer pillar in London, WhatsApp Sharing.</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2020</p>
+                    <ul>
+                        <li>Shipped video calling (Rooms) on Facebook for COVID</li>
+                        <li>Shipped work profile and new invite flows for Groups</li>
+                        <li class="ms">Joined WhatsApp</li>
+                        <li>Dynamic reply button and quick action button messages</li>
+                        <li>Ice breakers</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2019</p>
+                    <ul>
+                        <li>Started and shipped 0-1 product of Work Groups on Facebook</li>
+                        <li>Landing page experience, pricing and packaging and invite flows for Workplace</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2018</p>
+                    <div>
+                        <p class="who">TRANSFERWISE (NOW WISE)</p>
+                        <ul>
+                            <li>Started the High amount transfer and lead mobile designer for the company.</li>
+                        </ul>
+                        <p class="who">FACEBOOK</p>
+                        <ul>
+                            <li class="ms">Joined Facebook as IC4 and promoted to IC5 in one half</li>
+                            <li>Designed and shipped sign up flows on Facebook</li>
+                            <li>Redesigned landing page</li>
+                            <li>App Store assets and localisation</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2017</p>
+                    <div>
+                        <p class="who">TRANSFERWISE (NOW WISE)</p>
+                        <ul>
+                            <li>Designer for Conversion team</li>
+                            <li>Shipped Instant transfers</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2015–16</p>
+                    <ul>
+                        <li>Apple + IBM, designing iOS apps for airlines, finance and logistic industries.</li>
+                    </ul>
+                </section>
+
+                <section class="yr">
+                    <p class="y">2012–14</p>
+                    <ul>
+                        <li>Designer for IBM iX, working across clients like Santander, Co-Op, Argos, Cathay Pacific and more.</li>
+                        <li class="ms">Moved to Toronto to join Apple partnership.</li>
+                    </ul>
+                </section>
+
+                <p class="hint"><span class="key"></span> CAREER MILESTONE &nbsp;&nbsp; <span class="key work"></span> SHIPPED WORK<br>PRESS ESC OR TAP OUTSIDE TO RETURN TO THE LAWN</p>
+            </div>
+        </div>
+    </div>
 
     <canvas id="grass"></canvas>
     <canvas id="fx"></canvas>
@@ -1530,6 +1873,7 @@
 
         function onMove(e) {
             if (finished) return;
+            if (body.classList.contains('work-open')) return; // sheet is up: pause the mower
             if (gfx === 'ultra') return; // 3D mode raycasts its own mowing
             var x = e.clientX, y = e.clientY;
             // mower cursor
@@ -1650,6 +1994,87 @@
                 if (soundOn && audio && audio.state === 'running') blip(880, audio.currentTime, 0.07, 0.08);
             }
         };
+    })();
+
+    /* ---------- WORK sheet ----------
+       Lives outside the game IIFE so it also works on the reduced-motion
+       path, where the game returns early and the site renders unmowed. */
+    (function () {
+        'use strict';
+        var body = document.body;
+        var workEl = document.getElementById('work');
+        var workBtn = document.getElementById('workbtn');
+        var workDoc = document.getElementById('workdoc');
+        var closeBtn = document.getElementById('workclose');
+        if (!workEl || !workBtn) return;
+
+        function isOpen() { return body.classList.contains('work-open'); }
+
+        function beep() {
+            if (window.LAWN && window.LAWN.blip) window.LAWN.blip();
+        }
+
+        // true only while #work is a history entry we pushed ourselves — going
+        // back is safe then. A page loaded straight at /#work has no entry of
+        // ours behind it, so closing must rewrite the hash, not navigate away.
+        var pushedByUs = false;
+
+        function open(push) {
+            if (isOpen()) return;
+            body.classList.add('work-open');
+            workBtn.setAttribute('aria-expanded', 'true');
+            workDoc.scrollTop = 0;
+            closeBtn.focus();
+            if (push && location.hash !== '#work') {
+                try {
+                    history.pushState({ work: 1 }, '', '#work');
+                    pushedByUs = true;
+                } catch (e) { /* ignore */ }
+            }
+            beep();
+        }
+
+        function close(fromPop) {
+            if (!isOpen()) return;
+            body.classList.remove('work-open');
+            workBtn.setAttribute('aria-expanded', 'false');
+            workBtn.focus();
+            if (!fromPop) {
+                try {
+                    if (pushedByUs) history.back();
+                    else if (location.hash === '#work') history.replaceState(null, '', location.pathname + location.search);
+                } catch (e) { /* ignore */ }
+            }
+            pushedByUs = false;
+            beep();
+        }
+
+        workBtn.addEventListener('click', function () { open(true); });
+        closeBtn.addEventListener('click', function () { close(false); });
+
+        // click the dim backdrop (but not the sheet) to close
+        workEl.addEventListener('click', function (e) {
+            if (e.target === workEl) close(false);
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (!isOpen()) return;
+            if (e.key === 'Escape') { e.preventDefault(); close(false); return; }
+            // keep tab focus inside the sheet
+            if (e.key === 'Tab') {
+                var f = [closeBtn, workDoc];
+                var i = f.indexOf(document.activeElement);
+                e.preventDefault();
+                f[(i + (e.shiftKey ? f.length - 1 : 1) + f.length) % f.length].focus();
+            }
+        });
+
+        window.addEventListener('popstate', function () {
+            if (location.hash === '#work') open(false); else close(true);
+        });
+
+        // deep link: mobashagha.com/#work opens straight to the sheet
+        if (location.hash === '#work') open(false);
     })();
     </script>
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "953a3b657f804b79a6c8d47baddc81c9"}'></script><!-- End Cloudflare Web Analytics -->
