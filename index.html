@@ -363,15 +363,18 @@
         /* a full slab of --gold is far too hot against the dark sheet, so at
            night the plate becomes a bordered panel and gold drops to accent
            weight: the border and the label, nothing filled */
+        /* the plate keeps its var(--mow-b) fill from the day rule — the token
+           is already the night lawn after dark, so the plate stays a patch of
+           cut grass in both palettes. Only the text has to flip: ink is
+           unreadable on the night sage, so the three lines go light. */
         body.night:not(.ultra) #work .now {
-            background: #1d3a26;
-            border-color: #b8912b;
+            border-color: #0d2114;
             box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
         }
 
-        body.night:not(.ultra) #work .now .k { color: #d9b74a; }
+        body.night:not(.ultra) #work .now .k { color: #dcebd2; }
         body.night:not(.ultra) #work .now .v { color: #f4f1e6; }
-        body.night:not(.ultra) #work .now .v2 { color: #a8c39f; }
+        body.night:not(.ultra) #work .now .v2 { color: #d8e8ce; }
 
         body.night:not(.ultra) #work .y {
             background: #224a30;
