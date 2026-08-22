@@ -335,6 +335,57 @@
             #work .y { position: static; justify-self: start; padding: 0.55rem 0.75rem; }
         }
 
+        /* ---------- WORK sheet at night ----------
+           Keyed on .night alone, not :not(.ultra): the sheet keeps one look in
+           both graphics modes, and ULTRA's night scene is dark too. */
+        body.night #work { background: rgba(4, 12, 7, 0.9); }
+
+        body.night #work .sheet {
+            background: #173020;
+            border-color: #3f7d4a;
+            box-shadow: 12px 12px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 4px #224a30;
+        }
+
+        body.night #work .bar { background: #0d2114; }
+
+        body.night #work .doc {
+            /* scanlines flip from dark-on-cream to light-on-dark */
+            background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 4px);
+            scrollbar-color: #3f7d4a #0d2114;
+        }
+
+        body.night #work .doc::-webkit-scrollbar-track { background: #0d2114; }
+        body.night #work .doc::-webkit-scrollbar-thumb { background: #3f7d4a; border-color: #0d2114; }
+
+        /* the gold plate stays gold — it is the one bright thing at night */
+        body.night #work .now {
+            border-color: #0d2114;
+            box-shadow: 5px 5px 0 #0d2114;
+        }
+
+        body.night #work .y {
+            background: #224a30;
+            border-color: #f4f1e6;
+            color: #f4f1e6;
+            box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        body.night #work li { color: #dfeeda; }
+        body.night #work .lead { color: #dfeeda; }
+        body.night #work li.ms { color: #f4f1e6; }
+
+        body.night #work li::before { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
+        body.night #work li.ms::before,
+        body.night #work .hint .key:not(.work) { background: #ef5350; }
+        body.night #work .hint .key { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
+
+        body.night #work .yr + .yr { border-top-color: rgba(244, 241, 230, 0.18); }
+
+        body.night #work .hint {
+            border-top-color: rgba(244, 241, 230, 0.18);
+            color: #8fb389;
+        }
+
         /* ---------- game layers ---------- */
         #grass, #fx {
             position: fixed;
@@ -828,7 +879,7 @@
                     </ul>
                 </section>
 
-                <p class="hint"><span class="key"></span> CAREER MILESTONE &nbsp;&nbsp; <span class="key work"></span> SHIPPED WORK<br>PRESS ESC OR TAP OUTSIDE TO RETURN TO THE LAWN</p>
+                <p class="hint"><span class="key"></span> CAREER MILESTONE &nbsp;&nbsp; <span class="key work"></span> SHIPPED WORK</p>
             </div>
         </div>
     </div>
