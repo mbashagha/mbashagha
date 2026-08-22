@@ -72,6 +72,12 @@
             border: 4px solid var(--ink);
             box-shadow: 10px 10px 0 rgba(20, 46, 18, 0.35), inset 0 0 0 4px #fff;
             padding: clamp(1.5rem, 4vw, 2.75rem);
+            /* h1's line-height puts 0.225em of leading above its caps, so the
+               tag-to-title gap always reads that much bigger than its 1.5rem
+               margin. The top padding has to carry the same leading to look
+               equal; max() keeps the card's own padding where it is already
+               the larger of the two. */
+            padding-top: max(clamp(1.5rem, 4vw, 2.75rem), calc(1.5rem + 0.225 * clamp(1.3rem, 5.5vw, 2rem)));
             max-width: 460px;
             width: 100%;
             text-align: center;
@@ -306,11 +312,9 @@
            than the site red, which reads as an error next to an achievement.
            Deeper than --gold so an 8px square still holds against the cream. */
         #work li.ms::before { background: #f9a825; }
-        #work li.ms { color: #0f2412; }
 
-        /* lead-in labels sit in the body ink: the marker square carries the
-           only colour coding in the list */
-        #work .lead { color: var(--ink); }
+        /* .lead marks the label half of an entry but is deliberately given no
+           treatment — no weight, no colour. The marker alone distinguishes. */
 
         #work .hint .key {
             display: inline-block;
@@ -384,8 +388,6 @@
         }
 
         body.night:not(.ultra) #work li { color: #dfeeda; }
-        body.night:not(.ultra) #work .lead { color: #dfeeda; }
-        body.night:not(.ultra) #work li.ms { color: #f4f1e6; }
 
         body.night:not(.ultra) #work li::before { box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4); }
         body.night:not(.ultra) #work li.ms::before,
@@ -570,11 +572,6 @@
             background: var(--gold);
             box-shadow: 0 0 10px rgba(255, 215, 64, 0.65);
         }
-
-        body.ultra #work li.ms { color: #fff; }
-
-        /* weight, not colour, separates a lead-in from its detail */
-        body.ultra #work .lead { font-weight: 500; color: #fff; }
 
         body.ultra #work .hint {
             border-top-color: rgba(255, 255, 255, 0.1);
@@ -844,21 +841,23 @@
         body.ultra .blink { animation: fadeblink 1.4s ease-in-out infinite; }
         @keyframes fadeblink { 50% { opacity: 0.1; } }
 
-        body.ultra .menu a {
+        body.ultra .menu a, body.ultra .menu button {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 12px;
             box-shadow: none;
             color: #fff;
+            font-family: 'Outfit', sans-serif;
             font-weight: 500;
             font-size: 0.85rem;
             letter-spacing: 0.35em;
             transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
-        body.ultra .menu a::before { content: none; }
+        body.ultra .menu a::before, body.ultra .menu button::before { content: none; }
 
-        body.ultra .menu a:hover, body.ultra .menu a:focus-visible {
+        body.ultra .menu a:hover, body.ultra .menu a:focus-visible,
+        body.ultra .menu button:hover, body.ultra .menu button:focus-visible {
             background: rgba(255, 215, 64, 0.12);
             border-color: var(--gold);
             box-shadow: 0 0 24px rgba(255, 215, 64, 0.25);
