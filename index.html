@@ -245,6 +245,13 @@
             color: var(--ink);
         }
 
+        #work .now .v2 {
+            margin-top: 0.75rem;
+            font-size: clamp(0.46rem, 1.85vw, 0.53rem);
+            line-height: 2;
+            color: #5e4600;
+        }
+
         /* year rows */
         #work .yr {
             display: grid;
@@ -298,17 +305,9 @@
         #work li.ms::before { background: #c62828; }
         #work li.ms { color: #0f2412; }
 
-        #work .lead { color: #c62828; }
-
-        #work .who {
-            font-size: clamp(0.46rem, 1.9vw, 0.52rem);
-            letter-spacing: 0.1em;
-            color: #33691e;
-            margin-bottom: 0.85rem;
-        }
-
-        #work .who + ul { margin-bottom: 0.2rem; }
-        #work .who ~ .who { margin-top: 1.25rem; }
+        /* red is reserved for the milestone marker, so lead-in labels take the
+           site's secondary green instead */
+        #work .lead { color: #33691e; }
 
         #work .hint .key {
             display: inline-block;
@@ -698,7 +697,7 @@
             <h1>MO BASHAGHA</h1>
             <p class="sub">CURRENTLY DESIGNING<br>WHATSAPP<span class="blink">▮</span></p>
             <nav class="menu">
-                <button id="workbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="work">WORK</button>
+                <button id="workbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="work">WORK HISTORY</button>
                 <a href="mailto:mbashagha@gmail.com">EMAIL</a>
                 <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LINKEDIN</a>
             </nav>
@@ -709,39 +708,39 @@
     <div id="work" role="dialog" aria-modal="true" aria-labelledby="worktitle">
         <div class="sheet">
             <div class="bar">
-                <h2 id="worktitle">WORK<i aria-hidden="true"></i></h2>
-                <button class="x" id="workclose" type="button" aria-label="Close work">X CLOSE</button>
+                <h2 id="worktitle">WORK HISTORY<i aria-hidden="true"></i></h2>
+                <button class="x" id="workclose" type="button" aria-label="Close work history">X CLOSE</button>
             </div>
 
             <div class="doc" id="workdoc" tabindex="0">
                 <div class="now">
                     <p class="k">CURRENTLY</p>
                     <p class="v">Lead IC designer for WhatsApp Growth &amp; Broadcast Pillar</p>
+                    <p class="v2">Responsible for WhatsApp Growth, Status, Channels and New Bets.</p>
                 </div>
 
                 <section class="yr">
                     <p class="y">2026</p>
                     <ul>
-                        <li><span class="lead">In progress:</span> New bets for US Growth and defining future of Status &amp; Channels.</li>
-                        <li><span class="lead">AI:</span> Defined and ran AI curriculum and learning series for designers and XFN.</li>
+                        <li><span class="lead">In progress:</span> New bets for WhatsApp and defining future of Status &amp; Channels.</li>
+                        <li><span class="lead">AI:</span> Defined and ran AI learning series for designers and XFN.</li>
                     </ul>
                 </section>
 
                 <section class="yr">
                     <p class="y">2025</p>
                     <ul>
-                        <li><span class="lead">WhatsApp Channels:</span> Defining Interactivity Vision, shipping new interactive message type ‘Questions’, personalised recommendations and supported launch of monetisation projects.</li>
-                        <li><span class="lead">WhatsApp Status:</span> Designed new features to help people share with their close friends and allowing Channels to post to status.</li>
+                        <li><span class="lead">Channels:</span> Question, Personalisation</li>
+                        <li><span class="lead">Status:</span> Close sharing, Channels Status, Monetisation</li>
                     </ul>
                 </section>
 
                 <section class="yr">
                     <p class="y">2024</p>
                     <ul>
-                        <li>Redesigned Updates Tab</li>
-                        <li>Redesigned WhatsApp sharing flows</li>
-                        <li>Designed Channels directory and discovery</li>
-                        <li>Supported WhatsApp-wide redesign</li>
+                        <li>Updates Tab</li>
+                        <li>WhatsApp sharing flows</li>
+                        <li>Channels directory</li>
                     </ul>
                 </section>
 
@@ -756,10 +755,10 @@
                 <section class="yr">
                     <p class="y">2022</p>
                     <ul>
-                        <li>Pitched (up to Mark) and got approval for 0-1 product called WhatsApp Channels.</li>
-                        <li>Designed and shipped Status reactions, profile rings and audience selection.</li>
+                        <li><span class="lead">Started 0-1 product:</span> WhatsApp Channels, presenting to Meta leadership + Mark.</li>
+                        <li>Status reactions, profile rings and audience selection.</li>
                         <li>Redesigned the WhatsApp camera, introducing camera modes.</li>
-                        <li>Designed new media editor tools such as pen tools and blur.</li>
+                        <li>New media editor tools</li>
                     </ul>
                 </section>
 
@@ -769,7 +768,7 @@
                         <li class="ms">Promoted to IC6</li>
                         <li>Shipped E2E payment flows</li>
                         <li>Shipped interactive business messages</li>
-                        <li class="ms">Moved from WhatsApp Commerce &amp; Payments to set up first consumer pillar in London, WhatsApp Sharing.</li>
+                        <li class="ms">Moved to set up first consumer pillar in London, WhatsApp Sharing.</li>
                     </ul>
                 </section>
 
@@ -787,37 +786,27 @@
                 <section class="yr">
                     <p class="y">2019</p>
                     <ul>
-                        <li>Started and shipped 0-1 product of Work Groups on Facebook</li>
+                        <li><span class="lead">Started 0-1 product:</span> Work Groups on Facebook</li>
                         <li>Landing page experience, pricing and packaging and invite flows for Workplace</li>
                     </ul>
                 </section>
 
                 <section class="yr">
                     <p class="y">2018</p>
-                    <div>
-                        <p class="who">TRANSFERWISE (NOW WISE)</p>
-                        <ul>
-                            <li>Started the High amount transfer and lead mobile designer for the company.</li>
-                        </ul>
-                        <p class="who">FACEBOOK</p>
-                        <ul>
-                            <li class="ms">Joined Facebook as IC4 and promoted to IC5 in one half</li>
-                            <li>Designed and shipped sign up flows on Facebook</li>
-                            <li>Redesigned landing page</li>
-                            <li>App Store assets and localisation</li>
-                        </ul>
-                    </div>
+                    <ul>
+                        <li><span class="lead">TransferWise (now Wise):</span> Started the High amount transfer team and led mobile design.</li>
+                        <li class="ms">Joined Facebook as IC4 and promoted to IC5 in one half</li>
+                        <li>Designed and shipped sign up flows on Facebook</li>
+                        <li>Redesigned landing page</li>
+                        <li>App Store assets and localisation</li>
+                    </ul>
                 </section>
 
                 <section class="yr">
                     <p class="y">2017</p>
-                    <div>
-                        <p class="who">TRANSFERWISE (NOW WISE)</p>
-                        <ul>
-                            <li>Designer for Conversion team</li>
-                            <li>Shipped Instant transfers</li>
-                        </ul>
-                    </div>
+                    <ul>
+                        <li><span class="lead">TransferWise (now Wise):</span> Designer for Conversion team and shipped Instant transfers</li>
+                    </ul>
                 </section>
 
                 <section class="yr">
