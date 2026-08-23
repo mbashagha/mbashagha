@@ -20,7 +20,7 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@200;300;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@200;300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <script type="importmap">
     { "imports": { "three": "./vendor/three.module.min.js", "postprocessing": "./vendor/postprocessing.js" } }
     </script>
@@ -456,10 +456,10 @@
         }
 
         body.ultra #work .bar h2 {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            font-size: clamp(0.95rem, 3vw, 1.1rem);
-            letter-spacing: -0.01em;
+            font-family: var(--u-serif);
+            font-weight: 400;
+            font-size: clamp(1.15rem, 3.4vw, 1.45rem);
+            letter-spacing: -0.005em;
             color: var(--u-t1);
             text-shadow: none;
         }
@@ -528,10 +528,11 @@
         }
 
         body.ultra #work .now .v {
-            font-weight: 500;
-            font-size: clamp(0.98rem, 2.6vw, 1.1rem);
-            letter-spacing: -0.012em;
-            line-height: 1.4;
+            font-family: var(--u-serif);
+            font-weight: 400;
+            font-size: clamp(1.15rem, 3vw, 1.35rem);
+            letter-spacing: -0.005em;
+            line-height: 1.3;
             color: var(--u-t1);
         }
 
@@ -887,6 +888,13 @@
 
             --u-r: 18px;
 
+            /* The display face, for the handful of lines that name something:
+               his name, the sheet's title, what he is doing now, and the two
+               game shouts. Everything else stays in the sans. Instrument
+               Serif ships one weight (400) and an italic — never ask it for
+               600, or the browser will synthesise a bold and smear it. */
+            --u-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+
             /* smooth striped turf: vignette + grain + soft alternating bands */
             background-image:
                 radial-gradient(ellipse at 50% 38%, rgba(255, 255, 245, 0.13), rgba(0, 0, 0, 0.30)),
@@ -948,23 +956,30 @@
         body.ultra .tag .st { display: none; }
 
         body.ultra h1 {
-            font-weight: 600;
-            font-size: clamp(2rem, 6.5vw, 2.85rem);
+            font-family: var(--u-serif);
+            font-weight: 400;
+            /* a serif carries less ink per point than Outfit did, so it needs
+               the extra size to hold the same weight on the card */
+            font-size: clamp(2.4rem, 8vw, 3.5rem);
             /* tight, not spaced: at display size the name should read as one
-               word-shape. The old 0.18em broke it into eleven letters. */
-            letter-spacing: -0.025em;
-            line-height: 1.06;
+               word-shape. The old 0.18em broke it into eleven letters. The
+               serif needs less of the correction than the sans did. */
+            letter-spacing: -0.01em;
+            line-height: 1.02;
             text-shadow: none;
             /* background-clip: text paints the gradient only inside the
                element's border box, so anything the glyphs hang outside that
-               box is simply never painted. Outfit's content area is 1.272em
-               against a 1.06em line box, which leaves 0.106em of descender
-               below it — enough to lop the tail off the 'g' in Bashagha.
-               The padding gives the box that room back (0.14em for headroom)
-               and the margin gives it up again, so nothing moves. Keep them
-               in step if either value changes. */
-            padding-bottom: 0.14em;
-            margin-bottom: calc(0.9rem - 0.14em);
+               box is simply never painted — which is what was lopping the
+               tail off the 'g' in Bashagha. Instrument Serif's content area
+               is 1.286em against a 1.02em line box, so it sits 0.133em proud
+               of the box top and bottom alike. The padding gives the box that
+               room back with headroom; the margins give it up again, so
+               nothing moves. Re-measure both if the face or line-height
+               changes: this is the font's metrics, not a magic number. */
+            padding-top: 0.18em;
+            padding-bottom: 0.18em;
+            margin-top: -0.18em;
+            margin-bottom: calc(0.9rem - 0.18em);
             /* lit from above, like everything else on the card */
             background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.72));
             -webkit-background-clip: text;
@@ -1102,9 +1117,10 @@
         @keyframes floaty { 50% { transform: translateX(-50%) translateY(6px); } }
 
         body.ultra #toast h2 {
-            font-weight: 600;
-            letter-spacing: -0.01em;
-            font-size: 1.2rem;
+            font-family: var(--u-serif);
+            font-weight: 400;
+            letter-spacing: -0.005em;
+            font-size: 1.45rem;
             color: var(--u-accent);
         }
 
@@ -1132,8 +1148,9 @@
         }
 
         body.ultra #banner h2 {
-            font-weight: 600;
-            letter-spacing: -0.015em;
+            font-family: var(--u-serif);
+            font-weight: 400;
+            letter-spacing: -0.005em;
             color: var(--u-accent);
             text-shadow: 0 0 50px rgba(255, 211, 107, 0.45);
         }
