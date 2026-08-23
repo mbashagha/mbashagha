@@ -543,10 +543,13 @@
         }
 
         body.ultra #work .now .v {
-            font-weight: 500;
-            font-size: clamp(0.95rem, 2.5vw, 1.08rem);
-            letter-spacing: -0.012em;
-            line-height: 1.4;
+            font-family: var(--u-serif);
+            font-weight: 400;
+            /* the serif needs the extra size to hold its weight next to
+               Raveo, which has the larger x-height of the two */
+            font-size: clamp(1.15rem, 3vw, 1.35rem);
+            letter-spacing: -0.005em;
+            line-height: 1.3;
             color: var(--u-t1);
         }
 
@@ -902,7 +905,8 @@
 
             --u-r: 18px;
 
-            /* The display face, used on exactly one line: his name. Instrument
+            /* The display face, for the two lines that state something rather
+               than label it: his name, and what he is doing now. Instrument
                Serif ships one weight (400) and an italic — never ask it for
                600, or the browser will synthesise a bold and smear it. */
             --u-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
