@@ -308,13 +308,13 @@
             box-shadow: 2px 2px 0 rgba(22, 48, 26, 0.3);
         }
 
-        /* career milestones read differently from shipped work — amber rather
+        /* career milestones read differently from shipped work: amber rather
            than the site red, which reads as an error next to an achievement.
            Deeper than --gold so an 8px square still holds against the cream. */
         #work li.ms::before { background: #f9a825; }
 
         /* .lead marks the label half of an entry but is deliberately given no
-           treatment — no weight, no colour. The marker alone distinguishes. */
+           treatment: no weight, no colour. The marker alone distinguishes. */
 
         #work .hint .key {
             display: inline-block;
@@ -367,9 +367,9 @@
         /* a full slab of --gold is far too hot against the dark sheet, so at
            night the plate becomes a bordered panel and gold drops to accent
            weight: the border and the label, nothing filled */
-        /* the plate keeps its var(--mow-b) fill from the day rule — the token
-           is already the night lawn after dark, so the plate stays a patch of
-           cut grass in both palettes. Only the text has to flip: ink is
+        /* the plate keeps its var(--mow-b) fill from the day rule, since the
+           token is already the night lawn after dark, so the plate stays a patch
+           of cut grass in both palettes. Only the text has to flip: ink is
            unreadable on the night sage, so the three lines go light. */
         body.night:not(.ultra) #work .now {
             border-color: #0d2114;
@@ -402,12 +402,12 @@
         }
 
         /* ---------- WORK sheet in ULTRA ----------
-           The pixel sheet's devices — hard shadows, scanlines, square markers,
-           boxed years — are 8-bit vocabulary. ULTRA restates the same structure
+           The pixel sheet's devices (hard shadows, scanlines, square markers,
+           boxed years) are 8-bit vocabulary. ULTRA restates the same structure
            in its own: dark glass, hairlines, Outfit at wide tracking, gold as a
            point accent rather than a fill. */
         /* the scrim, not the sheet, does the work of hiding the 3D card behind
-           it — that leaves the sheet free to use the card's own glass */
+           it, which leaves the sheet free to use the card's own glass */
         body.ultra #work {
             background: rgba(4, 8, 6, 0.72);
             -webkit-backdrop-filter: blur(8px);
@@ -1009,7 +1009,7 @@
                     <p class="y">2023</p>
                     <ul>
                         <li class="ms">Promoted to IC7 (Senior Staff)</li>
-                        <li>Shipped Channels and new Status experience globally — growing to 500M users in 7 weeks.</li>
+                        <li>Shipped Channels and new Status experience globally, growing to 500M users in 7 weeks.</li>
                     </ul>
                 </section>
 
@@ -1075,14 +1075,14 @@
                 </section>
 
                 <section class="yr">
-                    <p class="y">2015–16</p>
+                    <p class="y">2015-16</p>
                     <ul>
                         <li>Apple + IBM, designed iOS apps for airlines, finance and logistic industries.</li>
                     </ul>
                 </section>
 
                 <section class="yr">
-                    <p class="y">2012–14</p>
+                    <p class="y">2012-14</p>
                     <ul>
                         <li>Designer for IBM iX, worked across clients like Santander, Co-Op, Argos, Cathay Pacific and more.</li>
                         <li class="ms">Moved to Toronto to join Apple partnership.</li>
@@ -2270,8 +2270,8 @@
             if (window.LAWN && window.LAWN.blip) window.LAWN.blip();
         }
 
-        // true only while #work is a history entry we pushed ourselves — going
-        // back is safe then. A page loaded straight at /#work has no entry of
+        // true only while #work is a history entry we pushed ourselves, so
+        // going back is safe. A page loaded straight at /#work has no entry of
         // ours behind it, so closing must rewrite the hash, not navigate away.
         var pushedByUs = false;
 
