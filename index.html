@@ -1202,7 +1202,7 @@
                 <a href="mailto:mbashagha@gmail.com">Email</a>
                 <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LinkedIn</a>
             </nav>
-            <p class="tiny">© <span id="year">2026</span> Mo Bashagha · <span id="edition">8-bit edition</span></p>
+            <p class="tiny"><span id="edition">8-bit edition</span></p>
         </div>
     </main>
 
@@ -1398,8 +1398,6 @@
     <script>
     (function () {
         'use strict';
-
-        document.getElementById('year').textContent = new Date().getFullYear();
 
         var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var body = document.body;
