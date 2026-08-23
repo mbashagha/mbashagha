@@ -954,8 +954,17 @@
                word-shape. The old 0.18em broke it into eleven letters. */
             letter-spacing: -0.025em;
             line-height: 1.06;
-            margin-bottom: 0.9rem;
             text-shadow: none;
+            /* background-clip: text paints the gradient only inside the
+               element's border box, so anything the glyphs hang outside that
+               box is simply never painted. Outfit's content area is 1.272em
+               against a 1.06em line box, which leaves 0.106em of descender
+               below it — enough to lop the tail off the 'g' in Bashagha.
+               The padding gives the box that room back (0.14em for headroom)
+               and the margin gives it up again, so nothing moves. Keep them
+               in step if either value changes. */
+            padding-bottom: 0.14em;
+            margin-bottom: calc(0.9rem - 0.14em);
             /* lit from above, like everything else on the card */
             background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.72));
             -webkit-background-clip: text;
