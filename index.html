@@ -406,8 +406,10 @@
            boxed years — are 8-bit vocabulary. ULTRA restates the same structure
            in its own: dark glass, hairlines, Outfit at wide tracking, gold as a
            point accent rather than a fill. */
+        /* the scrim, not the sheet, does the work of hiding the 3D card behind
+           it — that leaves the sheet free to use the card's own glass */
         body.ultra #work {
-            background: rgba(4, 8, 6, 0.55);
+            background: rgba(4, 8, 6, 0.72);
             -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
         }
@@ -415,7 +417,7 @@
         body.ultra #work .sheet {
             padding: 0;
             overflow: hidden;
-            background: rgba(8, 14, 10, 0.74);
+            background: rgba(8, 14, 10, 0.55); /* same glass as .panel */
             -webkit-backdrop-filter: blur(24px) saturate(1.3);
             backdrop-filter: blur(24px) saturate(1.3);
             border: 1px solid rgba(255, 255, 255, 0.18);
