@@ -664,6 +664,7 @@
         @media (max-width: 420px) {
             body.ultra .sub {
                 align-items: flex-start;
+                text-align: left;
                 font-size: 0.62rem;
                 letter-spacing: 0.08em;
             }
@@ -955,10 +956,12 @@
         body.ultra .panel {
             -webkit-backdrop-filter: blur(18px) saturate(1.25);
             backdrop-filter: blur(18px) saturate(1.25);
-            /* left-ranged: centring gave every line the same axis and so the
-               same weight. A shared left edge lets size and colour carry the
-               hierarchy instead. */
-            text-align: left;
+            /* Centred, like the 8-bit card. A left edge is the right call for
+               a page of content, where it gives the eye one axis to run down
+               — but this is six short lines on a small plaque, and there is no
+               reading order to establish. Centring keeps the two modes the
+               same object, and gives the buttons their own symmetry. */
+            text-align: center;
             max-width: 430px;
             padding: clamp(1.6rem, 4.5vw, 2.15rem);
             padding-top: clamp(1.6rem, 4.5vw, 2.15rem);
@@ -1013,6 +1016,7 @@
         body.ultra .sub {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.55rem;
             color: var(--u-t2);
             font-weight: 400;
@@ -1052,7 +1056,7 @@
 
         body.ultra .menu a, body.ultra .menu button {
             display: block;
-            text-align: left;
+            text-align: center;
             background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 55%);
             background-color: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--u-line-2);
