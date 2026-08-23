@@ -139,6 +139,26 @@
 
         .tiny { font-size: 0.45rem; color: #6d8b5a; letter-spacing: 0.08em; }
 
+        /* All the chrome copy is authored in sentence case, because ULTRA
+           reads as modern only if it stops shouting. 8-bit's voice IS the
+           shout, so it puts the caps back here rather than in the markup —
+           one source string, two registers. Only chrome is listed: the work
+           entries were always sentence case and stay that way in both. */
+        body:not(.ultra) .tag,
+        body:not(.ultra) h1,
+        body:not(.ultra) .sub,
+        body:not(.ultra) .menu a,
+        body:not(.ultra) .menu button,
+        body:not(.ultra) .tiny,
+        body:not(.ultra) #work .bar h2,
+        body:not(.ultra) #work .x,
+        body:not(.ultra) #work .now .k,
+        body:not(.ultra) #work .hint,
+        body:not(.ultra) .hud,
+        body:not(.ultra) #controls button,
+        body:not(.ultra) #toast,
+        body:not(.ultra) #banner { text-transform: uppercase; }
+
         /* ---------- WORK sheet ---------- */
         #work {
             position: fixed;
@@ -438,8 +458,8 @@
         body.ultra #work .bar h2 {
             font-family: 'Outfit', sans-serif;
             font-weight: 600;
-            font-size: clamp(0.85rem, 3vw, 1rem);
-            letter-spacing: 0.02em;
+            font-size: clamp(0.95rem, 3vw, 1.1rem);
+            letter-spacing: -0.01em;
             color: var(--u-t1);
             text-shadow: none;
         }
@@ -450,8 +470,8 @@
         body.ultra #work .x {
             font-family: 'Outfit', sans-serif;
             font-weight: 500;
-            font-size: 0.74rem;
-            letter-spacing: 0.06em;
+            font-size: 0.82rem;
+            letter-spacing: 0.005em;
             line-height: 1;
             color: var(--u-t2);
             background: rgba(255, 255, 255, 0.05);
@@ -501,10 +521,10 @@
 
         body.ultra #work .now .k {
             font-weight: 600;
-            font-size: 0.6rem;
-            letter-spacing: 0.2em;
+            font-size: 0.76rem;
+            letter-spacing: 0.01em;
             color: var(--u-accent);
-            margin-bottom: 0.65rem;
+            margin-bottom: 0.5rem;
         }
 
         body.ultra #work .now .v {
@@ -603,13 +623,8 @@
             margin-right: 0.45rem;
         }
 
-        /* milestones also lift in weight and colour: the dot alone was too
-           quiet once the entries stopped being spaced apart */
-        body.ultra #work li.ms {
-            color: var(--u-t1);
-            font-weight: 500;
-        }
-
+        /* the gold dot is the whole distinction: entries keep one colour and
+           one weight, so the list reads as one list */
         body.ultra #work li.ms::before,
         body.ultra #work .hint .key:not(.work) {
             background: var(--u-accent);
@@ -619,8 +634,8 @@
         body.ultra #work .hint {
             border-top: 1px solid var(--u-line);
             font-weight: 400;
-            font-size: 0.74rem;
-            letter-spacing: 0.02em;
+            font-size: 0.8rem;
+            letter-spacing: 0.005em;
             color: var(--u-t3);
         }
 
@@ -730,7 +745,9 @@
             left: clamp(0.5rem, 2vw, 1rem);
             pointer-events: none;
         }
-        #progress .pct { color: var(--gold); }
+        /* the pill is a flex container, so the space in the markup between
+           the label and the count is collapsed away — this puts it back */
+        #progress .pct { color: var(--gold); margin-left: 0.35em; }
 
         #controls {
             top: clamp(0.5rem, 2vw, 1rem);
@@ -929,9 +946,9 @@
         body.ultra .tag {
             color: var(--u-accent);
             font-weight: 600;
-            font-size: 0.66rem;
-            letter-spacing: 0.2em;
-            margin-bottom: 1.1rem;
+            font-size: 0.74rem;
+            letter-spacing: 0.01em;
+            margin-bottom: 1rem;
         }
 
         /* the stars are 8-bit punctuation; the label carries itself here */
@@ -960,9 +977,9 @@
             align-items: center;
             gap: 0.55rem;
             color: var(--u-t2);
-            font-weight: 500;
-            font-size: 0.72rem;
-            letter-spacing: 0.13em;
+            font-weight: 400;
+            font-size: 0.84rem;
+            letter-spacing: 0.005em;
             line-height: 1.5;
             margin-bottom: 1.35rem;
         }
@@ -987,83 +1004,43 @@
 
         @keyframes fadeblink { 50% { opacity: 0.1; } }
 
-        /* Three stacked pills were three big empty boxes competing with the
-           name. As hairline rows they read as a list of links, and the hover
-           highlight (a rounded plate bleeding past the text) does the work
-           the borders were doing. */
+        /* Each row is a small card cut from the card's own recipe — glass
+           edge, top sheen, rounded corners — so it reads as a pressable
+           object without borrowing the 8-bit slab shadow. */
         body.ultra .menu {
-            gap: 0;
-            margin-bottom: 1.15rem;
-            border-top: 1px solid var(--u-line);
+            gap: 0.6rem;
+            margin-bottom: 1.3rem;
         }
 
         body.ultra .menu a, body.ultra .menu button {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
+            display: block;
             text-align: left;
-            background: none;
-            border: 0;
-            border-bottom: 1px solid var(--u-line);
-            border-radius: 0;
-            box-shadow: none;
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 55%);
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--u-line-2);
+            border-radius: 12px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
             color: var(--u-t2);
             font-family: 'Outfit', sans-serif;
             font-weight: 500;
-            font-size: 0.9rem;
-            letter-spacing: 0.01em;
-            padding: 0.9rem 0.1rem;
-            transition: color 0.22s ease, padding 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 0.92rem;
+            letter-spacing: 0.005em;
+            padding: 0.82rem 1rem;
+            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
         }
 
-        body.ultra .menu a::before, body.ultra .menu button::before {
-            content: '';
-            visibility: visible;
-            position: absolute;
-            inset: 0.18rem -0.65rem;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.055);
-            opacity: 0;
-            transition: opacity 0.22s ease;
-            pointer-events: none;
-        }
+        body.ultra .menu a::before, body.ultra .menu button::before,
+        body.ultra .menu a::after, body.ultra .menu button::after { content: none; }
 
-        /* chevron drawn from borders, not typed: Outfit has no arrow glyph,
-           so a character would fall back to a different face mid-row */
-        body.ultra .menu a::after, body.ultra .menu button::after {
-            content: '';
-            flex: none;
-            width: 6px;
-            height: 6px;
-            border-top: 1.5px solid currentColor;
-            border-right: 1.5px solid currentColor;
-            transform: rotate(45deg) translate(-3px, 3px);
-            opacity: 0;
-            transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
+        /* colour alone carries the hover: nothing moves, nothing appears, so
+           the row stays exactly the object it was when the cursor arrived */
         body.ultra .menu a:hover, body.ultra .menu a:focus-visible,
         body.ultra .menu button:hover, body.ultra .menu button:focus-visible {
-            background: none;
-            border-color: var(--u-line);
-            box-shadow: none;
-            transform: none;
-            color: var(--u-t1);
-            padding-left: 0.6rem;
-        }
-
-        body.ultra .menu a:hover::before, body.ultra .menu a:focus-visible::before,
-        body.ultra .menu button:hover::before, body.ultra .menu button:focus-visible::before {
-            opacity: 1;
-        }
-
-        body.ultra .menu a:hover::after, body.ultra .menu a:focus-visible::after,
-        body.ultra .menu button:hover::after, body.ultra .menu button:focus-visible::after {
-            opacity: 1;
-            transform: rotate(45deg) translate(0, 0);
+            background-color: rgba(255, 211, 107, 0.09);
+            border-color: rgba(255, 211, 107, 0.45);
             color: var(--u-accent);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            transform: none;
         }
 
         /* the rows dropped their borders, so keyboard focus gets an explicit
@@ -1076,9 +1053,9 @@
 
         body.ultra .tiny {
             color: var(--u-t3);
-            font-size: 0.62rem;
-            font-weight: 500;
-            letter-spacing: 0.12em;
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.005em;
         }
 
         /* ---------- HUD, toast, banner ---------- */
@@ -1086,8 +1063,8 @@
         body.ultra .hud, body.ultra #controls button {
             font-family: 'Outfit', sans-serif;
             font-weight: 500;
-            letter-spacing: 0.08em;
-            font-size: clamp(0.6rem, 2.4vw, 0.75rem);
+            letter-spacing: 0.005em;
+            font-size: clamp(0.66rem, 2.4vw, 0.82rem);
         }
 
         body.ultra #progress, body.ultra #controls button {
@@ -1124,15 +1101,15 @@
 
         body.ultra #toast h2 {
             font-weight: 600;
-            letter-spacing: 0.02em;
-            font-size: 1.05rem;
+            letter-spacing: -0.01em;
+            font-size: 1.2rem;
             color: var(--u-accent);
         }
 
         body.ultra #toast p {
             font-weight: 400;
-            letter-spacing: 0.02em;
-            font-size: 0.78rem;
+            letter-spacing: 0.005em;
+            font-size: 0.85rem;
             line-height: 1.5;
             color: var(--u-t2);
         }
@@ -1154,15 +1131,15 @@
 
         body.ultra #banner h2 {
             font-weight: 600;
-            letter-spacing: -0.01em;
+            letter-spacing: -0.015em;
             color: var(--u-accent);
             text-shadow: 0 0 50px rgba(255, 211, 107, 0.45);
         }
 
         body.ultra #banner p, body.ultra #banner .time {
             font-weight: 400;
-            letter-spacing: 0.04em;
-            font-size: 0.85rem;
+            letter-spacing: 0.005em;
+            font-size: 0.9rem;
         }
 
         body.ultra #banner .time { color: var(--u-accent); }
@@ -1179,28 +1156,28 @@
 <body>
     <main class="scene">
         <div class="panel">
-            <p class="tag"><span class="st">★ </span>PRODUCT DESIGNER<span class="st"> ★</span></p>
-            <h1>MO BASHAGHA</h1>
-            <p class="sub">CURRENTLY DESIGNING<br> WHATSAPP<span class="blink">▮</span></p>
+            <p class="tag"><span class="st">★ </span>Product designer<span class="st"> ★</span></p>
+            <h1>Mo Bashagha</h1>
+            <p class="sub">Currently designing<br> WhatsApp<span class="blink">▮</span></p>
             <nav class="menu">
-                <button id="workbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="work">WORK HISTORY</button>
-                <a href="mailto:mbashagha@gmail.com">EMAIL</a>
-                <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LINKEDIN</a>
+                <button id="workbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="work">Work history</button>
+                <a href="mailto:mbashagha@gmail.com">Email</a>
+                <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LinkedIn</a>
             </nav>
-            <p class="tiny">© <span id="year">2026</span> MO BASHAGHA · <span id="edition">8-BIT EDITION</span></p>
+            <p class="tiny">© <span id="year">2026</span> Mo Bashagha · <span id="edition">8-bit edition</span></p>
         </div>
     </main>
 
     <div id="work" role="dialog" aria-modal="true" aria-labelledby="worktitle">
         <div class="sheet">
             <div class="bar">
-                <h2 id="worktitle">WORK HISTORY<i aria-hidden="true"></i></h2>
-                <button class="x" id="workclose" type="button" aria-label="Close work history"><span class="xk">X</span> CLOSE</button>
+                <h2 id="worktitle">Work history<i aria-hidden="true"></i></h2>
+                <button class="x" id="workclose" type="button" aria-label="Close work history"><span class="xk">X</span> Close</button>
             </div>
 
             <div class="doc" id="workdoc" tabindex="0">
                 <div class="now">
-                    <p class="k">CURRENTLY</p>
+                    <p class="k">Currently</p>
                     <p class="v">Lead IC designer for WhatsApp’s Growth &amp; Broadcast Pillar</p>
                     <p class="v2">Growth, Status, Channels and New Bets.</p>
                 </div>
@@ -1318,7 +1295,7 @@
                     </ul>
                 </section>
 
-                <p class="hint"><span class="key"></span> CAREER MILESTONE &nbsp;&nbsp; <span class="key work"></span> SHIPPED WORK</p>
+                <p class="hint"><span class="key"></span> Career milestone &nbsp;&nbsp; <span class="key work"></span> Shipped work</p>
             </div>
         </div>
     </div>
@@ -1327,17 +1304,17 @@
     <canvas id="fx"></canvas>
 
     <div id="toast">
-        <h2>MO THE LAWN!</h2>
-        <p>MOVE YOUR CURSOR (OR DRAG)<br>TO REVEAL THE SITE</p>
+        <h2>Mo the lawn!</h2>
+        <p>Move your cursor (or drag)<br>to reveal the site</p>
     </div>
 
     <div id="controls" class="hud">
-        <button id="mowall" type="button">MO ALL ⏭</button>
-        <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">ULTRA</button>
+        <button id="mowall" type="button">Mo all ⏭</button>
+        <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">Ultra</button>
         <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
-    <div id="progress" class="hud" role="status">LAWN MO'ED: <span class="pct">0%</span></div>
+    <div id="progress" class="hud" role="status">Lawn mo'ed: <span class="pct">0%</span></div>
 
     <div id="mower" aria-hidden="true">
         <svg class="sprite" width="64" height="48" viewBox="0 0 16 12" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
@@ -1366,12 +1343,12 @@
         </svg>
     </div>
 
-    <div id="ultraload" hidden>LOADING ULTRA<span class="blink">▮</span></div>
+    <div id="ultraload" hidden>Loading Ultra<span class="blink">▮</span></div>
 
     <div id="banner">
         <div class="inner">
-            <h2>LEVEL CLEAR!</h2>
-            <p>LAWN 100% MO'ED ★★★</p>
+            <h2>Level clear!</h2>
+            <p>Lawn 100% mo'ed ★★★</p>
             <p class="time" id="clearTime" hidden></p>
         </div>
     </div>
@@ -1576,9 +1553,9 @@
         function setGfx(g, save) {
             gfx = g;
             body.classList.toggle('ultra', g === 'ultra');
-            gfxBtn.textContent = g === 'ultra' ? '8-BIT' : 'ULTRA';
+            gfxBtn.textContent = g === 'ultra' ? '8-bit' : 'Ultra';
             var edition = document.getElementById('edition');
-            if (edition) edition.textContent = g === 'ultra' ? 'ULTRA EDITION' : '8-BIT EDITION';
+            if (edition) edition.textContent = g === 'ultra' ? 'Ultra edition' : '8-bit edition';
             if (g === 'ultra') {
                 if (ultraCtl) ultraCtl.start();
                 else loadUltra();
@@ -2320,7 +2297,7 @@
                 var pct = total ? Math.floor((mowedCount / total) * 100) : 0;
                 var left = total - mowedCount;
                 pctEl.textContent = finished ? '100%'
-                    : (left > 0 && left <= 20 ? left + ' LEFT!' : pct + '%');
+                    : (left > 0 && left <= 20 ? left + ' left!' : pct + '%');
                 if (!finished && pct > 0) document.title = '🌱 ' + pct + "% MO'ED · MO BASHAGHA";
                 if (!finished && mowedCount / total > 0.08) toast.classList.add('hide');
                 updatePanelReveal();
@@ -2418,12 +2395,12 @@
             // mow time + personal best (only for fully hand-mowed runs)
             if (!skipped && startTime !== null) {
                 var secs = (performance.now() - startTime) / 1000;
-                var line = 'CLEARED IN ' + secs.toFixed(1) + 'S';
+                var line = 'Cleared in ' + secs.toFixed(1) + 's';
                 var best = null;
                 try { best = parseFloat(localStorage.getItem('mowBest')); } catch (e) { /* private mode */ }
                 if (best && !isNaN(best)) {
-                    if (secs < best) line += ' · ★ NEW BEST!';
-                    else line += ' · BEST: ' + best.toFixed(1) + 'S';
+                    if (secs < best) line += ' · ★ New best!';
+                    else line += ' · Best: ' + best.toFixed(1) + 's';
                 }
                 if (!best || isNaN(best) || secs < best) {
                     try { localStorage.setItem('mowBest', secs.toFixed(1)); } catch (e) { /* ignore */ }
