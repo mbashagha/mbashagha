@@ -404,25 +404,23 @@
         /* ---------- WORK sheet in ULTRA ----------
            The pixel sheet's devices (hard shadows, scanlines, square markers,
            boxed years) are 8-bit vocabulary. ULTRA restates the same structure
-           in its own: dark glass, hairlines, Outfit at wide tracking, gold as a
-           point accent rather than a fill. */
-        /* the scrim, not the sheet, does the work of hiding the 3D card behind
-           it, which leaves the sheet free to use the card's own glass */
+           as an editorial index: a year in the margin, entries as rows that
+           highlight under the cursor, and gold reserved for the two things
+           that are genuinely different — what he is doing now, and the
+           milestones. The sheet shares its surface recipe with .panel. */
+
+        /* the scrim, not the sheet, does the work of hiding the 3D card
+           behind it, which leaves the sheet free to use the card's own glass */
         body.ultra #work {
-            background: rgba(4, 8, 6, 0.72);
-            -webkit-backdrop-filter: blur(8px);
-            backdrop-filter: blur(8px);
+            background: rgba(3, 7, 4, 0.66);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
         }
 
         body.ultra #work .sheet {
+            width: min(720px, 100%);
             padding: 0;
             overflow: hidden;
-            background: rgba(8, 14, 10, 0.55); /* same glass as .panel */
-            -webkit-backdrop-filter: blur(24px) saturate(1.3);
-            backdrop-filter: blur(24px) saturate(1.3);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 20px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
             animation: sheetup 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
@@ -433,159 +431,217 @@
 
         body.ultra #work .bar {
             background: transparent;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            padding: clamp(1rem, 3vw, 1.4rem) clamp(1.1rem, 3.5vw, 1.8rem);
+            border-bottom: 1px solid var(--u-line);
+            padding: clamp(0.95rem, 3vw, 1.15rem) clamp(1.1rem, 3.5vw, 1.6rem);
         }
 
         body.ultra #work .bar h2 {
             font-family: 'Outfit', sans-serif;
-            font-weight: 200;
-            font-size: clamp(0.95rem, 3.6vw, 1.35rem);
-            letter-spacing: 0.35em;
-            color: #fff;
-            text-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            font-size: clamp(0.85rem, 3vw, 1rem);
+            letter-spacing: 0.02em;
+            color: var(--u-t1);
+            text-shadow: none;
         }
 
-        /* the block cursor thins out and fades rather than hard-blinking */
-        body.ultra #work .bar h2 i {
-            width: 2px;
-            height: 1.05em;
-            background: var(--gold);
-            animation: fadeblink 1.4s ease-in-out infinite;
-        }
+        /* the caret is a prompt device; a modal title is not a prompt */
+        body.ultra #work .bar h2 i { display: none; }
 
         body.ultra #work .x {
             font-family: 'Outfit', sans-serif;
             font-weight: 500;
-            font-size: clamp(0.62rem, 2.2vw, 0.72rem);
-            letter-spacing: 0.3em;
-            color: #fff;
+            font-size: 0.74rem;
+            letter-spacing: 0.06em;
+            line-height: 1;
+            color: var(--u-t2);
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 999px;
-            padding: 0.7rem 1.15rem;
-            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+            border: 1px solid var(--u-line-2);
+            border-radius: 9px;
+            padding: 0.5rem 0.85rem;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
 
         body.ultra #work .x .xk { display: none; }
 
         body.ultra #work .x:hover, body.ultra #work .x:focus-visible {
-            background: rgba(255, 215, 64, 0.12);
-            border-color: var(--gold);
-            box-shadow: 0 0 24px rgba(255, 215, 64, 0.25);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.32);
+            color: var(--u-t1);
+            box-shadow: none;
         }
 
         body.ultra #work .doc {
             background: none; /* scanlines are a CRT device */
-            padding: clamp(1.5rem, 4.5vw, 2.4rem) clamp(1.1rem, 3.5vw, 2.2rem) clamp(1.8rem, 5vw, 2.6rem);
-            scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+            padding: clamp(1.4rem, 4vw, 1.9rem) clamp(1.1rem, 3.5vw, 1.6rem) clamp(1.6rem, 4.5vw, 2.1rem);
+            scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
         }
 
         body.ultra #work .doc::-webkit-scrollbar { width: 10px; }
         body.ultra #work .doc::-webkit-scrollbar-track { background: transparent; }
 
         body.ultra #work .doc::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.2);
             border: 3px solid transparent;
             background-clip: content-box;
             border-radius: 999px;
         }
 
-        /* CURRENTLY: glass card with a gold hairline, not a gold fill */
+        /* CURRENTLY: a warm plate, not a gold-outlined box. The old hairline
+           border plus outer glow drew a rectangle around the content; a tinted
+           fill with a top sheen sits it on the same surface as everything else. */
         body.ultra #work .now {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 215, 64, 0.45);
+            background:
+                linear-gradient(180deg, rgba(255, 211, 107, 0.09), rgba(255, 211, 107, 0.02));
+            border: 1px solid rgba(255, 211, 107, 0.2);
             border-radius: 14px;
-            box-shadow: 0 0 40px rgba(255, 215, 64, 0.08);
-            padding: clamp(1.1rem, 3.5vw, 1.5rem);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            padding: clamp(1.05rem, 3vw, 1.3rem) clamp(1.1rem, 3.2vw, 1.4rem);
+            margin-bottom: clamp(1.6rem, 4vw, 2.1rem);
         }
 
         body.ultra #work .now .k {
             font-weight: 600;
-            font-size: 0.62rem;
-            letter-spacing: 0.45em;
-            color: var(--gold);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            color: var(--u-accent);
+            margin-bottom: 0.65rem;
         }
 
         body.ultra #work .now .v {
-            font-weight: 300;
-            font-size: clamp(0.9rem, 2.6vw, 1.05rem);
-            letter-spacing: 0.06em;
-            line-height: 1.6;
-            color: #fff;
+            font-weight: 500;
+            font-size: clamp(0.98rem, 2.6vw, 1.1rem);
+            letter-spacing: -0.012em;
+            line-height: 1.4;
+            color: var(--u-t1);
         }
 
         body.ultra #work .now .v2 {
-            font-weight: 300;
-            font-size: clamp(0.75rem, 2.2vw, 0.85rem);
-            letter-spacing: 0.14em;
-            line-height: 1.7;
-            color: rgba(255, 255, 255, 0.55);
+            margin-top: 0.5rem;
+            font-weight: 400;
+            font-size: 0.85rem;
+            letter-spacing: 0;
+            line-height: 1.5;
+            color: var(--u-t2);
         }
 
-        /* the year loses its box and becomes a quiet numeral in the margin */
-        body.ultra #work .yr { grid-template-columns: 6.5rem 1fr; }
+        /* the year loses its box and becomes an index numeral in the margin */
+        body.ultra #work .yr {
+            grid-template-columns: 3.75rem 1fr;
+            gap: clamp(0.85rem, 2.4vw, 1.35rem);
+            padding-bottom: clamp(1.1rem, 3vw, 1.4rem);
+        }
+
+        body.ultra #work .yr + .yr {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: clamp(1.1rem, 3vw, 1.4rem);
+        }
 
         body.ultra #work .y {
             background: none;
             border: none;
             box-shadow: none;
-            padding: 0;
+            padding: 0.34rem 0 0;
             text-align: left;
-            font-weight: 200;
-            font-size: clamp(1rem, 3vw, 1.25rem);
-            letter-spacing: 0.14em;
-            color: rgba(255, 255, 255, 0.5);
+            font-weight: 500;
+            font-size: 0.8rem;
+            letter-spacing: 0.01em;
+            color: var(--u-t3);
             font-variant-numeric: tabular-nums;
+            transition: color 0.2s ease;
         }
 
-        /* a hairline rule carries the timeline instead of dashed dividers */
+        body.ultra #work .yr:hover .y { color: var(--u-accent); }
+
+        /* the hairline rule went with the boxes: the year column already
+           carries the timeline, and a second vertical line just narrowed
+           the measure. Rows sit flush so the highlight can bleed past them. */
         body.ultra #work .yr > ul {
-            border-left: 1px solid rgba(255, 255, 255, 0.12);
-            padding-left: clamp(1rem, 3vw, 1.6rem);
-            gap: 0.95rem;
+            border-left: none;
+            padding-left: 0;
+            gap: 0;
         }
 
-        body.ultra #work .yr + .yr { border-top: 1px solid rgba(255, 255, 255, 0.07); }
-
+        /* Density was the sheet's real problem: five two-word entries used
+           half a viewport. Rows are now line-height 1.5 with no gap, and
+           earn their separation from the hover plate rather than whitespace. */
         body.ultra #work li {
-            padding-left: 1.5rem;
-            font-weight: 300;
-            font-size: clamp(0.82rem, 2.3vw, 0.92rem);
-            letter-spacing: 0.02em;
-            line-height: 1.75;
-            color: rgba(255, 255, 255, 0.8);
+            margin-left: -0.6rem;
+            padding: 0.3rem 0.6rem 0.3rem 1.5rem;
+            border-radius: 9px;
+            font-weight: 400;
+            font-size: 0.9rem;
+            letter-spacing: 0;
+            line-height: 1.5;
+            color: var(--u-t2);
+            transition: background 0.18s ease, color 0.18s ease;
         }
 
-        /* square pixels become dots; the milestone one carries a gold glow */
+        body.ultra #work li:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--u-t1);
+        }
+
+        /* square pixels become dots; the milestone one takes a gold ring
+           rather than a blurred glow, so it stays crisp at 5px */
         body.ultra #work li::before,
         body.ultra #work .hint .key {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.3);
             box-shadow: none;
         }
 
-        body.ultra #work li::before { top: 0.68em; }
+        /* the marker centres on the entry's x-height, not the line box:
+           0.33em of the row's padding sits above the first line */
+        body.ultra #work li::before { top: 1.03em; left: 0.6rem; }
+
+        /* the legend keys sit inline with their labels, so they need the
+           optical nudge the list markers get from absolute positioning */
+        body.ultra #work .hint .key {
+            vertical-align: 0.08em;
+            margin-right: 0.45rem;
+        }
+
+        /* milestones also lift in weight and colour: the dot alone was too
+           quiet once the entries stopped being spaced apart */
+        body.ultra #work li.ms {
+            color: var(--u-t1);
+            font-weight: 500;
+        }
 
         body.ultra #work li.ms::before,
         body.ultra #work .hint .key:not(.work) {
-            background: var(--gold);
-            box-shadow: 0 0 10px rgba(255, 215, 64, 0.65);
+            background: var(--u-accent);
+            box-shadow: 0 0 0 3px rgba(255, 211, 107, 0.15);
         }
 
         body.ultra #work .hint {
-            border-top-color: rgba(255, 255, 255, 0.1);
-            font-weight: 300;
-            font-size: 0.68rem;
-            letter-spacing: 0.25em;
-            color: rgba(255, 255, 255, 0.45);
+            border-top: 1px solid var(--u-line);
+            font-weight: 400;
+            font-size: 0.74rem;
+            letter-spacing: 0.02em;
+            color: var(--u-t3);
         }
 
         @media (max-width: 560px) {
-            /* stacked: the rule would hang off the year with nothing to carry */
-            body.ultra #work .yr > ul { border-left: none; padding-left: 0; }
+            /* the base stacking rule is out-specificitied by body.ultra, so
+               ULTRA has to stack the rows itself: at this width a 3.75rem
+               gutter costs the entries a third of their measure */
+            body.ultra #work .yr { grid-template-columns: 1fr; gap: 0.55rem; }
+            body.ultra #work .y { padding: 0; }
+            body.ultra #work li { margin-left: -0.6rem; }
+        }
+
+        /* the status line runs out of room before the card does; it shrinks
+           rather than wrapping, and the dot holds the first line either way */
+        @media (max-width: 420px) {
+            body.ultra .sub {
+                align-items: flex-start;
+                font-size: 0.66rem;
+                letter-spacing: 0.08em;
+            }
+            body.ultra .sub::before { margin-top: 0.42em; }
         }
 
         /* ---------- game layers ---------- */
@@ -786,7 +842,13 @@
             box-shadow: 2px 2px 0 #0d2114;
         }
 
-        /* ================= ULTRA (next-gen) theme ================= */
+        /* ================= ULTRA (next-gen) theme =================
+           8-bit speaks in hard shadows, wide tracking and shouted caps.
+           ULTRA is the same site in an editorial voice: one dark surface
+           lit from the top edge, type set tight rather than spaced out,
+           and gold kept back as a point accent. Wide letter-spacing is
+           reserved for eyebrow labels only, where it is a signal, not a
+           style: on a heading or a paragraph it just costs legibility. */
 
         body.ultra #mower { display: none !important; }
 
@@ -794,6 +856,27 @@
             font-family: 'Outfit', sans-serif;
             --mow-a: #74a23f;
             --mow-b: #67993f;
+
+            /* surfaces: near-black with a green cast so the panels read as
+               objects sitting on the lawn rather than holes cut out of it */
+            --u-solid: #0b110d;
+            --u-line: rgba(255, 255, 255, 0.09);
+            --u-line-2: rgba(255, 255, 255, 0.16);
+            --u-hi: rgba(255, 255, 255, 0.05);
+
+            /* three text weights, not five: primary, secondary, and a
+               tertiary that is still above the 4.5:1 floor on --u-solid */
+            --u-t1: rgba(255, 255, 255, 0.95);
+            --u-t2: rgba(255, 255, 255, 0.68);
+            --u-t3: rgba(255, 255, 255, 0.46);
+
+            /* a degree warmer and softer than the arcade --gold, which is
+               sized for a cream card and glares on a near-black one */
+            --u-accent: #ffd36b;
+            --u-live: #86df6e;
+
+            --u-r: 18px;
+
             /* smooth striped turf: vignette + grain + soft alternating bands */
             background-image:
                 radial-gradient(ellipse at 50% 38%, rgba(255, 255, 245, 0.13), rgba(0, 0, 0, 0.30)),
@@ -808,94 +891,232 @@
 
         body.ultra.night { --mow-a: #24382c; --mow-b: #2a4032; }
 
-        body.ultra .panel {
-            background: rgba(8, 14, 10, 0.55);
-            -webkit-backdrop-filter: blur(18px) saturate(1.3);
-            backdrop-filter: blur(18px) saturate(1.3);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 18px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-            color: #fff;
+        /* One surface recipe, shared by the card and the work sheet: a top
+           sheen fading out over the first third, a solid body under it, a
+           1px inner highlight on the top edge and a wide ambient shadow.
+           On desktop the card is a CSS3D object over the WebGL canvas, where
+           backdrop-filter has no canvas to sample and the old glass collapsed
+           into a flat muddy rectangle. The gradient does the lifting instead,
+           so the surface reads the same in both mounts; the blur is kept only
+           for the mobile path, where the card really does sit over the canvas. */
+        body.ultra .panel, body.ultra #work .sheet {
+            background:
+                radial-gradient(120% 90% at 50% -15%, rgba(255, 244, 214, 0.07), rgba(255, 255, 255, 0) 62%),
+                linear-gradient(180deg, var(--u-hi), rgba(255, 255, 255, 0) 38%),
+                linear-gradient(180deg, rgba(19, 28, 21, 0.94), rgba(8, 13, 10, 0.96));
+            border: 1px solid var(--u-line-2);
+            border-radius: var(--u-r);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.14),
+                0 2px 12px rgba(0, 0, 0, 0.35),
+                0 32px 80px rgba(0, 0, 0, 0.55);
+            color: var(--u-t1);
         }
 
-        body.ultra .tag {
-            color: var(--gold);
-            font-weight: 600;
-            font-size: 0.7rem;
-            letter-spacing: 0.45em;
+        body.ultra .panel {
+            -webkit-backdrop-filter: blur(18px) saturate(1.25);
+            backdrop-filter: blur(18px) saturate(1.25);
+            /* left-ranged: centring gave every line the same axis and so the
+               same weight. A shared left edge lets size and colour carry the
+               hierarchy instead. */
+            text-align: left;
+            max-width: 430px;
+            padding: clamp(1.6rem, 4.5vw, 2.15rem);
+            padding-top: clamp(1.6rem, 4.5vw, 2.15rem);
         }
+
+        /* eyebrow: the one place wide tracking earns its keep */
+        body.ultra .tag {
+            color: var(--u-accent);
+            font-weight: 600;
+            font-size: 0.66rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 1.1rem;
+        }
+
+        /* the stars are 8-bit punctuation; the label carries itself here */
+        body.ultra .tag .st { display: none; }
 
         body.ultra h1 {
-            font-weight: 200;
-            font-size: clamp(2rem, 7vw, 3.1rem);
-            letter-spacing: 0.18em;
-            color: #fff;
-            text-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            font-size: clamp(2rem, 6.5vw, 2.85rem);
+            /* tight, not spaced: at display size the name should read as one
+               word-shape. The old 0.18em broke it into eleven letters. */
+            letter-spacing: -0.025em;
+            line-height: 1.06;
+            margin-bottom: 0.9rem;
+            text-shadow: none;
+            /* lit from above, like everything else on the card */
+            background: linear-gradient(180deg, #fff, rgba(255, 255, 255, 0.72));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
+        /* status line: a live dot replaces the CRT caret, and the break
+           that stacked it over two lines is dropped */
         body.ultra .sub {
-            color: rgba(255, 255, 255, 0.65);
-            font-weight: 300;
-            font-size: 0.85rem;
-            letter-spacing: 0.3em;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            color: var(--u-t2);
+            font-weight: 500;
+            font-size: 0.72rem;
+            letter-spacing: 0.13em;
+            line-height: 1.5;
+            margin-bottom: 1.35rem;
         }
 
-        body.ultra .blink { animation: fadeblink 1.4s ease-in-out infinite; }
+        body.ultra .sub br { display: none; }
+        body.ultra .sub .blink { display: none; }
+
+        body.ultra .sub::before {
+            content: '';
+            flex: none;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--u-live);
+            box-shadow: 0 0 0 3px rgba(134, 223, 110, 0.15);
+            animation: livedot 2.6s ease-in-out infinite;
+        }
+
+        @keyframes livedot {
+            50% { box-shadow: 0 0 0 6px rgba(134, 223, 110, 0); }
+        }
+
         @keyframes fadeblink { 50% { opacity: 0.1; } }
 
-        body.ultra .menu a, body.ultra .menu button {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 12px;
-            box-shadow: none;
-            color: #fff;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 500;
-            font-size: 0.85rem;
-            letter-spacing: 0.35em;
-            transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        /* Three stacked pills were three big empty boxes competing with the
+           name. As hairline rows they read as a list of links, and the hover
+           highlight (a rounded plate bleeding past the text) does the work
+           the borders were doing. */
+        body.ultra .menu {
+            gap: 0;
+            margin-bottom: 1.15rem;
+            border-top: 1px solid var(--u-line);
         }
 
-        body.ultra .menu a::before, body.ultra .menu button::before { content: none; }
+        body.ultra .menu a, body.ultra .menu button {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            text-align: left;
+            background: none;
+            border: 0;
+            border-bottom: 1px solid var(--u-line);
+            border-radius: 0;
+            box-shadow: none;
+            color: var(--u-t2);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
+            padding: 0.9rem 0.1rem;
+            transition: color 0.22s ease, padding 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body.ultra .menu a::before, body.ultra .menu button::before {
+            content: '';
+            visibility: visible;
+            position: absolute;
+            inset: 0.18rem -0.65rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.055);
+            opacity: 0;
+            transition: opacity 0.22s ease;
+            pointer-events: none;
+        }
+
+        /* chevron drawn from borders, not typed: Outfit has no arrow glyph,
+           so a character would fall back to a different face mid-row */
+        body.ultra .menu a::after, body.ultra .menu button::after {
+            content: '';
+            flex: none;
+            width: 6px;
+            height: 6px;
+            border-top: 1.5px solid currentColor;
+            border-right: 1.5px solid currentColor;
+            transform: rotate(45deg) translate(-3px, 3px);
+            opacity: 0;
+            transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
         body.ultra .menu a:hover, body.ultra .menu a:focus-visible,
         body.ultra .menu button:hover, body.ultra .menu button:focus-visible {
-            background: rgba(255, 215, 64, 0.12);
-            border-color: var(--gold);
-            box-shadow: 0 0 24px rgba(255, 215, 64, 0.25);
+            background: none;
+            border-color: var(--u-line);
+            box-shadow: none;
             transform: none;
+            color: var(--u-t1);
+            padding-left: 0.6rem;
         }
 
-        body.ultra .tiny { color: rgba(255, 255, 255, 0.4); letter-spacing: 0.25em; font-weight: 300; }
+        body.ultra .menu a:hover::before, body.ultra .menu a:focus-visible::before,
+        body.ultra .menu button:hover::before, body.ultra .menu button:focus-visible::before {
+            opacity: 1;
+        }
+
+        body.ultra .menu a:hover::after, body.ultra .menu a:focus-visible::after,
+        body.ultra .menu button:hover::after, body.ultra .menu button:focus-visible::after {
+            opacity: 1;
+            transform: rotate(45deg) translate(0, 0);
+            color: var(--u-accent);
+        }
+
+        /* the rows dropped their borders, so keyboard focus gets an explicit
+           ring rather than leaning on the hover plate alone */
+        body.ultra .menu a:focus-visible, body.ultra .menu button:focus-visible,
+        body.ultra #work .x:focus-visible, body.ultra #controls button:focus-visible {
+            outline: 2px solid var(--u-accent);
+            outline-offset: 3px;
+        }
+
+        body.ultra .tiny {
+            color: var(--u-t3);
+            font-size: 0.62rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+        }
+
+        /* ---------- HUD, toast, banner ---------- */
 
         body.ultra .hud, body.ultra #controls button {
             font-family: 'Outfit', sans-serif;
             font-weight: 500;
-            letter-spacing: clamp(0.05em, 0.6vw, 0.2em);
-            font-size: clamp(0.46rem, 2.4vw, 0.72rem);
+            letter-spacing: 0.08em;
+            font-size: clamp(0.6rem, 2.4vw, 0.75rem);
         }
 
         body.ultra #progress, body.ultra #controls button {
-            background: rgba(8, 14, 10, 0.5);
+            background: rgba(9, 14, 11, 0.62);
             -webkit-backdrop-filter: blur(12px);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.22);
+            border: 1px solid var(--u-line-2);
             border-radius: 999px;
-            padding: 0 clamp(0.7rem, 2.8vw, 1.15rem);
-            transition: background 0.25s ease, border-color 0.25s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            color: var(--u-t2);
+            padding: 0 clamp(0.75rem, 2.8vw, 1.1rem);
+            transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
         }
 
+        body.ultra #progress .pct { color: var(--u-accent); }
+
         body.ultra #controls button:hover, body.ultra #controls button:focus-visible {
-            background: rgba(255, 215, 64, 0.18);
-            border-color: var(--gold);
+            background: rgba(255, 211, 107, 0.14);
+            border-color: rgba(255, 211, 107, 0.55);
+            color: var(--u-t1);
         }
 
         body.ultra #toast {
-            background: rgba(8, 14, 10, 0.55);
+            background: rgba(9, 14, 11, 0.72);
             -webkit-backdrop-filter: blur(14px);
             backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--u-line-2);
             border-radius: 14px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 20px 50px rgba(0, 0, 0, 0.4);
             animation: floaty 3s ease-in-out infinite;
         }
 
@@ -903,23 +1124,26 @@
 
         body.ultra #toast h2 {
             font-weight: 600;
-            letter-spacing: 0.4em;
-            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+            font-size: 1.05rem;
+            color: var(--u-accent);
         }
 
         body.ultra #toast p {
-            font-weight: 300;
-            letter-spacing: 0.25em;
-            font-size: 0.65rem;
-            color: rgba(255, 255, 255, 0.7);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            font-size: 0.78rem;
+            line-height: 1.5;
+            color: var(--u-t2);
         }
 
         body.ultra #banner .inner {
-            background: rgba(5, 10, 7, 0.6);
+            background: rgba(9, 14, 11, 0.78);
             -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 215, 64, 0.5);
-            border-radius: 18px;
+            border: 1px solid rgba(255, 211, 107, 0.4);
+            border-radius: var(--u-r);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 32px 80px rgba(0, 0, 0, 0.5);
             animation: popsoft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
@@ -929,15 +1153,19 @@
         }
 
         body.ultra #banner h2 {
-            font-weight: 200;
-            letter-spacing: 0.4em;
-            text-shadow: 0 0 40px rgba(255, 215, 64, 0.7);
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--u-accent);
+            text-shadow: 0 0 50px rgba(255, 211, 107, 0.45);
         }
 
         body.ultra #banner p, body.ultra #banner .time {
-            font-weight: 300;
-            letter-spacing: 0.3em;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+            font-size: 0.85rem;
         }
+
+        body.ultra #banner .time { color: var(--u-accent); }
 
         @media (prefers-reduced-motion: reduce) {
             .blink, #toast { animation: none; }
@@ -951,9 +1179,9 @@
 <body>
     <main class="scene">
         <div class="panel">
-            <p class="tag">★ PRODUCT DESIGNER ★</p>
+            <p class="tag"><span class="st">★ </span>PRODUCT DESIGNER<span class="st"> ★</span></p>
             <h1>MO BASHAGHA</h1>
-            <p class="sub">CURRENTLY DESIGNING<br>WHATSAPP<span class="blink">▮</span></p>
+            <p class="sub">CURRENTLY DESIGNING<br> WHATSAPP<span class="blink">▮</span></p>
             <nav class="menu">
                 <button id="workbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="work">WORK HISTORY</button>
                 <a href="mailto:mbashagha@gmail.com">EMAIL</a>
