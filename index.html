@@ -570,8 +570,6 @@
             transition: color 0.2s ease;
         }
 
-        body.ultra #work .yr:hover .y { color: var(--u-accent); }
-
         /* the hairline rule went with the boxes: the year column already
            carries the timeline, and a second vertical line just narrowed
            the measure. Rows sit flush so the highlight can bleed past them. */
@@ -582,23 +580,19 @@
         }
 
         /* Density was the sheet's real problem: five two-word entries used
-           half a viewport. Rows are now line-height 1.5 with no gap, and
-           earn their separation from the hover plate rather than whitespace. */
+           half a viewport. Rows are line-height 1.5 with no gap between them;
+           the marker column is what separates one entry from the next.
+           No hover treatment: nothing here is clickable, and a row that
+           lights up under the cursor promises otherwise. Which is also why
+           the entries sit brighter than --u-t2 — there is no hover left to
+           lift them to a readable weight. */
         body.ultra #work li {
-            margin-left: -0.6rem;
-            padding: 0.3rem 0.6rem 0.3rem 1.5rem;
-            border-radius: 9px;
+            padding: 0.3rem 0 0.3rem 0.9rem;
             font-weight: 400;
             font-size: 0.9rem;
             letter-spacing: 0;
             line-height: 1.5;
-            color: var(--u-t2);
-            transition: background 0.18s ease, color 0.18s ease;
-        }
-
-        body.ultra #work li:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--u-t1);
+            color: rgba(255, 255, 255, 0.78);
         }
 
         /* square pixels become dots; the milestone one takes a gold ring
@@ -614,7 +608,7 @@
 
         /* the marker centres on the entry's x-height, not the line box:
            0.33em of the row's padding sits above the first line */
-        body.ultra #work li::before { top: 1.03em; left: 0.6rem; }
+        body.ultra #work li::before { top: 1.03em; left: 0; }
 
         /* the legend keys sit inline with their labels, so they need the
            optical nudge the list markers get from absolute positioning */
@@ -645,7 +639,6 @@
                gutter costs the entries a third of their measure */
             body.ultra #work .yr { grid-template-columns: 1fr; gap: 0.55rem; }
             body.ultra #work .y { padding: 0; }
-            body.ultra #work li { margin-left: -0.6rem; }
         }
 
         /* the status line runs out of room before the card does; it shrinks
