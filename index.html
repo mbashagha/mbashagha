@@ -2068,7 +2068,9 @@
             if (gfx === 'ultra' && !finished) {
                 var pr = total ? mowedCount / total : 0;
                 panelEl.style.opacity = Math.min(1, pr * 1.3 + 0.04);
-                panelEl.style.pointerEvents = pr > 0.5 ? 'auto' : 'none';
+                // no pointer-events gate: the card takes clicks from the first
+                // frame in ULTRA too, matching 8-bit, where you can click the
+                // menu straight through the uncut grass
             } else {
                 panelEl.style.opacity = '';
                 panelEl.style.pointerEvents = '';

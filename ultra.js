@@ -597,22 +597,6 @@ export function initUltra(bridge) {
         else applyMask(url);
     }
 
-    function updateCardReveal() {
-        if (!panel) return;
-        const s = bridge.state();
-        const r = panel.getBoundingClientRect();
-        let tot = 0, mw = 0;
-        const c0 = Math.max(0, Math.floor(r.left / innerWidth * s.cols));
-        const c1 = Math.min(s.cols - 1, Math.ceil(r.right / innerWidth * s.cols));
-        const r0 = Math.max(0, Math.floor(r.top / innerHeight * s.rows));
-        const r1 = Math.min(s.rows - 1, Math.ceil(r.bottom / innerHeight * s.rows));
-        for (let rr = r0; rr <= r1; rr++) {
-            for (let cc = c0; cc <= c1; cc++) { tot++; if (s.mowed[rr * s.cols + cc]) mw++; }
-        }
-        const frac = s.finished ? 1 : (tot ? mw / tot : 0);
-        panel.style.pointerEvents = (s.finished || frac > 0.55) ? 'auto' : 'none';
-    }
-
     function adoptCard() {
         if (!panel) return;
         document.body.classList.add('card3d'); // index.html hands the card over to us
@@ -622,7 +606,8 @@ export function initUltra(bridge) {
         }
         panel.style.opacity = '1'; // the spatial mask does the hiding on both platforms
         updateCssMask(true);
-        updateCardReveal();
+        // clickable from the first frame, as the 8-bit card is under its grass
+        panel.style.pointerEvents = 'auto';
     }
     function releaseCard() {
         if (!panel) return;
@@ -732,7 +717,6 @@ export function initUltra(bridge) {
         if (cardObj) css3d.render(cssScene, camera);
         if (panel && (++cardTick % 6 === 0 || s.finished)) {
             updateCssMask();
-            updateCardReveal();
         }
     }
 
