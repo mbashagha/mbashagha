@@ -1418,10 +1418,12 @@
         var gfxBtn = document.getElementById('gfxbtn');
 
         /* ---------- graphics mode (retro pixels vs ultra WebGL) ---------- */
+        /* Every visit starts on the lawn. The mode used to persist, which
+           meant one visit to ULTRA and a returning visitor never saw the
+           mowing game again — and the mowing game is the site. ULTRA stays a
+           click away, and ?gfx=ultra still forces it for a direct link. */
         var qgfx = (location.search.match(/[?&]gfx=(retro|ultra)/) || [])[1];
-        var sgfx = null;
-        try { sgfx = localStorage.getItem('gfxMode'); } catch (e) { /* ignore */ }
-        var gfx = qgfx || (sgfx === 'ultra' ? 'ultra' : 'retro');
+        var gfx = qgfx || 'retro';
 
         /* ---------- day / night mode ---------- */
         var qmode = (location.search.match(/[?&]mode=(day|night)/) || [])[1];
@@ -1564,7 +1566,7 @@
             },
             fail: function () {
                 gfxBtn.style.display = 'none';
-                setGfx('retro', true);
+                setGfx('retro');
             }
         };
 
@@ -1585,12 +1587,12 @@
                 ultraLoading = false;
                 ultraCtl = null;
                 gfxBtn.style.display = 'none';
-                if (gfx === 'ultra') setGfx('retro', true);
+                if (gfx === 'ultra') setGfx('retro');
                 if (window.console) console.error('ULTRA init failed:', err);
             });
         }
 
-        function setGfx(g, save) {
+        function setGfx(g) {
             gfx = g;
             body.classList.toggle('ultra', g === 'ultra');
             gfxBtn.textContent = g === 'ultra' ? '8-bit' : 'Ultra';
@@ -1604,11 +1606,10 @@
             }
             updatePanelReveal();
             syncEngine();
-            if (save) { try { localStorage.setItem('gfxMode', g); } catch (e) { /* ignore */ } }
         }
 
         gfxBtn.addEventListener('click', function () {
-            setGfx(gfx === 'ultra' ? 'retro' : 'ultra', true);
+            setGfx(gfx === 'ultra' ? 'retro' : 'ultra');
             if (soundOn && audio && audio.state === 'running') blip(gfx === 'ultra' ? 220 : 660, audio.currentTime, 0.1, 0.08);
         });
 
@@ -2464,7 +2465,7 @@
         /* ---------- boot ---------- */
         buildSprites();
         initGrid();
-        setGfx(gfx, false);
+        setGfx(gfx);
         spawnFlies(mode === 'night' ? 22 : 0);
 
         // all four critters, every visit
