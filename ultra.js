@@ -486,6 +486,7 @@ export function initUltra(bridge) {
     let lastMoveAt = 0;
 
     function onPointer(e) {
+        if(window.MO_PORTFOLIO?.isOpen() || e.target.closest?.("#portfolio-shell"))return;
         ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
         ray.setFromCamera(ndc, camera);
         if (ray.ray.intersectPlane(groundPlane, hit)) {
@@ -531,7 +532,7 @@ export function initUltra(bridge) {
     let css3d = null, cssScene = null, cardHome = null, cardObj = null;
     let maskTarget = null;
     let cardTick = 0;
-    if (panel && !matchMedia('(pointer: coarse)').matches) {
+    if (panel && !document.getElementById('portfolio-scene') && !matchMedia('(pointer: coarse)').matches) {
         css3d = new CSS3DRenderer();
         css3d.setSize(innerWidth, innerHeight);
         css3d.domElement.style.cssText = 'position:fixed;inset:0;z-index:6;pointer-events:none;';
