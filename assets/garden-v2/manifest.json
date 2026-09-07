@@ -1,0 +1,20 @@
+{
+  "version": 22,
+  "models": {
+    "pavilion": "pavilion-packed.glb",
+    "tree": "tree-packed.glb",
+    "treeLow": "tree-low-packed.glb",
+    "sorrel": "sorrel-packed.glb",
+    "shrub": "shrub-packed.glb",
+    "flowers": "flowers-packed.glb",
+    "tuft": "tuft-packed.glb",
+    "sorrelLow": "sorrel-low-packed.glb",
+    "tuftLow": "tuft-low-packed.glb",
+    "shrubLow": "shrub-low-packed.glb",
+    "flowersLow": "flowers-low-packed.glb"
+  },
+  "character": "mo-wavy-packed.glb",
+  "lighting": "Cycles ambient occlusion atlas plus live sun, sky and shadows",
+  "compression": "EXT_meshopt_compression; floating quantized positions, exact UVs",
+  "characterRevision": "Rear reference: soft waves, sage tee and wide rust trousers"
+}

@@ -1,1 +1,142 @@
-{}
+{
+  "revision": 22,
+  "sources": [
+    {
+      "asset": "Botanical models",
+      "license": "CC0-1.0",
+      "source": "https://polyhaven.com/license",
+      "details": "Authored arrangements and optimized geometry from shrub_sorrel_01, grass_medium_01, shrub_04, shrub_03 and jacaranda_tree; exact source manifest in authoring/garden/vegetation."
+    },
+    {
+      "asset": "Lawn",
+      "license": "CC0-1.0",
+      "source": "https://ambientcg.com/view?id=Grass005",
+      "processing": "Matched albedo, OpenGL normal, roughness; JPEG fallback and mipmapped KTX2; 2m art-directed repeat."
+    },
+    {
+      "asset": "Sky",
+      "license": "CC0-1.0",
+      "source": "https://polyhaven.com/a/kloofendal_38d_partly_cloudy_puresky",
+      "processing": "Original publisher 1k HDR for runtime; 2k authoring original preserved. Measured solar elevation 37.959 degrees; aligned live sun and IBL.",
+      "download": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_38d_partly_cloudy_puresky_1k.hdr"
+    },
+    {
+      "asset": "Pavilion",
+      "source": "Project-authored Blender model",
+      "processing": "Original geometry, inherited project limestone/plaster/linen and Poly Haven wood_table_worn maps; Cycles AO; delivery textures repacked1024px."
+    },
+    {
+      "asset": "Character",
+      "source": "Project-authored Blender model, existing Mo face image and built-in imagegen hair texture based on a supplied personal reference",
+      "processing": "84,175 triangles; nine authored mesh groups, 15 rendered primitives and one skin; loose sage tee, wide rust trousers and softly wavy native hair. Opaque RGB hair reference projected onto curved geometry and baked as a 2048px colour atlas on UV1; fibre normals retain UV0. PushWalk 1s / Idle 2s; Idle first-key seam corrected. Exported stride and grip extras preserved.",
+      "provenance": "authoring/garden/character/hair-reference-provenance.json",
+      "privacy": "Raw personal reference photograph is not distributed; generated texture, exact prompts and editable model are retained in the authoring sources."
+    }
+  ],
+  "files": [
+    {
+      "file": "day-sky-1k.hdr",
+      "bytes": 1366191,
+      "sha256": "78882f3e560d7f6f2856f5ff071c52da51098507c391fdbb811dc9f79c403704"
+    },
+    {
+      "file": "flowers-low-packed.glb",
+      "bytes": 597316,
+      "sha256": "0ada33b0816f9d83b5cae1db7d34275b0dec5d4f26f5a8f28e8a176f95097c2e"
+    },
+    {
+      "file": "flowers-packed.glb",
+      "bytes": 627932,
+      "sha256": "88e18bf3646362a7a6dcf5eae36e60ec91039576ed89a9cf2a5a5ccc64d8714d"
+    },
+    {
+      "file": "lawn-color.jpg",
+      "bytes": 506163,
+      "sha256": "b42d6ed0f85871bee2ad51866706f7f845bfc2bbf11b4b13701459bd40732573"
+    },
+    {
+      "file": "lawn-color.ktx2",
+      "bytes": 217384,
+      "sha256": "2c6e7c6cf3a2195606839f48b929cc95ab950e82e387a2d48a2c7f7f81040551"
+    },
+    {
+      "file": "lawn-normal.jpg",
+      "bytes": 1203726,
+      "sha256": "a958e48a3fe5815cc000471711bc46ab46883e45f0be8e5311c41eabb13e798e"
+    },
+    {
+      "file": "lawn-normal.ktx2",
+      "bytes": 1350023,
+      "sha256": "24a58fe87bcdaf62518fad050c9f10d8786f48a6565ec9e7bc6da946478da263"
+    },
+    {
+      "file": "lawn-roughness.jpg",
+      "bytes": 450166,
+      "sha256": "6c46d36fcef991ecbfb7e03568285ef7a49d2b1d7c05f1c20517a967b5e694a7"
+    },
+    {
+      "file": "lawn-roughness.ktx2",
+      "bytes": 199054,
+      "sha256": "9a06adc18e3aec1abcfcba68a08feb743dc57fdc1558f86024d41093173ac60f"
+    },
+    {
+      "file": "mo-wavy-packed.glb",
+      "bytes": 3929672,
+      "sha256": "432c080d6aef0e803ae91e598c6289bc90b5da864f0e349d9b786aac4db31a48"
+    },
+    {
+      "file": "pavilion-packed.glb",
+      "bytes": 5398960,
+      "sha256": "e38c238c9d009e191b43b13d7d821dd4987af589322f36e679fddbb94adfdf78"
+    },
+    {
+      "file": "shrub-low-packed.glb",
+      "bytes": 310392,
+      "sha256": "0fae0ddc60dccc5003eda42aa83acd6dbf02eb165fd840f61858a7e16e11c4a5"
+    },
+    {
+      "file": "shrub-packed.glb",
+      "bytes": 354080,
+      "sha256": "49de48e7d1cc0e8650a9a8445d7d2b6630aa968d6952c380e39cefd7344fa82c"
+    },
+    {
+      "file": "sorrel-low-packed.glb",
+      "bytes": 274316,
+      "sha256": "773901b6194dd9efe77b1161cd6d168aa606766ad3d15b029885dad588f22b8b"
+    },
+    {
+      "file": "sorrel-packed.glb",
+      "bytes": 298160,
+      "sha256": "dcdb1c306d32c8f71536400c1c40580388629a5c6638b84ec34f646d1ee04b22"
+    },
+    {
+      "file": "tree-low-packed.glb",
+      "bytes": 2405800,
+      "sha256": "459ea7a73cf79272e834c364d9c653d973fc532ae91ca2d6433a3f74bd0a3dd5"
+    },
+    {
+      "file": "tree-packed.glb",
+      "bytes": 4239272,
+      "sha256": "187db8fd16c8aa31c797915c036607e85669acd2b5525681eb5e9ba85959091d"
+    },
+    {
+      "file": "tuft-low-packed.glb",
+      "bytes": 587084,
+      "sha256": "a478eff1bea347506e7ceb789199f42dce98184ea57985bec74a718566fc902f"
+    },
+    {
+      "file": "tuft-packed.glb",
+      "bytes": 606672,
+      "sha256": "6d99a6b771f3c284db0dd158381f5cea873c512bebeef5d289b6d3e8682a0768"
+    }
+  ],
+  "delivery": {
+    "compression": "gltfpack 1.2.0 EXT_meshopt_compression; quantized positions/normals/animation, exact restored UV0/UV1 and unchanged image bytes; no geometric simplification.",
+    "originalModelBytes": 31701160,
+    "packedModelBytes": 19629656,
+    "verification": "authoring/garden/compression/decoded-error-report.json",
+    "font": "Instrument Serif Regular, self-hosted under SIL Open Font License; vendor/InstrumentSerif-OFL.txt",
+    "characterVerification": "authoring/garden/character/v22-packed-qa.json",
+    "localBrowserReview": "authoring/garden/character/browser-review.json"
+  }
+}
