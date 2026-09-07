@@ -1194,29 +1194,19 @@
             #toast { top: 3.6rem; }
         }
     </style>
+<link rel="stylesheet" href="./portfolio-ui.css?v=13"><script defer src="./portfolio-ui.js?v=14"></script>
 </head>
 <body>
-    <main class="scene">
-        <div class="panel">
-            <p class="tag"><span class="st">★ </span>Product Designer<span class="st"> ★</span></p>
-            <h1>Mo Bashagha</h1>
-            <p class="sub">Currently designing<br> WhatsApp<span class="blink">▮</span></p>
-            <nav class="menu">
-                <button id="workbtn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="work">Work history</button>
-                <a href="mailto:mbashagha@gmail.com">Email</a>
-                <a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LinkedIn</a>
-            </nav>
-            <p class="tiny"><span id="edition">8-bit edition</span></p>
-        </div>
-    </main>
-
-    <div id="work" role="dialog" aria-modal="true" aria-labelledby="worktitle">
-        <div class="sheet">
-            <div class="bar">
-                <h2 id="worktitle">Work history<i aria-hidden="true"></i></h2>
-                <button class="x" id="workclose" type="button" aria-label="Close work history"><span class="xk">X</span> Close</button>
-            </div>
-
+    <main class="scene" id="portfolio-scene">
+ <section class="panel" aria-labelledby="portfolio-title">
+  <div class="portfolio-meta"><span>PRODUCT DESIGNER</span></div>
+  <h1 id="portfolio-title" tabindex="-1">Mo Bashagha</h1>
+  <p class="portfolio-summary">Currently designing <strong>WhatsApp</strong></p>
+  <nav class="portfolio-links" aria-label="Work and contact"><button id="workbtn" type="button" aria-haspopup="dialog" aria-controls="career-dialog">Work history</button><a href="mailto:mbashagha@gmail.com">Email</a><a href="https://www.linkedin.com/in/mobashagha/" target="_blank" rel="noopener">LinkedIn</a></nav>
+  <div class="portfolio-footer"><span id="edition">8-bit edition</span></div>
+ </section>
+</main>
+<dialog id="career-dialog" aria-labelledby="worktitle"><div class="career-top"><div><h2 id="worktitle">Work history</h2></div><button id="career-close" type="button" aria-label="Close work history">Close <span>×</span></button></div>
             <div class="doc" id="workdoc" tabindex="0">
                 <div class="now">
                     <p class="k">Currently</p>
@@ -1339,20 +1329,21 @@
 
                 <p class="hint"><span class="key"></span> Career milestone &nbsp;&nbsp; <span class="key work"></span> Shipped work</p>
             </div>
-        </div>
-    </div>
+</dialog>
+
 
     <canvas id="grass"></canvas>
     <canvas id="fx"></canvas>
 
     <div id="toast">
         <h2>Mo the lawn!</h2>
-        <p>Move your cursor (or drag)<br>to reveal the site</p>
+        <p>Mow the grass to reveal the site.</p><p class="intro-help">Move your cursor or drag to mow.</p>
     </div>
 
     <div id="controls" class="hud">
         <button id="mowall" type="button">Mo all ⏭</button>
         <button id="gfxbtn" type="button" aria-label="Toggle graphics mode">Ultra</button>
+        <button id="simbtn" type="button" onclick="location.href='./simulator.html'" aria-label="Play the 3D lawn simulator">Simulator ↗</button>
         <button id="modebtn" type="button" aria-label="Toggle day and night">☀️</button>
         <button id="mute" type="button" aria-pressed="false" aria-label="Toggle sound">🔇</button>
     </div>
@@ -1405,6 +1396,7 @@
 
         var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         var body = document.body;
+        if (['simulator','3d'].includes(new URLSearchParams(location.search).get('gfx'))) { location.replace('./simulator.html'+location.search+location.hash); return; }
         var grass = document.getElementById('grass');
         var fx = document.getElementById('fx');
         var mowerEl = document.getElementById('mower');
@@ -1428,12 +1420,14 @@
         /* ---------- day / night mode ---------- */
         var qmode = (location.search.match(/[?&]mode=(day|night)/) || [])[1];
         var hour = new Date().getHours();
-        var mode = qmode || (hour >= 19 || hour < 6 ? 'night' : 'day');
+        var savedMode;try{savedMode=localStorage.getItem('mo:appearance');}catch(e){}
+        var mode = qmode || savedMode || 'day';
         var MODE_ICON = { day: '☀️', night: '🌙' };
         if (mode !== 'day') body.classList.add(mode);
         modeBtn.textContent = MODE_ICON[mode];
 
-        if (reduced) {
+        if (reduced || new URLSearchParams(location.search).get('view') === 'portfolio') {
+            body.classList.toggle('ultra',gfx==='ultra');
             // No game: show the site directly.
             body.classList.add('done');
             grass.style.display = 'none';
@@ -1553,8 +1547,9 @@
             state: function () {
                 return { cols: cols, rows: rows, mowed: mowed, finished: finished, mode: mode, maskVersion: maskVersion };
             },
-            mowWorld: function (tx, tz) { mowAt(tx * TILE, tz * TILE, false); },
+            mowWorld: function (tx, tz) { if(window.MO_PORTFOLIO?.isOpen())return; mowAt(tx * TILE, tz * TILE, false); },
             mowScreen: function (px, py) {
+                if(window.MO_PORTFOLIO?.isOpen())return;
                 // scale screen px into grid space (grid is locked once ultra loads)
                 mowAt(px * (cols * TILE) / window.innerWidth, py * (rows * TILE) / window.innerHeight, false);
             },
@@ -1575,7 +1570,7 @@
             ultraLoading = true;
             var ld = document.getElementById('ultraload');
             ld.hidden = false;
-            import('./ultra.js').then(function (mod) {
+            import('./ultra.js?v=2').then(function (mod) {
                 ultraCtl = mod.initUltra(BRIDGE);
                 ultraCtl.setMode(mode);
                 ld.hidden = true;
@@ -2113,7 +2108,7 @@
         }
 
         /* ---------- sound (Web Audio, generated) ---------- */
-        var audio = null, soundOn = true, lastWhirr = 0;
+        var audio = null, soundOn = false, lastWhirr = 0;try{soundOn=localStorage.getItem('mo:sound')==='true';}catch(e){}
 
         // The icon reflects whether sound can actually play right now.
         function setIcon() {
@@ -2238,10 +2233,13 @@
         }
 
         function syncEngine() {
-            var want = gfx === 'ultra' && soundOn && audio && audio.state === 'running' && !finished && !reduced;
+            var want = gfx === 'ultra' && soundOn && audio && audio.state === 'running' && !finished && !reduced && !window.MO_PORTFOLIO?.isOpen();
             if (want && !engine) buildEngine();
             else if (!want && engine) killEngine();
         }
+
+        window.addEventListener('mo:portfolio',syncEngine);
+        window.addEventListener('mo:settings',syncEngine);
 
         function chimeNote(freq, t0, dur, vol) {
             var o = audio.createOscillator(), g = audio.createGain();
@@ -2375,6 +2373,7 @@
         var lastX = null, lastY = null;
 
         function onMove(e) {
+            if(window.MO_PORTFOLIO?.isOpen() || e.target.closest('#portfolio-shell'))return;
             if (finished) return;
             if (body.classList.contains('work-open')) return; // sheet is up: pause the mower
             if (gfx === 'ultra') return; // 3D mode raycasts its own mowing
@@ -2455,6 +2454,7 @@
             updatePanelReveal();
             syncEngine();
             body.classList.add('done');
+            window.dispatchEvent(new CustomEvent('mo:complete'));
             banner.classList.add('show');
             spawnConfetti();
             victoryTune();
@@ -2487,6 +2487,7 @@
         // small debug/testing handle
         window.LAWN = {
             finish: finishLawn,
+            skip: function(){mowallBtn.click();},
             setMode: setMode,
             setGfx: setGfx,
             progress: function () { return total ? mowedCount / total : 0; },
@@ -2499,86 +2500,6 @@
         };
     })();
 
-    /* ---------- WORK sheet ----------
-       Lives outside the game IIFE so it also works on the reduced-motion
-       path, where the game returns early and the site renders unmowed. */
-    (function () {
-        'use strict';
-        var body = document.body;
-        var workEl = document.getElementById('work');
-        var workBtn = document.getElementById('workbtn');
-        var workDoc = document.getElementById('workdoc');
-        var closeBtn = document.getElementById('workclose');
-        if (!workEl || !workBtn) return;
-
-        function isOpen() { return body.classList.contains('work-open'); }
-
-        function beep() {
-            if (window.LAWN && window.LAWN.blip) window.LAWN.blip();
-        }
-
-        // true only while #work is a history entry we pushed ourselves, so
-        // going back is safe. A page loaded straight at /#work has no entry of
-        // ours behind it, so closing must rewrite the hash, not navigate away.
-        var pushedByUs = false;
-
-        function open(push) {
-            if (isOpen()) return;
-            body.classList.add('work-open');
-            workBtn.setAttribute('aria-expanded', 'true');
-            workDoc.scrollTop = 0;
-            closeBtn.focus();
-            if (push && location.hash !== '#work') {
-                try {
-                    history.pushState({ work: 1 }, '', '#work');
-                    pushedByUs = true;
-                } catch (e) { /* ignore */ }
-            }
-            beep();
-        }
-
-        function close(fromPop) {
-            if (!isOpen()) return;
-            body.classList.remove('work-open');
-            workBtn.setAttribute('aria-expanded', 'false');
-            workBtn.focus();
-            if (!fromPop) {
-                try {
-                    if (pushedByUs) history.back();
-                    else if (location.hash === '#work') history.replaceState(null, '', location.pathname + location.search);
-                } catch (e) { /* ignore */ }
-            }
-            pushedByUs = false;
-            beep();
-        }
-
-        workBtn.addEventListener('click', function () { open(true); });
-        closeBtn.addEventListener('click', function () { close(false); });
-
-        // click the dim backdrop (but not the sheet) to close
-        workEl.addEventListener('click', function (e) {
-            if (e.target === workEl) close(false);
-        });
-
-        document.addEventListener('keydown', function (e) {
-            if (!isOpen()) return;
-            if (e.key === 'Escape') { e.preventDefault(); close(false); return; }
-            // keep tab focus inside the sheet
-            if (e.key === 'Tab') {
-                var f = [closeBtn, workDoc];
-                var i = f.indexOf(document.activeElement);
-                e.preventDefault();
-                f[(i + (e.shiftKey ? f.length - 1 : 1) + f.length) % f.length].focus();
-            }
-        });
-
-        window.addEventListener('popstate', function () {
-            if (location.hash === '#work') open(false); else close(true);
-        });
-
-        // deep link: mobashagha.com/#work opens straight to the sheet
-        if (location.hash === '#work') open(false);
-    })();
     </script>
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "953a3b657f804b79a6c8d47baddc81c9"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
