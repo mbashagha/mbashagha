@@ -1,1 +1,180 @@
-
+[
+  {
+    "file": "terrain-color.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rocky_terrain_02/rocky_terrain_02_diff_1k.jpg",
+    "asset": "https://polyhaven.com/a/rocky_terrain_02",
+    "license": "CC0-1.0",
+    "upstream_md5": "cf604d3868398a6a996cb5ba330dd3ab"
+  },
+  {
+    "file": "terrain-normal.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rocky_terrain_02/rocky_terrain_02_nor_gl_1k.jpg",
+    "asset": "https://polyhaven.com/a/rocky_terrain_02",
+    "license": "CC0-1.0",
+    "upstream_md5": "c1636176f0fa8eb9b924ebdecd47ddfd"
+  },
+  {
+    "file": "terrain-roughness.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rocky_terrain_02/rocky_terrain_02_rough_1k.jpg",
+    "asset": "https://polyhaven.com/a/rocky_terrain_02",
+    "license": "CC0-1.0",
+    "upstream_md5": "f940e341352cca8bdd2dc4d0c30f3da1"
+  },
+  {
+    "file": "stone-color.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rustic_stone_wall_02/rustic_stone_wall_02_diff_1k.jpg",
+    "asset": "https://polyhaven.com/a/rustic_stone_wall_02",
+    "license": "CC0-1.0",
+    "upstream_md5": "9ca81a5ea589ea55a547bccc43c9df85"
+  },
+  {
+    "file": "stone-normal.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rustic_stone_wall_02/rustic_stone_wall_02_nor_gl_1k.jpg",
+    "asset": "https://polyhaven.com/a/rustic_stone_wall_02",
+    "license": "CC0-1.0",
+    "upstream_md5": "9612e01f923facfdd420fd7b811269b0"
+  },
+  {
+    "file": "stone-roughness.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rustic_stone_wall_02/rustic_stone_wall_02_rough_1k.jpg",
+    "asset": "https://polyhaven.com/a/rustic_stone_wall_02",
+    "license": "CC0-1.0",
+    "upstream_md5": "d5fad1c25c7bc87dd697d8491e43f9fc"
+  },
+  {
+    "file": "wood-color.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_worn/wood_table_worn_diff_1k.jpg",
+    "asset": "https://polyhaven.com/a/wood_table_worn",
+    "license": "CC0-1.0",
+    "upstream_md5": "8c71f701f70fef34b87fb7c8742ad0a5"
+  },
+  {
+    "file": "wood-normal.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_worn/wood_table_worn_nor_gl_1k.jpg",
+    "asset": "https://polyhaven.com/a/wood_table_worn",
+    "license": "CC0-1.0",
+    "upstream_md5": "d8e76d135e94e32bc81eedb3342c7614"
+  },
+  {
+    "file": "wood-roughness.jpg",
+    "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_worn/wood_table_worn_rough_1k.jpg",
+    "asset": "https://polyhaven.com/a/wood_table_worn",
+    "license": "CC0-1.0",
+    "upstream_md5": "1e068051a440933d9d054dc6614f950f"
+  },
+  {
+    "file": "plaster.jpg",
+    "source": "../plaster.png",
+    "license": "Inherited project asset; see original project history"
+  },
+  {
+    "file": "turf.jpg",
+    "source": "../turf.png",
+    "license": "Inherited project asset; see original project history"
+  },
+  {
+    "file": "fabric.jpg",
+    "source": "../fabric.png",
+    "license": "Inherited project asset; see original project history"
+  },
+  {
+    "file": "bark.jpg",
+    "source": "../bark.png",
+    "license": "Inherited project asset; see original project history"
+  },
+  {
+    "file": "paving.jpg",
+    "source": "../paving.png",
+    "license": "Inherited project asset; see original project history"
+  },
+  {
+    "file": "limestone.jpg",
+    "source": "../limestone.png",
+    "license": "Inherited project asset; see original project history"
+  },
+  {
+    "file": "terrain-color.ktx2",
+    "derived_from": "terrain-color.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "terrain-normal.ktx2",
+    "derived_from": "terrain-normal.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "terrain-roughness.ktx2",
+    "derived_from": "terrain-roughness.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "stone-color.ktx2",
+    "derived_from": "stone-color.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "stone-normal.ktx2",
+    "derived_from": "stone-normal.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "stone-roughness.ktx2",
+    "derived_from": "stone-roughness.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "wood-color.ktx2",
+    "derived_from": "wood-color.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "wood-normal.ktx2",
+    "derived_from": "wood-normal.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "wood-roughness.ktx2",
+    "derived_from": "wood-roughness.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "plaster.ktx2",
+    "derived_from": "plaster.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "turf.ktx2",
+    "derived_from": "turf.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "fabric.ktx2",
+    "derived_from": "fabric.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "bark.ktx2",
+    "derived_from": "bark.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "paving.ktx2",
+    "derived_from": "paving.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "limestone.ktx2",
+    "derived_from": "limestone.jpg",
+    "processing": "Basis Universal: mipmapped ETC1S colour/roughness; UASTC normals; colour uses sRGB, data maps linear"
+  },
+  {
+    "file": "mower.glb",
+    "source": "../../sim-scenery.js",
+    "processing": "Bespoke rigid model, compiled by scripts/export-mower.mjs"
+  },
+  {
+    "file": "irradiance.png",
+    "source": "../../scripts/bake-garden-light.py",
+    "processing": "48 cosine-weighted hemisphere samples against static garden proxies, linear RGB; no direct sunlight"
+  }
+]
