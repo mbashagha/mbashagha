@@ -82,10 +82,14 @@ function buildLand(scene,maps,random){
  pebble.receiveShadow=true;scene.add(pebble);
 }
 
-export async function loadGardenEnvironment(scene,maps,random){
- const response=await fetch(base+'manifest.json');if(!response.ok)throw new Error('Garden asset manifest unavailable');const manifest=await response.json();
+export async function loadGardenEnvironmentAssets(){
+ const response=await fetch(base+'manifest.json?v=23');if(!response.ok)throw new Error('Garden asset manifest unavailable');const manifest=await response.json();
  const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),assets={};
- await Promise.all(Object.entries(manifest.models).map(async([key,file])=>{assets[key]=(await loader.loadAsync(base+file)).scene;}));
+ await Promise.all(Object.entries(manifest.models).map(async([key,file])=>{const revision=key.endsWith('Low')&&manifest.loadingRevision?'?v='+encodeURIComponent(manifest.loadingRevision):'';assets[key]=(await loader.loadAsync(base+file+revision)).scene;}));
+ return {manifest,assets};
+}
+
+export function buildGardenEnvironment(scene,maps,random,{manifest,assets}){
  // LODs share photographic textures; only their geometric detail differs.
  if(assets.treeLow){const materials=new Map();assets.tree.traverse(o=>{if(o.isMesh)materials.set(o.material.name,o.material);});assets.treeLow.traverse(o=>{if(o.isMesh&&materials.has(o.material.name))o.material=materials.get(o.material.name);});}
  buildLand(scene,maps,random);

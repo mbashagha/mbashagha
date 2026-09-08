@@ -14,16 +14,19 @@ export async function loadGardenMaps(renderer,{legacy=false}={}){
  }
  try{
   const surfaces=legacy?['plaster','turf','fabric','bark','paving','limestone']:['plaster','paving'];
-  await Promise.all(surfaces.map(n=>load(n,n)));
-  if(legacy)await Promise.all(['mo-face','hair-strands'].map(async n=>{maps[n]=await images.loadAsync('./assets/'+n+'.png');maps[n].colorSpace=T.SRGBColorSpace;maps[n].anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());maps[n].wrapS=maps[n].wrapT=T.RepeatWrapping;}));
-  await Promise.all((legacy?['terrain','stone','wood']:['terrain','stone']).flatMap(n=>['Color','Normal','Roughness'].map(c=>load(n+c,n+'-'+c.toLowerCase(),c==='Color'))));
-  await Promise.all(['color','normal','roughness'].map(async name=>{
+  // Enqueue every independent request together. The transcoder's two workers
+  // already bound decode concurrency; waiting for material families just adds RTTs.
+  const jobs=surfaces.map(n=>load(n,n));
+  if(legacy)jobs.push(...['mo-face','hair-strands'].map(async n=>{maps[n]=await images.loadAsync('./assets/'+n+'.png');maps[n].colorSpace=T.SRGBColorSpace;maps[n].anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());maps[n].wrapS=maps[n].wrapT=T.RepeatWrapping;}));
+  jobs.push(...(legacy?['terrain','stone','wood']:['terrain','stone']).flatMap(n=>['Color','Normal','Roughness'].map(c=>load(n+c,n+'-'+c.toLowerCase(),c==='Color'))));
+  jobs.push(...['color','normal','roughness'].map(async name=>{
    let texture;try{texture=await compressed.loadAsync('./assets/garden-v2/lawn-'+name+'.ktx2');}catch{try{texture=await images.loadAsync('./assets/garden-v2/lawn-'+name+'.jpg');}catch{return;}}
    texture.colorSpace=name==='color'?T.SRGBColorSpace:T.NoColorSpace;
    texture.wrapS=texture.wrapT=T.RepeatWrapping;texture.repeat.set(10,12);
    texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
    maps['lawn'+name[0].toUpperCase()+name.slice(1)]=texture;
   }));
+  await Promise.all(jobs);
   if(!maps.lawnColor&&!maps.turf){await load('turf','turf');if(!maps.turf){maps.turf=new T.DataTexture(new Uint8Array([74,101,32,255]),1,1);maps.turf.colorSpace=T.SRGBColorSpace;maps.turf.needsUpdate=true;}}
   if(legacy)try{maps.irradiance=await images.loadAsync('./assets/garden/irradiance.png');maps.irradiance.channel=1;maps.irradiance.colorSpace=T.NoColorSpace;}catch{}
   // A failed optional compressed asset does not prevent the original game loading.

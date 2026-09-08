@@ -2,8 +2,9 @@ import * as T from 'three';
 import {createGrass} from './sim-render-grass.js?v=21';
 import {QualityController,QUALITY} from './sim-render-quality.mjs?v=21';
 import {FrameMetrics} from './sim-render-metrics.mjs';
-import {loadGardenEnvironment} from './sim-garden-environment.js?v=21';
-import {loadGardenMaps,loadGardenMower,loadGardenCharacter} from './sim-render-assets.js?v=22';
+import {loadGardenEnvironmentAssets,buildGardenEnvironment} from './sim-garden-environment.js?v=23';
+import {loadGardenMaps,loadGardenMower,loadGardenCharacter} from './sim-render-assets.js?v=23';
+import {compileForTarget,uploadSceneTextures,createShadowWarmup,captureGardenReflection,yieldToBrowser} from './sim-startup.mjs?v=23';
 import {animateFoliage} from './sim-render-foliage.js?v=21';
 import {Sky} from './vendor/Sky.js';
 import {RGBELoader} from './vendor/RGBELoader.js';
@@ -16,6 +17,8 @@ import {Clippings,makeDestination} from './sim-effects.js?v=12';
 const $=id=>document.getElementById(id),canvas=$('garden');
 const bootStages={module:Math.round(performance.now())};
 function bootStage(name){bootStages[name]=Math.round(performance.now());canvas.dataset.bootStages=JSON.stringify(bootStages);}
+const shaderStages={};
+function shaderStage(name){shaderStages[name]=renderer.info.programs.length;canvas.dataset.shaderStages=JSON.stringify(shaderStages);}
 const frameMetrics=new FrameMetrics(),reviewParams=new URLSearchParams(location.search);
 let gardenEnvironment=null,reviewCamera=null,daySky=null;
 const coarse=matchMedia('(pointer:coarse)').matches,reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -37,7 +40,7 @@ function buildGrass(){
 }
 function applyQuality(){
  const q=QUALITY[quality.tier];renderer.setPixelRatio(Math.min(devicePixelRatio,q.scale));renderer.setSize(innerWidth,innerHeight);post?.setQuality(q);post?.setSize(innerWidth,innerHeight);
- sun.shadow.mapSize.set(q.shadow,q.shadow);sun.shadow.map?.dispose();sun.shadow.map=null;
+ if(sun.shadow.mapSize.x!==q.shadow||sun.shadow.mapSize.y!==q.shadow){sun.shadow.mapSize.set(q.shadow,q.shadow);sun.shadow.map?.dispose();sun.shadow.map=null;}
  scene.traverse(o=>{if(o.isInstancedMesh&&o!==clippings?.mesh){if(o.userData.fullDensity===undefined)o.userData.fullDensity=o.count;
  // Preserve the original instance order while reducing foliage cost on slower devices.
  if(!o.userData.gardenAsset&&o.material.side===T.DoubleSide)o.count=Math.floor(o.userData.fullDensity*(quality.tier==='high'?1:quality.tier==='medium'?.7:.45));}});
@@ -58,30 +61,41 @@ async function init(){
  try{
  renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,coarse?1.15:1.35));renderer.setSize(innerWidth,innerHeight);
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.outputColorSpace=T.SRGBColorSpace;
+ canvas.dataset.parallelShaders=String(renderer.extensions.has('KHR_parallel_shader_compile'));
+ canvas.dataset.bootVisibility=document.visibilityState;
  scene=new T.Scene();camera=new T.PerspectiveCamera(innerWidth<650?60:51,innerWidth/innerHeight,.08,220);
  sun=new T.DirectionalLight();sun.castShadow=true;sun.shadow.mapSize.set(coarse?2048:4096,coarse?2048:4096);Object.assign(sun.shadow.camera,{left:-19,right:19,top:19,bottom:-19,near:1,far:95});sun.shadow.normalBias=.012;sun.shadow.bias=-.00006;scene.add(sun,sun.target);
  hemi=new T.HemisphereLight();scene.add(hemi);
  sky=new Sky();sky.scale.setScalar(180);sky.material.uniforms.turbidity.value=3;sky.material.uniforms.rayleigh.value=1.8;sky.material.uniforms.mieCoefficient.value=.003;sky.material.uniforms.mieDirectionalG.value=.86;sky.material.uniforms.sunPosition.value.set(-.55,.62,-.62);scene.add(sky);
  setLight();const pmrem=new T.PMREMGenerator(renderer);
- try{daySky=await new RGBELoader().loadAsync('./assets/garden-v2/day-sky-1k.hdr');daySky.mapping=T.EquirectangularReflectionMapping;env=pmrem.fromEquirectangular(daySky);scene.backgroundRotation.y=scene.environmentRotation.y=3.1808;}
- catch{env=pmrem.fromScene(sky,.025,.1,500);}
- scene.environment=env.texture;pmrem.dispose();setLight();
- bootStage('sky');
- maps=await loadGardenMaps(renderer);
- bootStage('materials');
+ // Fetch/decode independently, then assemble with the same deterministic random
+ // sequence. A slow character or sky no longer holds up every other request.
+ const skyReady=new RGBELoader().loadAsync('./assets/garden-v2/day-sky-1k.hdr').catch(()=>null);
+ const mapsReady=loadGardenMaps(renderer).then(value=>{bootStage('materials');return value;});
+ const environmentReady=loadGardenEnvironmentAssets().then(value=>({value}),error=>({error}));
+ const mowerReady=loadGardenMower(buildMower);
+ const characterReady=loadGardenCharacter(async()=>{const old=await loadGardenMaps(renderer,{legacy:true});return createMo(old['mo-face'],old.fabric,old['hair-strands']);});
+ const allAssets=Promise.all([skyReady,mapsReady,environmentReady,mowerReady,characterReady]);
+ pmrem.compileEquirectangularShader();
+ const [loadedSky,loadedMaps,environmentResult,loadedMower,loadedCharacter]=await allAssets;
+ bootStage('downloads');maps=loadedMaps;daySky=loadedSky;
+ try{
+  if(daySky){daySky.mapping=T.EquirectangularReflectionMapping;env=pmrem.fromEquirectangular(daySky);scene.backgroundRotation.y=scene.environmentRotation.y=3.1808;}
+  else env=pmrem.fromScene(sky,.025,.1,500);
+ }finally{pmrem.dispose();}
+ scene.environment=env.texture;setLight();bootStage('sky');
  const authored=new T.Group();
- try{gardenEnvironment=await loadGardenEnvironment(authored,maps,random);scene.add(authored);canvas.dataset.assets='authored-v21';}
+ try{if(environmentResult.error)throw environmentResult.error;gardenEnvironment=buildGardenEnvironment(authored,maps,random,environmentResult.value);scene.add(authored);canvas.dataset.assets='authored-v21';}
  catch(error){console.error('Authored garden assets failed to load',error);Object.assign(maps,await loadGardenMaps(renderer,{legacy:true}));buildScenery(scene,random,maps);canvas.dataset.assets='fallback';}
  bootStage('models');
- foliage=animateFoliage(scene);buildGrass();
- // Capture the actual garden once for glazing reflections, instead of a flat sky colour.
- const glazing=[];scene.traverse(o=>{if(o.isMesh&&(o.userData.gardenGlass||o.material?.envMapIntensity===2)){glazing.push(o);o.visible=false;}});
+ foliage=animateFoliage(scene);await yieldToBrowser();buildGrass();
+ // Actors are prepared for compilation but excluded from the original static
+ // glazing capture, retaining its exact garden-only composition.
+ const glazing=[];scene.traverse(o=>{if(o.isMesh&&(o.userData.gardenGlass||o.material?.envMapIntensity===2))glazing.push(o);});
  const reflection=new T.WebGLCubeRenderTarget(128,{generateMipmaps:true,minFilter:T.LinearMipmapLinearFilter});
- const reflectionCamera=new T.CubeCamera(.1,100,reflection);reflectionCamera.position.set(0,2.2,15.1);reflectionCamera.update(renderer,scene);
- glazing.forEach(o=>{o.visible=true;o.material.envMap=reflection.texture;o.material.envMapIntensity=.70;o.material.needsUpdate=true;});
- bootStage('reflections');
- mower=await loadGardenMower(buildMower);scene.add(mower.root);
- mo=await loadGardenCharacter(async()=>{const old=await loadGardenMaps(renderer,{legacy:true});return createMo(old['mo-face'],old.fabric,old['hair-strands']);});scene.add(mo.root);canvas.dataset.character=mo.source||'fallback';canvas.dataset.characterRevision=String(mo.revision||'legacy');
+ const reflectionCamera=new T.CubeCamera(.1,100,reflection);reflectionCamera.position.set(0,2.2,15.1);
+ mower=loadedMower;scene.add(mower.root);
+ mo=loadedCharacter;scene.add(mo.root);canvas.dataset.character=mo.source||'fallback';canvas.dataset.characterRevision=String(mo.revision||'legacy');
  bootStage('character');
  clippings=new Clippings(scene);destination=makeDestination(scene);
  updateRig(0);camera.position.set(5,2.5,-12);camera.lookAt(0,1,3);
@@ -89,11 +103,25 @@ async function init(){
  if(['high','medium','low'].includes(reviewParams.get('quality')))quality.set(reviewParams.get('quality'));
  applyQuality();setLight();installReviewControls();
  installQualityControl();
- // Warm the same linear scene target and display pass used during play.
- // Compiling against the canvas warms different tone/color-space variants.
- bootStage('compileStart');renderer.setRenderTarget(post.target);
- try{await renderer.compileAsync(scene,camera);}finally{renderer.setRenderTarget(null);}
- await renderer.compileAsync(post.scene,post.ortho);bootStage('compiled');post.render(scene);
+ // Submit shaders before ANY scene render, including the six reflection faces.
+ // Shadow programs require their own warmup in Three r170. Both targets use the
+ // same linear scene shader variants; the final display pass is warmed separately.
+ bootStage('compileStart');const shadows=createShadowWarmup(scene);
+ try{
+  const programs=Promise.all([compileForTarget(renderer,scene,camera,reflection),compileForTarget(renderer,shadows.scene,camera,reflection),compileForTarget(renderer,post.scene,post.ortho,null)]);
+  bootStage('compileSubmitted');
+  await Promise.all([programs,uploadSceneTextures(renderer,scene,[maskTexture,grassSystem.uniforms.trackMap.value]).then(count=>{canvas.dataset.uploadedTextures=String(count);bootStage('texturesUploaded');})]);
+  bootStage('compiled');shaderStage('warmed');
+  renderer.initRenderTarget(post.target);
+  captureGardenReflection(renderer,scene,reflectionCamera,[...glazing,mower.root,mo.root,clippings.mesh,destination]);
+  glazing.forEach(o=>{o.material.envMap=reflection.texture;o.material.envMapIntensity=.70;o.material.needsUpdate=true;});
+  bootStage('reflections');shaderStage('reflection');
+  // Begin with the normal play-camera LODs and shadow selection, avoiding a
+  // full-density throwaway first frame. The reflection above keeps its old detail.
+  updateCamera(0);grassSystem.update(0,mower.root.position,camera,quality.tier,0);gardenEnvironment?.update(camera,quality.tier);
+  await compileForTarget(renderer,scene,camera,post.target);bootStage('glazingCompiled');
+  post.render(scene);shaderStage('firstFrame');
+ }finally{shadows.dispose();}
  bootStage('ready');
  canvas.dataset.loadMs=String(Math.round(performance.now()));
  canvas.dataset.transferBytes=String(performance.getEntriesByType('resource').reduce((n,r)=>n+(r.transferSize||0),0));
@@ -161,7 +189,7 @@ function tick(){
  if(!started||running||portfolioActive)updateCamera(dt);
  if(++frame%10===0){$('percent').textContent=Math.floor(lawn.ratio*100);$('progress-fill').style.width=`${lawn.ratio*100}%`;$('area').textContent=Math.round(lawn.area);$('elapsed').textContent=formatTime(elapsed);$('speed').innerHTML=`${(Math.abs(rig.speed)*3.6).toFixed(1)} <small>km/h</small>`;canvas.dataset.fps=String(Math.round(fps));drawMap();syncSound();}
  const artTime=reviewCamera?0:t;grassSystem.update(reduced?0:artTime,mower.root.position,camera,quality.tier,dt);foliage.update(reduced?0:artTime);gardenEnvironment?.update(camera,quality.tier);post.render(scene);
- if(frame%10===0){canvas.dataset.drawCalls=String(post.metrics.calls);canvas.dataset.triangles=String(post.metrics.triangles);canvas.dataset.frameP95=String(frameMetrics.snapshot().p95Ms);}
+ if(frame%10===0){canvas.dataset.drawCalls=String(post.metrics.calls);canvas.dataset.triangles=String(post.metrics.triangles);canvas.dataset.frameP95=String(frameMetrics.snapshot().p95Ms);canvas.dataset.shaderPrograms=String(renderer.info.programs.length);}
 }
 function formatTime(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;}
 function drawMap(){
