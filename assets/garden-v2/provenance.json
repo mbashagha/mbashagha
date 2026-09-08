@@ -41,8 +41,8 @@
     },
     {
       "file": "flowers-low-packed.glb",
-      "bytes": 597316,
-      "sha256": "0ada33b0816f9d83b5cae1db7d34275b0dec5d4f26f5a8f28e8a176f95097c2e"
+      "bytes": 42568,
+      "sha256": "b7c63371c909ba49816214fac6633b039f2d440f5aeeb43acd995f2b234a23db"
     },
     {
       "file": "flowers-packed.glb",
@@ -91,8 +91,8 @@
     },
     {
       "file": "shrub-low-packed.glb",
-      "bytes": 310392,
-      "sha256": "0fae0ddc60dccc5003eda42aa83acd6dbf02eb165fd840f61858a7e16e11c4a5"
+      "bytes": 46936,
+      "sha256": "33237a94835911af81595ff71183c4ab56a8922b0460d4800b84d0f50fa8a542"
     },
     {
       "file": "shrub-packed.glb",
@@ -101,8 +101,8 @@
     },
     {
       "file": "sorrel-low-packed.glb",
-      "bytes": 274316,
-      "sha256": "773901b6194dd9efe77b1161cd6d168aa606766ad3d15b029885dad588f22b8b"
+      "bytes": 37436,
+      "sha256": "07b657803e0516d2cb6ef16f7e79de11d729674691261f91e72cfc4bbd764db7"
     },
     {
       "file": "sorrel-packed.glb",
@@ -111,8 +111,8 @@
     },
     {
       "file": "tree-low-packed.glb",
-      "bytes": 2405800,
-      "sha256": "459ea7a73cf79272e834c364d9c653d973fc532ae91ca2d6433a3f74bd0a3dd5"
+      "bytes": 797820,
+      "sha256": "8137fd8ee1580668c699c438404d98eeb1b008aacbe71879a427b9a8f2c040ad"
     },
     {
       "file": "tree-packed.glb",
@@ -121,8 +121,8 @@
     },
     {
       "file": "tuft-low-packed.glb",
-      "bytes": 587084,
-      "sha256": "a478eff1bea347506e7ceb789199f42dce98184ea57985bec74a718566fc902f"
+      "bytes": 23232,
+      "sha256": "dfcaca18110bfa27eed6dbe54e980e0ca255f71cde5c994e5664eda9d4472c05"
     },
     {
       "file": "tuft-packed.glb",
@@ -133,10 +133,13 @@
   "delivery": {
     "compression": "gltfpack 1.2.0 EXT_meshopt_compression; quantized positions/normals/animation, exact restored UV0/UV1 and unchanged image bytes; no geometric simplification.",
     "originalModelBytes": 31701160,
-    "packedModelBytes": 19629656,
+    "packedModelBytes": 16402740,
     "verification": "authoring/garden/compression/decoded-error-report.json",
     "font": "Instrument Serif Regular, self-hosted under SIL Open Font License; vendor/InstrumentSerif-OFL.txt",
     "characterVerification": "authoring/garden/character/v22-packed-qa.json",
-    "localBrowserReview": "authoring/garden/character/browser-review.json"
+    "localBrowserReview": "authoring/garden/character/browser-review.json",
+    "loadingRevision": 23,
+    "lowDetailTextures": "Removed 3,226,916 bytes of unused low-LOD images. All decoded geometry and high-detail materials remain unchanged.",
+    "lowDetailVerification": "authoring/garden/loading/verification-report.json"
   }
 }

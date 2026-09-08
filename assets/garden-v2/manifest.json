@@ -16,5 +16,7 @@
   "character": "mo-wavy-packed.glb",
   "lighting": "Cycles ambient occlusion atlas plus live sun, sky and shadows",
   "compression": "EXT_meshopt_compression; floating quantized positions, exact UVs",
-  "characterRevision": "Rear reference: soft waves, sage tee and wide rust trousers"
+  "characterRevision": "Rear reference: soft waves, sage tee and wide rust trousers",
+  "loadingRevision": 23,
+  "lowDetailMaterials": "Shared from the corresponding full-detail model; low files contain geometry only."
 }
