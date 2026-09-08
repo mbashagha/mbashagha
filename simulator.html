@@ -157,7 +157,7 @@
     <p class="intro-prompt">Tap anywhere on the garden to begin</p>
   </div>
   <div id="loading" role="status"><span>Preparing the garden<span class="loading-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></span></div>
-  <div id="error" hidden role="alert"><h2>The garden couldn’t open.</h2><p>Your browser may not support this 3D mode.</p><a href="./index.html">Return to 8-bit</a></div>
+  <div id="error" hidden role="alert" style="overflow-y:auto;box-sizing:border-box"><h2>The garden couldn’t open.</h2><p id="error-message">The 3D garden stopped loading. Try again with simpler graphics.</p><p><a id="retry-3d" href="./simulator.html?graphics=basic&amp;quality=low">Try simpler 3D</a> <a href="./index.html">Return to 8-bit</a></p><details><summary>Error details</summary><pre id="error-details" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px"></pre></details></div>
   <div class="location"><span class="live-dot"></span> 3D Gaming <span id="time-label">17:42 · GOLDEN HOUR</span></div>
   <aside id="hud" hidden>
     <section class="progress-panel" aria-label="Mowing progress">
@@ -178,6 +178,6 @@
   </aside>
   <div id="pause-panel" class="modal" hidden><div><h2>Paused</h2><button id="resume" class="primary">Back to the garden</button><button id="reset">Start a fresh lawn</button></div></div>
   <div id="complete" class="modal" hidden><div><h2>Lawn complete</h2><p id="result"></p><a class="primary" href="?view=portfolio">View portfolio</a><button id="again">Mo again</button></div></div>
-<script type="module" src="./simulator.js?v=23"></script>
+<script type="module" src="./simulator.js?v=24"></script>
 </body></html>
 

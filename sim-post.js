@@ -49,3 +49,18 @@ export class GardenPost {
  }
  dispose(){this.target.dispose();this.material.dispose();}
 }
+
+// Recovery mode renders directly to the canvas: no floating-point,
+// multisampled offscreen framebuffer or depth-texture postprocessing.
+export class BasicGardenPost {
+ constructor(renderer,camera){this.renderer=renderer;this.camera=camera;this.metrics={calls:0,triangles:0,textures:0,geometries:0};}
+ setQuality(){}
+ setSize(){}
+ render(scene){
+  const info=this.renderer.info,autoReset=info.autoReset;info.autoReset=false;info.reset();
+  try{this.renderer.setRenderTarget(null);this.renderer.render(scene,this.camera);
+   this.metrics={calls:info.render.calls,triangles:info.render.triangles,textures:info.memory.textures,geometries:info.memory.geometries};
+  }finally{info.autoReset=autoReset;}
+ }
+ dispose(){}
+}

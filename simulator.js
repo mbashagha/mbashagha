@@ -11,7 +11,7 @@ import {RGBELoader} from './vendor/RGBELoader.js';
 import {LawnState,LAWN,OBSTACLES,clamp,free,moveRig} from './sim-world.mjs?v=12';
 import {createMo} from './sim-character.js?v=13';
 import {buildScenery,buildMower} from './sim-scenery.js?v=18';
-import {GardenPost} from './sim-post.js?v=21';
+import {GardenPost,BasicGardenPost} from './sim-post.js?v=24';
 import {Clippings,makeDestination} from './sim-effects.js?v=12';
 
 const $=id=>document.getElementById(id),canvas=$('garden');
@@ -22,6 +22,18 @@ function shaderStage(name){shaderStages[name]=renderer.info.programs.length;canv
 const frameMetrics=new FrameMetrics(),reviewParams=new URLSearchParams(location.search);
 let gardenEnvironment=null,reviewCamera=null,daySky=null;
 const coarse=matchMedia('(pointer:coarse)').matches,reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const basicGraphics=reviewParams.get('graphics')==='basic';
+let failureShown=false;
+function showGardenError(error,contextLost=false){
+ if(failureShown)return;failureShown=true;running=false;renderer?.setAnimationLoop(null);syncSound();
+ const phase=Object.keys(bootStages).at(-1)||'startup';
+ $('loading').hidden=true;$('error').hidden=false;
+ $('error-message').textContent=contextLost?'The browser stopped the 3D graphics. Try reopening with simpler graphics.':'The garden could not finish loading. You can retry with simpler graphics or use 8-bit.';
+ $('error-details').textContent=`Stage: ${phase}\nGraphics: ${basicGraphics?'basic':'full'}\nRelease: 24\nBrowser: ${navigator.userAgent}\n${error?.name||'Error'}: ${error?.message||String(error)}`;
+ const retry=new URL(location.href);retry.searchParams.set('graphics','basic');retry.searchParams.set('quality','low');retry.searchParams.delete('view');retry.hash='';
+ $('retry-3d').href=retry.href;if(basicGraphics)$('retry-3d').textContent='Retry 3D';
+}
+canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();showGardenError(new Error('WebGL graphics context lost'),true);});
 let seed=5137;function random(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;}
 const lawn=new LawnState(),rig={x:1,z:-7,yaw:0,speed:0};
 let renderer,scene,camera,mo,mower,maskTexture,sky,sun,hemi,env,post,maps,clippings,destination;
@@ -59,7 +71,8 @@ function setLight(){
 
 async function init(){
  try{
- renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,coarse?1.15:1.35));renderer.setSize(innerWidth,innerHeight);
+ bootStage('graphicsContext');
+ renderer=new T.WebGLRenderer({canvas,antialias:!basicGraphics,powerPreference:basicGraphics?'default':'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,coarse?1.15:1.35));renderer.setSize(innerWidth,innerHeight);
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.outputColorSpace=T.SRGBColorSpace;
  canvas.dataset.parallelShaders=String(renderer.extensions.has('KHR_parallel_shader_compile'));
  canvas.dataset.bootVisibility=document.visibilityState;
@@ -67,23 +80,25 @@ async function init(){
  sun=new T.DirectionalLight();sun.castShadow=true;sun.shadow.mapSize.set(coarse?2048:4096,coarse?2048:4096);Object.assign(sun.shadow.camera,{left:-19,right:19,top:19,bottom:-19,near:1,far:95});sun.shadow.normalBias=.012;sun.shadow.bias=-.00006;scene.add(sun,sun.target);
  hemi=new T.HemisphereLight();scene.add(hemi);
  sky=new Sky();sky.scale.setScalar(180);sky.material.uniforms.turbidity.value=3;sky.material.uniforms.rayleigh.value=1.8;sky.material.uniforms.mieCoefficient.value=.003;sky.material.uniforms.mieDirectionalG.value=.86;sky.material.uniforms.sunPosition.value.set(-.55,.62,-.62);scene.add(sky);
- setLight();const pmrem=new T.PMREMGenerator(renderer);
+ setLight();const pmrem=basicGraphics?null:new T.PMREMGenerator(renderer);
+ bootStage('assetDownloads');
  // Fetch/decode independently, then assemble with the same deterministic random
  // sequence. A slow character or sky no longer holds up every other request.
- const skyReady=new RGBELoader().loadAsync('./assets/garden-v2/day-sky-1k.hdr').catch(()=>null);
+ const skyReady=basicGraphics?Promise.resolve(null):new RGBELoader().loadAsync('./assets/garden-v2/day-sky-1k.hdr').catch(()=>null);
  const mapsReady=loadGardenMaps(renderer).then(value=>{bootStage('materials');return value;});
  const environmentReady=loadGardenEnvironmentAssets().then(value=>({value}),error=>({error}));
  const mowerReady=loadGardenMower(buildMower);
  const characterReady=loadGardenCharacter(async()=>{const old=await loadGardenMaps(renderer,{legacy:true});return createMo(old['mo-face'],old.fabric,old['hair-strands']);});
  const allAssets=Promise.all([skyReady,mapsReady,environmentReady,mowerReady,characterReady]);
- pmrem.compileEquirectangularShader();
+ pmrem?.compileEquirectangularShader();
  const [loadedSky,loadedMaps,environmentResult,loadedMower,loadedCharacter]=await allAssets;
  bootStage('downloads');maps=loadedMaps;daySky=loadedSky;
  try{
-  if(daySky){daySky.mapping=T.EquirectangularReflectionMapping;env=pmrem.fromEquirectangular(daySky);scene.backgroundRotation.y=scene.environmentRotation.y=3.1808;}
+  if(!pmrem){env=null;}
+  else if(daySky){daySky.mapping=T.EquirectangularReflectionMapping;env=pmrem.fromEquirectangular(daySky);scene.backgroundRotation.y=scene.environmentRotation.y=3.1808;}
   else env=pmrem.fromScene(sky,.025,.1,500);
- }finally{pmrem.dispose();}
- scene.environment=env.texture;setLight();bootStage('sky');
+ }finally{pmrem?.dispose();}
+ scene.environment=env?.texture||null;setLight();bootStage('sky');
  const authored=new T.Group();
  try{if(environmentResult.error)throw environmentResult.error;gardenEnvironment=buildGardenEnvironment(authored,maps,random,environmentResult.value);scene.add(authored);canvas.dataset.assets='authored-v21';}
  catch(error){console.error('Authored garden assets failed to load',error);Object.assign(maps,await loadGardenMaps(renderer,{legacy:true}));buildScenery(scene,random,maps);canvas.dataset.assets='fallback';}
@@ -99,13 +114,21 @@ async function init(){
  bootStage('character');
  clippings=new Clippings(scene);destination=makeDestination(scene);
  updateRig(0);camera.position.set(5,2.5,-12);camera.lookAt(0,1,3);
- post=new GardenPost(renderer,camera);post.material.uniforms.aoStrength.value=.55;
+ post=basicGraphics?new BasicGardenPost(renderer,camera):new GardenPost(renderer,camera);
+ if(post.material)post.material.uniforms.aoStrength.value=.55;
  if(['high','medium','low'].includes(reviewParams.get('quality')))quality.set(reviewParams.get('quality'));
+ if(basicGraphics)quality.set('low');
  applyQuality();setLight();installReviewControls();
  installQualityControl();
  // Submit shaders before ANY scene render, including the six reflection faces.
  // Shadow programs require their own warmup in Three r170. Both targets use the
  // same linear scene shader variants; the final display pass is warmed separately.
+ if(basicGraphics){
+  // Keep the authored garden and gameplay, but skip HDR, postprocessing,
+  // reflection capture and the burst of parallel shader/texture warmup work.
+  scene.traverse(object=>{for(const material of [object.material].flat().filter(Boolean)){if(material.transmission)material.transmission=0;if(material.sheen)material.sheen=0;if(material.clearcoat)material.clearcoat=0;}});
+  bootStage('firstFrame');updateCamera(0);grassSystem.update(0,mower.root.position,camera,quality.tier,0);gardenEnvironment?.update(camera,quality.tier);post.render(scene);
+ }else{
  bootStage('compileStart');const shadows=createShadowWarmup(scene);
  try{
   const programs=Promise.all([compileForTarget(renderer,scene,camera,reflection),compileForTarget(renderer,shadows.scene,camera,reflection),compileForTarget(renderer,post.scene,post.ortho,null)]);
@@ -122,17 +145,19 @@ async function init(){
   await compileForTarget(renderer,scene,camera,post.target);bootStage('glazingCompiled');
   post.render(scene);shaderStage('firstFrame');
  }finally{shadows.dispose();}
+ }
+ if(failureShown||renderer.getContext().isContextLost()){showGardenError(new Error('WebGL graphics context lost'),true);return;}
  bootStage('ready');
  canvas.dataset.loadMs=String(Math.round(performance.now()));
  canvas.dataset.transferBytes=String(performance.getEntriesByType('resource').reduce((n,r)=>n+(r.transferSize||0),0));
  $('loading').hidden=true;bindControls();drawMap();renderer.setAnimationLoop(tick);
- }catch(error){console.error('Simulator initialization failed',error);$('loading').hidden=true;$('error').hidden=false;renderer?.setAnimationLoop(null);}
+ }catch(error){console.error('Simulator initialization failed',error);showGardenError(error);}
 }
 
 function installQualityControl(){
  const settings=$('garden-settings');if(!settings)return;
  const row=document.createElement('label');row.className='setting-row';row.innerHTML='<span>Graphics quality</span><select aria-label="Graphics quality"><option value="auto">Automatic</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>';
- const select=row.querySelector('select');select.style.cssText='font:inherit;background:var(--ui-paper);color:var(--ui-ink);padding:9px;border:1px solid var(--ui-line);border-radius:8px';
+ const select=row.querySelector('select');select.value=quality.mode;select.style.cssText='font:inherit;background:var(--ui-paper);color:var(--ui-ink);padding:9px;border:1px solid var(--ui-line);border-radius:8px';
  select.onchange=()=>{quality.set(select.value);applyQuality();};settings.insertBefore(row,settings.querySelector('.instructions'));
 }
 
@@ -218,7 +243,6 @@ function bindControls(){
  let joyId=null;const joy=$('joystick');const move=e=>{if(e.pointerId!==joyId)return;const r=joy.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,len=Math.hypot(dx,dy),f=len>38?38/len:1;touchAxis={x:dx*f/38,y:dy*f/38};$('stick').style.transform=`translate(${dx*f}px,${dy*f}px)`;};
  joy.addEventListener('pointerdown',e=>{joyId=e.pointerId;joy.setPointerCapture(joyId);move(e);});joy.addEventListener('pointermove',move);for(const event of ['pointerup','pointercancel','lostpointercapture'])joy.addEventListener(event,()=>{joyId=null;touchAxis={x:0,y:0};$('stick').style.transform='';});
  window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.fov=first?72:(innerWidth<650?60:51);camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);post.setSize(innerWidth,innerHeight);});
- canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();running=false;syncSound();renderer.setAnimationLoop(null);$('error').hidden=false;});
  registerGardenTools();ready=true;try{if(localStorage.getItem('mo:sound')==='true'&&!soundOn)toggleSound();}catch{}window.dispatchEvent(new CustomEvent('mo:ready'));if(pendingSweep)mowAll();
 }
 function finishGarden(){
