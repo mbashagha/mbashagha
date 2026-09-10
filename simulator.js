@@ -24,14 +24,27 @@ let gardenEnvironment=null,reviewCamera=null,daySky=null;
 const coarse=matchMedia('(pointer:coarse)').matches,reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const basicGraphics=reviewParams.get('graphics')==='basic';
 let failureShown=false;
+const contextFailureReasons=new Set();
+let failureReport='';
+function updateErrorDetails(){
+ $('error-details').textContent=failureReport+`\nBrowser graphics: ${[...contextFailureReasons].join(' | ')||'No additional reason provided.'}`;
+}
+// Chrome can dispatch this after getContext() has returned null. Keep listening
+// so the error report includes the GPU/driver reason even when it arrives late.
+canvas.addEventListener('webglcontextcreationerror',event=>{
+ if(event.statusMessage)contextFailureReasons.add(event.statusMessage);
+ if(failureShown)updateErrorDetails();
+});
 function showGardenError(error,contextLost=false){
  if(failureShown)return;failureShown=true;running=false;renderer?.setAnimationLoop(null);syncSound();
  const phase=Object.keys(bootStages).at(-1)||'startup';
+ const contextUnavailable=phase==='graphicsContext'&&!renderer;
  $('loading').hidden=true;$('error').hidden=false;
- $('error-message').textContent=contextLost?'The browser stopped the 3D graphics. Try reopening with simpler graphics.':'The garden could not finish loading. You can retry with simpler graphics or use 8-bit.';
- $('error-details').textContent=`Stage: ${phase}\nGraphics: ${basicGraphics?'basic':'full'}\nRelease: 24\nBrowser: ${navigator.userAgent}\n${error?.name||'Error'}: ${error?.message||String(error)}`;
+ $('error-message').textContent=contextUnavailable?'Your browser couldn’t start WebGL 2, which this 3D garden needs. Close other 3D tabs and restart your browser, then try again.':contextLost?'The browser stopped the 3D graphics. Try reopening with simpler graphics.':'The garden could not finish loading. You can retry with simpler graphics or use 8-bit.';
+ failureReport=`Stage: ${phase}\nGraphics: ${basicGraphics?'basic':'full'}\nRelease: 25\nBrowser: ${navigator.userAgent}\n${error?.name||'Error'}: ${error?.message||String(error)}`;
+ updateErrorDetails();
  const retry=new URL(location.href);retry.searchParams.set('graphics','basic');retry.searchParams.set('quality','low');retry.searchParams.delete('view');retry.hash='';
- $('retry-3d').href=retry.href;if(basicGraphics)$('retry-3d').textContent='Retry 3D';
+ $('retry-3d').href=retry.href;if(basicGraphics||contextUnavailable)$('retry-3d').textContent='Retry 3D';
 }
 canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();showGardenError(new Error('WebGL graphics context lost'),true);});
 let seed=5137;function random(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296;}
