@@ -22,12 +22,10 @@ function shaderStage(name){shaderStages[name]=renderer.info.programs.length;canv
 const frameMetrics=new FrameMetrics(),reviewParams=new URLSearchParams(location.search);
 let gardenEnvironment=null,reviewCamera=null,daySky=null;
 const coarse=matchMedia('(pointer:coarse)').matches,reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
-let savedGraphics=null;
-try{savedGraphics=localStorage.getItem('mo:3d-graphics');}catch{}
-const basicGraphics=(reviewParams.get('graphics')||savedGraphics)==='basic';
-function rememberBasicGraphics(){try{localStorage.setItem('mo:3d-graphics','basic');}catch{}}
-if(basicGraphics)rememberBasicGraphics();
-else if(reviewParams.get('graphics')==='full'){try{localStorage.removeItem('mo:3d-graphics');}catch{}}
+// The original scene is the default on every device. A recovery link or an
+// explicit graphics selection can opt into compatibility for this visit only.
+const basicGraphics=reviewParams.get('graphics')==='basic';
+try{localStorage.removeItem('mo:3d-graphics');}catch{}
 let failureShown=false;
 const contextFailureReasons=new Set();
 let failureReport='';
@@ -43,12 +41,11 @@ canvas.addEventListener('webglcontextcreationerror',event=>{
 });
 function showGardenError(error,contextLost=false){
  if(failureShown)return;failureShown=true;running=false;renderer?.setAnimationLoop(null);syncSound();
- rememberBasicGraphics();
  const phase=Object.keys(bootStages).at(-1)||'startup';
  const contextUnavailable=phase==='graphicsContext'&&!renderer;
  $('loading').hidden=true;$('error').hidden=false;
  $('error-message').textContent=contextUnavailable?'Your browser couldn’t start WebGL 2, which this 3D garden needs. Close other 3D tabs and restart your browser, then try again.':contextLost?(basicGraphics?'The browser stopped the 3D graphics. Close the garden tabs and restart your browser before trying again.':'The browser stopped the 3D graphics. Try reopening with simpler graphics.'):'The garden could not finish loading. You can retry with simpler graphics or use 8-bit.';
- failureReport=`Stage: ${phase}\nGraphics: ${basicGraphics?'basic':'full'}\nRelease: 26\nBrowser: ${navigator.userAgent}\n${error?.name||'Error'}: ${error?.message||String(error)}${post?.metrics?`\nLast frame: ${post.metrics.calls} draws, ${post.metrics.triangles} triangles`:''}`;
+ failureReport=`Stage: ${phase}\nGraphics: ${basicGraphics?'basic':'full'}\nRelease: 27\nBrowser: ${navigator.userAgent}\n${error?.name||'Error'}: ${error?.message||String(error)}${post?.metrics?`\nLast frame: ${post.metrics.calls} draws, ${post.metrics.triangles} triangles`:''}`;
  updateErrorDetails();
  const retry=new URL(location.href);retry.searchParams.set('graphics','basic');retry.searchParams.set('quality','low');retry.searchParams.delete('view');retry.hash='';
  $('retry-3d').href=retry.href;if(basicGraphics||contextUnavailable)$('retry-3d').textContent='Retry 3D';
@@ -178,9 +175,14 @@ async function init(){
 
 function installQualityControl(){
  const settings=$('garden-settings');if(!settings)return;
- if(basicGraphics){const row=document.createElement('div');row.className='setting-row';row.innerHTML='<span>Graphics quality</span><span>Compatibility</span>';settings.insertBefore(row,settings.querySelector('.instructions'));return;}
+ const controlStyle='font:inherit;background:var(--ui-paper);color:var(--ui-ink);padding:9px;border:1px solid var(--ui-line);border-radius:8px';
+ const modeRow=document.createElement('label');modeRow.className='setting-row';modeRow.innerHTML='<span>3D graphics</span><select aria-label="3D graphics"><option value="full">Original</option><option value="basic">Compatibility</option></select>';
+ const mode=modeRow.querySelector('select');mode.value=basicGraphics?'basic':'full';mode.style.cssText=controlStyle;
+ mode.onchange=()=>{const next=new URL(location.href);next.searchParams.set('graphics',mode.value);next.searchParams.delete('quality');location.assign(next.href);};
+ settings.insertBefore(modeRow,settings.querySelector('.instructions'));
+ if(basicGraphics)return;
  const row=document.createElement('label');row.className='setting-row';row.innerHTML='<span>Graphics quality</span><select aria-label="Graphics quality"><option value="auto">Automatic</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>';
- const select=row.querySelector('select');select.value=quality.mode;select.style.cssText='font:inherit;background:var(--ui-paper);color:var(--ui-ink);padding:9px;border:1px solid var(--ui-line);border-radius:8px';
+ const select=row.querySelector('select');select.value=quality.mode;select.style.cssText=controlStyle;
  select.onchange=()=>{quality.set(select.value);applyQuality();};settings.insertBefore(row,settings.querySelector('.instructions'));
 }
 
