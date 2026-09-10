@@ -149,13 +149,14 @@ body:not(.ultra):not([data-game="3d"]) #portfolio-shell .garden-progress{border:
 
 /* Floating glass for Ultra and 3D. Keep blur local to each surface. */
 :is(body.ultra,body[data-game="3d"]){
- --glass-fill:rgba(20,31,27,.42);
- --glass-panel:rgba(20,31,27,.64);
+ --glass-fill:rgba(33,39,42,.42);
+ --glass-panel:rgba(33,39,42,.64);
+ --glass-header:rgba(33,39,42,.42);
  --glass-shine:linear-gradient(145deg,rgba(255,255,255,.23),rgba(255,255,255,.035) 48%,rgba(255,255,255,.10));
  --glass-edge:rgba(255,255,255,.38);
  --glass-shadow:inset 0 1px 0 rgba(255,255,255,.58),inset 0 -1px 0 rgba(255,255,255,.12),0 8px 28px rgba(0,15,9,.20),0 2px 5px rgba(0,15,9,.12);
- --glass-blur:blur(18px) saturate(145%);
- --ui-muted:#e0e8e2;
+ --glass-blur:blur(18px) saturate(10%);
+ --ui-muted:#e4e8eb;
 }
 :is(body.ultra,body[data-game="3d"]) #portfolio-shell :is(.mode-switch,.mode-picker,.portfolio-entry,.garden-toolbar button,.garden-progress){
  background:var(--glass-shine),var(--glass-fill);
@@ -198,7 +199,33 @@ body[data-game="3d"] :is(#pause-panel,#complete)>div{
  color:var(--ui-ink);
 }
 :is(body.ultra,body[data-game="3d"]) :is(#garden-settings,#career-dialog)::backdrop{background:rgba(6,19,13,.18);-webkit-backdrop-filter:none;backdrop-filter:none}
-:is(body.ultra,body[data-game="3d"]) :is(.settings-heading,.career-top){background:rgba(25,39,32,.50);border-color:rgba(255,255,255,.16)}
+:is(body.ultra,body[data-game="3d"]) :is(.settings-heading,.career-top){
+ background:var(--glass-header);
+ border-color:rgba(255,255,255,.16);
+ -webkit-backdrop-filter:var(--glass-blur);
+ backdrop-filter:var(--glass-blur);
+}
+/* Keep the backing glass outside the scrolling header's backdrop root. */
+:is(body.ultra,body[data-game="3d"]) #career-dialog{
+ overflow:hidden;
+ isolation:isolate;
+ background:transparent!important;
+ -webkit-backdrop-filter:none;
+ backdrop-filter:none;
+}
+:is(body.ultra,body[data-game="3d"]) #career-dialog::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ border-radius:inherit;
+ background:var(--glass-shine),var(--glass-panel);
+ -webkit-backdrop-filter:var(--glass-blur);
+ backdrop-filter:var(--glass-blur);
+}
+:is(body.ultra,body[data-game="3d"]) #career-dialog .career-scroll{
+ max-height:calc(85dvh - 2px);
+ overflow-y:auto;
+ overscroll-behavior:contain;
+ border-radius:inherit;
+}
 /* A mask compositing hint would isolate the sheet from the lawn behind it. */
 :is(body.ultra,body[data-game="3d"]).portfolio-open #portfolio-scene{will-change:auto!important}
 :is(body.ultra,body[data-game="3d"]) :is(#toast,#intro) p{color:#edf3ed!important}
@@ -213,25 +240,25 @@ body[data-game="3d"] :is(#pause-panel,#complete)>div{
 }
 :is(body.ultra,body[data-game="3d"]) :is(.setting-row button,#settings-close,#career-close):hover,
 :is(body.ultra,body[data-game="3d"]) #portfolio-scene .portfolio-links :is(a,button):hover{background-color:#ffffff12}
-:is(body.ultra,body[data-game="3d"]) .setting-row select{border-radius:14px!important;background:#233b30!important;color:#fff!important;border-color:#ffffff40!important}
+:is(body.ultra,body[data-game="3d"]) .setting-row select{border-radius:14px!important;background:#293137!important;color:#fff!important;border-color:#ffffff40!important}
 body[data-game="3d"] :is(#pause-panel,#complete){background:rgba(6,19,13,.18);-webkit-backdrop-filter:none;backdrop-filter:none}
 body[data-game="3d"] :is(#pause-panel,#complete)>div{padding:30px}
 body[data-game="3d"] :is(#pause-panel,#complete) .primary{border-radius:100px;background:#edf5ef;color:#17352a}
-body[data-game="3d"] :is(.progress-panel,.minimap-wrap,#joystick){background:var(--glass-shine),var(--glass-fill);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+body[data-game="3d"] :is(.progress-panel,.minimap-wrap,#joystick){background:var(--glass-shine),var(--glass-fill);border:1px solid var(--glass-edge);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(10px) saturate(10%);backdrop-filter:blur(10px) saturate(10%)}
 body[data-game="3d"] :is(.progress-panel,.minimap-wrap){border-radius:20px}
 body[data-game="3d"] #stick{background:linear-gradient(145deg,#ffffffc9,#ffffff45);box-shadow:inset 0 1px 0 #fff,0 3px 10px #00190f26}
 
 @media(max-width:700px){
- :is(body.ultra,body[data-game="3d"]){--glass-blur:blur(12px) saturate(135%)}
+ :is(body.ultra,body[data-game="3d"]){--glass-blur:blur(12px) saturate(10%)}
  :is(body.ultra,body[data-game="3d"]) #portfolio-shell :is(.mode-picker,.garden-toolbar button){min-height:48px}
  :is(body.ultra,body[data-game="3d"]) #portfolio-scene .panel{border-radius:24px!important}
 }
 /* Readable opaque surfaces when blur is unavailable or transparency is reduced. */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
- :is(body.ultra,body[data-game="3d"]){--glass-fill:#273e32;--glass-panel:#20392d}
+ :is(body.ultra,body[data-game="3d"]){--glass-fill:#30383d;--glass-panel:#293137;--glass-header:#293137}
 }
 @media(prefers-reduced-transparency:reduce),(prefers-contrast:more){
- :is(body.ultra,body[data-game="3d"]){--glass-fill:#20392d;--glass-panel:#172e23;--glass-shine:linear-gradient(transparent,transparent);--glass-blur:none;--glass-edge:#ffffffa6;--ui-muted:#f1f6f2}
+ :is(body.ultra,body[data-game="3d"]){--glass-fill:#293137;--glass-panel:#20272d;--glass-header:#20272d;--glass-shine:linear-gradient(transparent,transparent);--glass-blur:none;--glass-edge:#ffffffa6;--ui-muted:#f1f4f6}
  body[data-game="3d"] :is(.progress-panel,.minimap-wrap,#joystick){-webkit-backdrop-filter:none;backdrop-filter:none}
 }
 @media(prefers-reduced-motion:reduce){
