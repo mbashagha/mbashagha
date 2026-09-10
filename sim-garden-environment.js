@@ -89,7 +89,7 @@ export async function loadGardenEnvironmentAssets(){
  return {manifest,assets};
 }
 
-export function buildGardenEnvironment(scene,maps,random,{manifest,assets}){
+export function buildGardenEnvironment(scene,maps,random,{manifest,assets},{basic=false}={}){
  // LODs share photographic textures; only their geometric detail differs.
  if(assets.treeLow){const materials=new Map();assets.tree.traverse(o=>{if(o.isMesh)materials.set(o.material.name,o.material);});assets.treeLow.traverse(o=>{if(o.isMesh&&materials.has(o.material.name))o.material=materials.get(o.material.name);});}
  buildLand(scene,maps,random);
@@ -101,13 +101,13 @@ export function buildGardenEnvironment(scene,maps,random,{manifest,assets}){
  for(const o of OBSTACLES)trees.push({x:o.x,z:o.z,scale:1,rotation:random()*6.28});
  const treeHeight=new T.Box3().setFromObject(assets.tree).getSize(new T.Vector3()).y;
  trees.forEach((t,i)=>t.scale=(i?7.1:7.6)/treeHeight);
- placeAsset(scene,assets.tree,trees,{name:'foreground_tree',wind:true});
+ placeAsset(scene,basic&&assets.treeLow?assets.treeLow:assets.tree,trees,{name:'foreground_tree',wind:!basic,shadow:!basic});
  const back=[];
  for(let i=0;i<7;i++)back.push({x:-18+i*5.7,z:26+random()*3,scale:(8.5+random()*3)/treeHeight,rotation:random()*6.28});
  for(const side of [-1,1])for(let i=0;i<6;i++)back.push({x:side*(15.5+random()*1.5),z:-15+i*6,scale:(7.3+random()*2.5)/treeHeight,rotation:random()*6.28});
  for(let i=0;i<5;i++)back.push({x:-14+i*7,z:-19.5-random()*2,scale:(8+random()*3)/treeHeight,rotation:random()*6.28});
  for(let i=0;i<8;i++)back.push({x:-23+i*6.3,z:33+random()*5,scale:(11+random()*4)/treeHeight,rotation:random()*6.28});
- placeAsset(scene,assets.treeLow||assets.tree,back,{name:'background_tree',wind:true,shadow:false});
+ placeAsset(scene,assets.treeLow||assets.tree,basic?back.filter((_,i)=>i%3===0):back,{name:'background_tree',wind:!basic,shadow:false});
  const plants=[],types=['sorrel','shrub','flowers','tuft'].filter(k=>assets[k]);
  for(const [ti,key] of types.entries()){
   const placements=[],height=new T.Box3().setFromObject(assets[key]).getSize(new T.Vector3()).y;
@@ -120,10 +120,10 @@ export function buildGardenEnvironment(scene,maps,random,{manifest,assets}){
    placements.push({x,z,y:.005,scale:wanted/Math.max(.05,height)*(.72+random()*.60),rotation:random()*6.28});
   }
   for(let i=0;i<42;i++)placements.push({x:-11.4+i*.55+(random()-.5)*.4,z:-12.5-random()*1.7,y:.005,scale:wanted/Math.max(.05,height)*(.7+random()*.6),rotation:random()*6.28});
-  plants.push(...placeAsset(scene,assets[key],placements,{name:'border_'+key,wind:true,low:assets[key+'Low']}));
+  plants.push(...placeAsset(scene,assets[key],basic?placements.filter((_,i)=>i%4===0):placements,{name:'border_'+key,wind:!basic,shadow:!basic,low:assets[key+'Low']}));
  }
  for(const x of [-6,6]){const lamp=new T.PointLight(0xffc68a,0,8,2);lamp.position.set(x,2.4,16.2);lamp.userData.gardenLamp=true;scene.add(lamp);}
  return {manifest,assets,pavilion,update(camera,tier){
-  for(const mesh of plants){const distance=mesh.boundingSphere.center.distanceTo(camera.position);mesh.castShadow=distance<(tier==='high'?12:7);mesh.geometry=distance<(tier==='high'?7:4)?mesh.userData.detailGeometry:mesh.userData.lowGeometry;}
+  for(const mesh of plants){const distance=mesh.boundingSphere.center.distanceTo(camera.position);mesh.castShadow=!basic&&distance<(tier==='high'?12:7);mesh.geometry=!basic&&distance<(tier==='high'?7:4)?mesh.userData.detailGeometry:mesh.userData.lowGeometry;}
  }};
 }

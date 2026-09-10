@@ -17,7 +17,7 @@ float fold=sin(h*3.14159)*bladeShape.z;
 vec3 transformed=vec3(blade.x+side*cos(blade.w)+bend*sin(blade.w),height*h-fold*(1.-cut),blade.y-side*sin(blade.w)+bend*cos(blade.w));
 bladeHeight=h;cutAmount=cut;`;
 
-export function createGrass(scene,mask,random,maps,free=()=>true){
+export function createGrass(scene,mask,random,maps,free=()=>true,{basic=false}={}){
   const tracks=new WheelTracks(),trackMap=new T.DataTexture(tracks.data,tracks.n,tracks.n,T.RedFormat);trackMap.magFilter=trackMap.minFilter=T.LinearFilter;trackMap.needsUpdate=true;let lastTime=0;
   const uniforms={trackMap:{value:trackMap},mowMask:{value:mask},gardenTime:{value:0},mowerPosition:{value:new T.Vector3(0,0,-8)}};
   const material=new T.MeshStandardMaterial({color:0xffffff,vertexColors:true,side:T.DoubleSide,roughness:.87});
@@ -46,7 +46,7 @@ export function createGrass(scene,mask,random,maps,free=()=>true){
   for(let i=0;i<5;i++){const h=i/4,w=.013*(1-h)+.0003;p.push(-w,h,0,w,h,0);uv.push(0,h,1,h);if(i<4){const a=i*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}}
   for(let z=0;z<6;z++)for(let x=0;x<5;x++){
     const geo=new T.InstancedBufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(p,3));geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();
-    const count=10500,blades=new Float32Array(count*4),shapes=new Float32Array(count*4),colors=new Float32Array(count*3),color=new T.Color();
+    const count=basic?1800:10500,blades=new Float32Array(count*4),shapes=new Float32Array(count*4),colors=new Float32Array(count*3),color=new T.Color();
     for(let i=0;i<count;i++){
       let bx,bz;do{bx=-10+x*4+random()*4;bz=-12+z*4+random()*4;}while(!free(bx,bz));
       const patch=(Math.sin(bx*.7+bz*.32)+Math.sin(bz*1.15-bx*.4))*.5;
@@ -87,6 +87,6 @@ export function createGrass(scene,mask,random,maps,free=()=>true){
     const dt=Math.min(.1,Math.max(0,delta??time-lastTime));lastTime=time;if(tracks.update(dt))trackMap.needsUpdate=true;
     uniforms.gardenTime.value=time;uniforms.mowerPosition.value.copy(mower);
     const density={high:1,medium:.72,low:.44}[tier];
-    for(const c of chunks){const distance=c.center.distanceTo(camera.position);const desired=c.count*density*(distance>22?.38:distance>14?.65:1);c.visibleCount=c.visibleCount??desired;c.visibleCount+=(desired-c.visibleCount)*(1-Math.exp(-Math.max(.016,dt)*6));c.mesh.geometry=c.lods[distance>16?2:distance>8?1:0];c.mesh.geometry.instanceCount=Math.floor(c.visibleCount);c.mesh.castShadow=tier==='high'&&distance<9;}
+    for(const c of chunks){const distance=c.center.distanceTo(camera.position);const desired=c.count*density*(distance>22?.38:distance>14?.65:1);c.visibleCount=c.visibleCount??desired;c.visibleCount+=(desired-c.visibleCount)*(1-Math.exp(-Math.max(.016,dt)*6));c.mesh.geometry=c.lods[basic?2:distance>16?2:distance>8?1:0];c.mesh.geometry.instanceCount=Math.floor(c.visibleCount);c.mesh.castShadow=!basic&&tier==='high'&&distance<9;}
   },dispose(){trackMap.dispose();material.dispose();depth.dispose();groundMat.dispose();ground.geometry.dispose();chunks.forEach(c=>c.lods.forEach(g=>g.dispose()));}};
 }

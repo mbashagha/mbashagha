@@ -1,8 +1,8 @@
 import * as T from 'three';
-import {createGrass} from './sim-render-grass.js?v=21';
+import {createGrass} from './sim-render-grass.js?v=26';
 import {QualityController,QUALITY} from './sim-render-quality.mjs?v=21';
 import {FrameMetrics} from './sim-render-metrics.mjs';
-import {loadGardenEnvironmentAssets,buildGardenEnvironment} from './sim-garden-environment.js?v=23';
+import {loadGardenEnvironmentAssets,buildGardenEnvironment} from './sim-garden-environment.js?v=26';
 import {loadGardenMaps,loadGardenMower,loadGardenCharacter} from './sim-render-assets.js?v=23';
 import {compileForTarget,uploadSceneTextures,createShadowWarmup,captureGardenReflection,yieldToBrowser} from './sim-startup.mjs?v=23';
 import {animateFoliage} from './sim-render-foliage.js?v=21';
@@ -22,12 +22,18 @@ function shaderStage(name){shaderStages[name]=renderer.info.programs.length;canv
 const frameMetrics=new FrameMetrics(),reviewParams=new URLSearchParams(location.search);
 let gardenEnvironment=null,reviewCamera=null,daySky=null;
 const coarse=matchMedia('(pointer:coarse)').matches,reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
-const basicGraphics=reviewParams.get('graphics')==='basic';
+let savedGraphics=null;
+try{savedGraphics=localStorage.getItem('mo:3d-graphics');}catch{}
+const basicGraphics=(reviewParams.get('graphics')||savedGraphics)==='basic';
+function rememberBasicGraphics(){try{localStorage.setItem('mo:3d-graphics','basic');}catch{}}
+if(basicGraphics)rememberBasicGraphics();
+else if(reviewParams.get('graphics')==='full'){try{localStorage.removeItem('mo:3d-graphics');}catch{}}
 let failureShown=false;
 const contextFailureReasons=new Set();
 let failureReport='';
 function updateErrorDetails(){
  $('error-details').textContent=failureReport+`\nBrowser graphics: ${[...contextFailureReasons].join(' | ')||'No additional reason provided.'}`;
+ if([...contextFailureReasons].some(reason=>reason.includes('caused context loss and was blocked')))$('error-message').textContent='Your browser blocked 3D for this site after a graphics failure. Close the garden tabs and restart your browser, then try again.';
 }
 // Chrome can dispatch this after getContext() has returned null. Keep listening
 // so the error report includes the GPU/driver reason even when it arrives late.
@@ -37,11 +43,12 @@ canvas.addEventListener('webglcontextcreationerror',event=>{
 });
 function showGardenError(error,contextLost=false){
  if(failureShown)return;failureShown=true;running=false;renderer?.setAnimationLoop(null);syncSound();
+ rememberBasicGraphics();
  const phase=Object.keys(bootStages).at(-1)||'startup';
  const contextUnavailable=phase==='graphicsContext'&&!renderer;
  $('loading').hidden=true;$('error').hidden=false;
- $('error-message').textContent=contextUnavailable?'Your browser couldn’t start WebGL 2, which this 3D garden needs. Close other 3D tabs and restart your browser, then try again.':contextLost?'The browser stopped the 3D graphics. Try reopening with simpler graphics.':'The garden could not finish loading. You can retry with simpler graphics or use 8-bit.';
- failureReport=`Stage: ${phase}\nGraphics: ${basicGraphics?'basic':'full'}\nRelease: 25\nBrowser: ${navigator.userAgent}\n${error?.name||'Error'}: ${error?.message||String(error)}`;
+ $('error-message').textContent=contextUnavailable?'Your browser couldn’t start WebGL 2, which this 3D garden needs. Close other 3D tabs and restart your browser, then try again.':contextLost?(basicGraphics?'The browser stopped the 3D graphics. Close the garden tabs and restart your browser before trying again.':'The browser stopped the 3D graphics. Try reopening with simpler graphics.'):'The garden could not finish loading. You can retry with simpler graphics or use 8-bit.';
+ failureReport=`Stage: ${phase}\nGraphics: ${basicGraphics?'basic':'full'}\nRelease: 26\nBrowser: ${navigator.userAgent}\n${error?.name||'Error'}: ${error?.message||String(error)}${post?.metrics?`\nLast frame: ${post.metrics.calls} draws, ${post.metrics.triangles} triangles`:''}`;
  updateErrorDetails();
  const retry=new URL(location.href);retry.searchParams.set('graphics','basic');retry.searchParams.set('quality','low');retry.searchParams.delete('view');retry.hash='';
  $('retry-3d').href=retry.href;if(basicGraphics||contextUnavailable)$('retry-3d').textContent='Retry 3D';
@@ -61,10 +68,11 @@ const mini=$('minimap').getContext('2d');
 
 function buildGrass(){
  maskTexture=new T.DataTexture(lawn.mask,lawn.n,lawn.n,T.RedFormat);maskTexture.magFilter=maskTexture.minFilter=T.LinearFilter;maskTexture.needsUpdate=true;
- grassSystem=createGrass(scene,maskTexture,random,maps,(x,z)=>free(x,z));
+ grassSystem=createGrass(scene,maskTexture,random,maps,(x,z)=>free(x,z),{basic:basicGraphics});
 }
 function applyQuality(){
- const q=QUALITY[quality.tier];renderer.setPixelRatio(Math.min(devicePixelRatio,q.scale));renderer.setSize(innerWidth,innerHeight);post?.setQuality(q);post?.setSize(innerWidth,innerHeight);
+ if(basicGraphics)quality.set('low');
+ const q=QUALITY[quality.tier];renderer.setPixelRatio(Math.min(devicePixelRatio,basicGraphics?.85:q.scale));renderer.setSize(innerWidth,innerHeight);post?.setQuality(q);post?.setSize(innerWidth,innerHeight);
  if(sun.shadow.mapSize.x!==q.shadow||sun.shadow.mapSize.y!==q.shadow){sun.shadow.mapSize.set(q.shadow,q.shadow);sun.shadow.map?.dispose();sun.shadow.map=null;}
  scene.traverse(o=>{if(o.isInstancedMesh&&o!==clippings?.mesh){if(o.userData.fullDensity===undefined)o.userData.fullDensity=o.count;
  // Preserve the original instance order while reducing foliage cost on slower devices.
@@ -76,7 +84,7 @@ function setLight(){
  const direction=new T.Vector3(night?-.4:-.656,night?.3:.6151,night?.6:-.4373).normalize();sun.position.copy(direction.clone().multiplyScalar(45));
  sun.color.set(night?0xafcafa:0xffe6bd);sun.intensity=night?1.3:3.8;
  hemi.color.set(night?0x6f8bac:0xb3c9e2);hemi.groundColor.set(night?0x16251d:0x576c38);hemi.intensity=night?.9:.55;
- sky.visible=!night&&!daySky;scene.background=night?new T.Color(0x162c42):daySky||new T.Color(0xbecbda);scene.fog=new T.Fog(night?0x162c42:0xc0c8c1,42,140);
+ sky.visible=!basicGraphics&&!night&&!daySky;scene.background=night?new T.Color(0x162c42):daySky||new T.Color(0xbecbda);scene.fog=new T.Fog(night?0x162c42:0xc0c8c1,42,140);
  scene.backgroundIntensity=1.15;renderer.toneMappingExposure=night?1.15:1.10;scene.environmentIntensity=night?.28:1.0;grassSystem?.setNight(night);
  scene.traverse(o=>{if(o.userData.gardenLamp)o.intensity=night?25:0;});
  $('light').innerHTML=(night?'Blue hour':'Golden hour')+' <kbd>L</kbd>';$('time-label').textContent=night?'20:16 · BLUE HOUR':'17:42 · GOLDEN HOUR';
@@ -85,8 +93,9 @@ function setLight(){
 async function init(){
  try{
  bootStage('graphicsContext');
- renderer=new T.WebGLRenderer({canvas,antialias:!basicGraphics,powerPreference:basicGraphics?'default':'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,coarse?1.15:1.35));renderer.setSize(innerWidth,innerHeight);
- renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.outputColorSpace=T.SRGBColorSpace;
+ renderer=new T.WebGLRenderer({canvas,antialias:!basicGraphics,powerPreference:basicGraphics?'default':'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,basicGraphics?.85:coarse?1.15:1.35));renderer.setSize(innerWidth,innerHeight);
+ renderer.shadowMap.enabled=!basicGraphics;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.outputColorSpace=T.SRGBColorSpace;
+ canvas.dataset.graphics=basicGraphics?'basic':'full';canvas.dataset.shadows=String(renderer.shadowMap.enabled);
  canvas.dataset.parallelShaders=String(renderer.extensions.has('KHR_parallel_shader_compile'));
  canvas.dataset.bootVisibility=document.visibilityState;
  scene=new T.Scene();camera=new T.PerspectiveCamera(innerWidth<650?60:51,innerWidth/innerHeight,.08,220);
@@ -113,10 +122,10 @@ async function init(){
  }finally{pmrem?.dispose();}
  scene.environment=env?.texture||null;setLight();bootStage('sky');
  const authored=new T.Group();
- try{if(environmentResult.error)throw environmentResult.error;gardenEnvironment=buildGardenEnvironment(authored,maps,random,environmentResult.value);scene.add(authored);canvas.dataset.assets='authored-v21';}
+ try{if(environmentResult.error)throw environmentResult.error;gardenEnvironment=buildGardenEnvironment(authored,maps,random,environmentResult.value,{basic:basicGraphics});scene.add(authored);canvas.dataset.assets='authored-v21';}
  catch(error){console.error('Authored garden assets failed to load',error);Object.assign(maps,await loadGardenMaps(renderer,{legacy:true}));buildScenery(scene,random,maps);canvas.dataset.assets='fallback';}
  bootStage('models');
- foliage=animateFoliage(scene);await yieldToBrowser();buildGrass();
+ foliage=basicGraphics?{update(){}}:animateFoliage(scene);await yieldToBrowser();buildGrass();
  // Actors are prepared for compilation but excluded from the original static
  // glazing capture, retaining its exact garden-only composition.
  const glazing=[];scene.traverse(o=>{if(o.isMesh&&(o.userData.gardenGlass||o.material?.envMapIntensity===2))glazing.push(o);});
@@ -137,9 +146,9 @@ async function init(){
  // Shadow programs require their own warmup in Three r170. Both targets use the
  // same linear scene shader variants; the final display pass is warmed separately.
  if(basicGraphics){
-  // Keep the authored garden and gameplay, but skip HDR, postprocessing,
-  // reflection capture and the burst of parallel shader/texture warmup work.
-  scene.traverse(object=>{for(const material of [object.material].flat().filter(Boolean)){if(material.transmission)material.transmission=0;if(material.sheen)material.sheen=0;if(material.clearcoat)material.clearcoat=0;}});
+  // Keep the authored garden and gameplay with a smaller geometry budget,
+  // no shadow pass and fewer texture lookups in each material.
+  scene.traverse(object=>{for(const material of [object.material].flat().filter(Boolean)){if(material.transmission)material.transmission=0;if(material.sheen)material.sheen=0;if(material.clearcoat)material.clearcoat=0;material.normalMap=null;material.bumpMap=null;material.roughnessMap=null;material.metalnessMap=null;material.aoMap=null;material.alphaToCoverage=false;}});
   bootStage('firstFrame');updateCamera(0);grassSystem.update(0,mower.root.position,camera,quality.tier,0);gardenEnvironment?.update(camera,quality.tier);post.render(scene);
  }else{
  bootStage('compileStart');const shadows=createShadowWarmup(scene);
@@ -169,6 +178,7 @@ async function init(){
 
 function installQualityControl(){
  const settings=$('garden-settings');if(!settings)return;
+ if(basicGraphics){const row=document.createElement('div');row.className='setting-row';row.innerHTML='<span>Graphics quality</span><span>Compatibility</span>';settings.insertBefore(row,settings.querySelector('.instructions'));return;}
  const row=document.createElement('label');row.className='setting-row';row.innerHTML='<span>Graphics quality</span><select aria-label="Graphics quality"><option value="auto">Automatic</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>';
  const select=row.querySelector('select');select.value=quality.mode;select.style.cssText='font:inherit;background:var(--ui-paper);color:var(--ui-ink);padding:9px;border:1px solid var(--ui-line);border-radius:8px';
  select.onchange=()=>{quality.set(select.value);applyQuality();};settings.insertBefore(row,settings.querySelector('.instructions'));
@@ -210,7 +220,14 @@ function steerToTarget(){
  const angle=Math.atan2(dx,dz),diff=Math.atan2(Math.sin(angle-rig.yaw),Math.cos(angle-rig.yaw));
  return {throttle:Math.abs(diff)>1.2?.15:Math.min(1,d),steer:clamp(diff*2,-1,1)};
 }
-function tick(){
+let lastBasicFrame=null;
+function tick(now){
+ if(failureShown)return;
+ if(basicGraphics){
+  if(document.hidden){clock.getDelta();lastBasicFrame=null;return;}
+  if(lastBasicFrame!==null&&now-lastBasicFrame<1000/30-.5)return;
+  lastBasicFrame=now;
+ }
  const rawDt=clock.getDelta(),dt=Math.min(rawDt,.04);const t=clock.elapsedTime;
  if(document.hidden)return;
  frameMetrics.sample(rawDt*1000);
@@ -227,7 +244,7 @@ function tick(){
  if(!started||running||portfolioActive)updateCamera(dt);
  if(++frame%10===0){$('percent').textContent=Math.floor(lawn.ratio*100);$('progress-fill').style.width=`${lawn.ratio*100}%`;$('area').textContent=Math.round(lawn.area);$('elapsed').textContent=formatTime(elapsed);$('speed').innerHTML=`${(Math.abs(rig.speed)*3.6).toFixed(1)} <small>km/h</small>`;canvas.dataset.fps=String(Math.round(fps));drawMap();syncSound();}
  const artTime=reviewCamera?0:t;grassSystem.update(reduced?0:artTime,mower.root.position,camera,quality.tier,dt);foliage.update(reduced?0:artTime);gardenEnvironment?.update(camera,quality.tier);post.render(scene);
- if(frame%10===0){canvas.dataset.drawCalls=String(post.metrics.calls);canvas.dataset.triangles=String(post.metrics.triangles);canvas.dataset.frameP95=String(frameMetrics.snapshot().p95Ms);canvas.dataset.shaderPrograms=String(renderer.info.programs.length);}
+ if(frame%10===0){canvas.dataset.renderedFrames=String(frame);canvas.dataset.drawCalls=String(post.metrics.calls);canvas.dataset.triangles=String(post.metrics.triangles);canvas.dataset.frameP95=String(frameMetrics.snapshot().p95Ms);canvas.dataset.shaderPrograms=String(renderer.info.programs.length);}
 }
 function formatTime(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;}
 function drawMap(){
