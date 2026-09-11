@@ -174,7 +174,7 @@ body:not(.ultra):not([data-game="3d"]) #portfolio-shell .garden-progress{border:
  color:#17352a;text-shadow:none;
  box-shadow:inset 0 1px 0 #fff,0 2px 6px #00190f24;
 }
-:is(body.ultra,body[data-game="3d"]) #portfolio-shell .garden-progress{font-weight:500}
+:is(body.ultra,body[data-game="3d"]) #portfolio-shell .garden-progress{font-weight:500;padding:12px 16px}
 :is(body.ultra,body[data-game="3d"]) #portfolio-shell .garden-progress strong{color:#ffe49a;font-weight:650}
 :is(body.ultra,body[data-game="3d"]) #portfolio-shell .garden-toolbar button{font-weight:550;transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease}
 :is(body.ultra,body[data-game="3d"]) #portfolio-shell .garden-toolbar button:hover{filter:none}
@@ -278,8 +278,13 @@ body[data-game="3d"] #error #error-details{margin:8px 0 0;padding:16px;border:1p
 
 @media(max-width:700px){
  :is(body.ultra,body[data-game="3d"]){--glass-blur:blur(12px) saturate(10%)}
- :is(body.ultra,body[data-game="3d"]) #portfolio-shell :is(.mode-picker,.garden-toolbar button){min-height:48px}
+ :is(body.ultra,body[data-game="3d"]) #portfolio-shell :is(.mode-picker,.garden-toolbar button,.garden-progress){min-height:48px}
+ :is(body.ultra,body[data-game="3d"]) #portfolio-shell .garden-progress{padding:11px 14px}
  :is(body.ultra,body[data-game="3d"]) #portfolio-scene .panel{border-radius:24px!important}
+}
+@media(max-width:400px){
+ /* Two lines of progress text fit the same 48px pill as the action buttons. */
+ :is(body.ultra,body[data-game="3d"]) #portfolio-shell .garden-progress{padding:5px 14px}
 }
 /* Readable opaque surfaces when blur is unavailable or transparency is reduced. */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
