@@ -7,7 +7,7 @@
   <link rel="icon" href="./favicon.svg"><link rel="stylesheet" href="./simulator.css?v=13">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
 <style>@font-face{font-family:'Instrument Serif';font-style:normal;font-weight:400;font-display:swap;src:url('./vendor/InstrumentSerif-Regular.ttf') format('truetype')}</style>
-<link rel="stylesheet" href="./portfolio-ui.css?v=15"><script defer src="./portfolio-ui.js?v=15"></script>
+<link rel="stylesheet" href="./portfolio-ui.css?v=16"><script defer src="./portfolio-ui.js?v=15"></script>
 </head>
 <body data-game="3d">
 <main class="scene" id="portfolio-scene">
@@ -157,7 +157,7 @@
     <p class="intro-prompt">Tap anywhere on the garden to begin</p>
   </div>
   <div id="loading" role="status"><span>Preparing the garden<span class="loading-dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span></span></div>
-  <div id="error" hidden role="alert" style="overflow-y:auto;box-sizing:border-box"><h2>The garden couldn’t open.</h2><p id="error-message">The 3D garden stopped loading. Try again with simpler graphics.</p><p><a id="retry-3d" href="./simulator.html?graphics=basic&amp;quality=low">Try simpler 3D</a> <a href="./index.html">Return to 8-bit</a></p><details><summary>Error details</summary><pre id="error-details" style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px"></pre></details></div>
+  <div id="error" hidden role="alert" aria-labelledby="error-title"><section class="error-sheet"><h2 id="error-title">The garden couldn’t open.</h2><p id="error-message">The 3D garden stopped loading. Try again with simpler graphics.</p><div class="error-actions"><a id="retry-3d" href="./simulator.html?graphics=basic&amp;quality=low">Try simpler 3D</a><a href="./index.html">Return to 8-bit</a></div><details><summary>Error details</summary><pre id="error-details"></pre></details></section></div>
   <div class="location"><span class="live-dot"></span> 3D Gaming <span id="time-label">17:42 · GOLDEN HOUR</span></div>
   <aside id="hud" hidden>
     <section class="progress-panel" aria-label="Mowing progress">
