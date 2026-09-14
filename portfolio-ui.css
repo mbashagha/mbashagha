@@ -78,6 +78,7 @@ body:not(.ultra):not([data-game="3d"]) :is(#career-close,#settings-close,.settin
 body:not(.ultra):not([data-game="3d"]) :is(.setting-row,.instructions p){font-size:10px;line-height:2}
 body:not(.ultra):not([data-game="3d"]) .instructions h3{font-size:11px;line-height:1.8}
 body:not(.ultra):not([data-game="3d"]) #career-dialog :is(.doc,li){font-size:10px;line-height:2;color:#33691e}
+body:not(.ultra):not([data-game="3d"]) #career-dialog .ms{color:#886d3d}
 body:not(.ultra):not([data-game="3d"]) #career-dialog .v{font-size:14px;line-height:1.8;letter-spacing:0}
 body:not(.ultra):not([data-game="3d"]) #career-dialog :is(.v2,.y,.k,.hint){font-size:9px;line-height:1.9;color:#33691e;letter-spacing:0}
 body:not(.ultra):not([data-game="3d"]) #toast{background:var(--cream)!important;border:3px solid var(--ink)!important;border-radius:0!important;box-shadow:5px 5px var(--ink)!important}
